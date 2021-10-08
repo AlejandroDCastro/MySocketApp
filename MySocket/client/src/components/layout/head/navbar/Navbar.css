@@ -1,0 +1,134 @@
+
+
+#nav-background {
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    display: none;
+    opacity: .4;
+}
+
+#navbar,
+#set-mobile {
+    position: absolute;
+}
+
+#set-mobile {
+    left: 0;
+}
+
+    #btn-menu,
+    #set-mobile>label {
+        display: none;
+    }
+
+        #set-mobile>label>i {
+            font-size: 2em;
+            padding: 26px;
+        }
+
+        #set-mobile>label>i:hover {
+            cursor: pointer;
+        }
+
+#navbar {
+    right: 0;
+}
+
+    #navbar>ul {
+        list-style-type: none;
+        display: flex;
+    }
+
+        #navbar>ul>li>a {
+            text-decoration: none;
+            display: flex;
+            padding: 34px 15px;
+        }
+
+        #navbar>ul>li>a:hover {
+            background-color: #8636e0;
+            transition: all .3s;
+        }
+
+
+
+/*
+    Media Queries for Navbar
+*/
+
+
+/* Disappear normal menu and transform it in dropdown menu */
+@media all and (max-width: 860px) {
+
+    #set-mobile>label {
+        display: initial;
+    }
+
+    #navbar {
+        position: fixed;
+        right: initial;
+        top: 0;
+        left: 0;
+        background-color: white;
+        width: 40%;
+        height: 100%;
+        margin-left: -40%;
+    }
+
+    #navbar>ul {
+        flex-direction: column;
+        width: 100%;
+    }
+
+        #navbar>ul>li>a {
+            text-decoration: none;
+            display: flex;
+            justify-content: center;
+            padding: 34px 15px;
+            color: black;
+        }
+
+        #navbar>ul>li>a:hover {
+            background-color: rgb(228, 228, 228);
+        }
+
+    
+    /*
+    *   When menu is checked
+    */
+
+    #btn-menu:checked {
+        display: initial;
+        position: fixed;
+        left: 40%;
+        top: 0;
+        width: 60%;
+        height: 100%;
+        opacity: 0;
+        z-index: 2;
+    }
+
+    #btn-menu:checked~span {
+        display: initial;
+    }
+
+    #nav-background {
+        background-color: black;
+    }
+
+    #btn-menu:checked~nav {
+        margin-left: 0;
+        transition: all .6s;
+        z-index: 3;
+    }
+
+    #btn-menu[data-dissapear="false"]:not(:checked)~nav {
+        margin-left: -40%;
+        transition: all .6s;
+    }
+
+}
