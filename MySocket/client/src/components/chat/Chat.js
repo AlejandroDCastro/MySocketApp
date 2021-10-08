@@ -3,6 +3,7 @@ import { UserContext } from '../../UserContext';
 import { Link, useParams } from 'react-router-dom';
 import io from 'socket.io-client';
 import Messages from './messages/Messages';
+import Input from './input/Input';
 
 let socket;
 const Chat = () => {
@@ -45,31 +46,11 @@ const Chat = () => {
         }
     }
 
-    const changeMessage = e => {
-        setMessage(e.target.value);
-    }
-
-    const pressMessage = e => {
-        if (e.key === 'Enter') {
-            sendMessage(e);
-        }
-    }
-
 
     return (
         <div>
-            <div>{room_id} {room_name}</div>
-            <h2>Chat {JSON.stringify(user)}</h2>
-            <pre>{JSON.stringify(messages, null, '\t')}</pre>
             <Messages messages={messages} user_id={user.id} />
-            <form action="" onSubmit={sendMessage}>
-                <div>
-                    <input type="text" value={message} onChange={changeMessage} onKeyPress={pressMessage} />
-                </div>
-                <div>
-                    <input type="submit" value="Send Message" />
-                </div>
-            </form>
+            <Input message={message} setMessage={setMessage} sendMessage={sendMessage} />
         </div>
     )
 }
