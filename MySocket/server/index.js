@@ -1,7 +1,20 @@
 const express = require('express');
 const app = express();
+const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
+const cookieParser = require('cookie-parser');
+const corsOptions = {
+    origin: 'http://localhost:3000',
+    credentials: true,
+    optionsSuccessStatus: 200 // For legacy browser support
+}
+
+// Middleware that recognize the incoming Request Object as a JSON Object
+app.use(cors(corsOptions));
+app.use(express.json());
 app.use(authRoutes);
+app.use(cookieParser());
+
 const http = require('http').createServer(app);
 const mongoose = require('mongoose');
 const socketio = require('socket.io');
@@ -12,6 +25,20 @@ const { addUser, getUser, removeUser } = require('./helper');
 const PORT = process.env.PORT || 5000;
 const Room = require('./models/Room');
 const Message = require('./models/Message');
+
+
+app.get('set-cookies', (req, res) => {
+    res.cookie('username', 'Tony');
+    res.cookie('isAuthenticated', true, { maxAge: 24 * 60 * 60 * 1000 });
+    res.send('cookies are set');
+});
+
+app.get('get-cookies', (req, res) => {
+    const cookies = req.cookies;
+    console.log(cookies);
+    res.json(cookies);
+});
+
 
 io.on('connection', (socket) => {
     console.log(socket.id);
@@ -69,7 +96,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('get-messages-history', room_id => {
-        Message.find({room_id}).then(result => {
+        Message.find({ room_id }).then(result => {
             socket.emit('output-messages', result);
         });
     });
@@ -78,6 +105,7 @@ io.on('connection', (socket) => {
         const user = removeUser(socket.id);
     });
 });
+
 
 http.listen(PORT, () => {
     console.log(`listening on port ${PORT}`);
