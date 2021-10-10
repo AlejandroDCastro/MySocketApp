@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { UserContext } from '../../UserContext';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import RoomList from './RoomList/RoomList';
 import io from 'socket.io-client';
 import './Home.css';
@@ -56,24 +56,11 @@ const Home = () => {
         setRoom(e.target.value);
     }
 
-    const setAsAlex = () => {
-        const ale = {
-            name: 'Alex',
-            email: 'alex@gmail.com',
-            password: '123',
-            id: '123'
-        }
-        setUser(ale);
+    // Login first if user is not identified
+    if (!user) {
+        return <Redirect to="/login" />
     }
-    const setAsFloren = () => {
-        const flo = {
-            name: 'Floren',
-            email: 'floren@gmail.com',
-            password: '456',
-            id: '456'
-        }
-        setUser(flo);
-    }
+
 
     return (
         <div>
@@ -87,10 +74,6 @@ const Home = () => {
                         </div>
                         <input type="submit" value="CREATE ROOM" />
                     </form>
-                    <div>
-                        <a href="#" onClick={setAsAlex}>set as Alex</a>
-                        <a href="#" onClick={setAsFloren}>set as Floren</a>
-                    </div>
                 </section>
                 <section id="room-section">
                     <h2>Avaliable Rooms</h2>
@@ -99,10 +82,6 @@ const Home = () => {
                     </div>
                 </section>
             </div>
-
-            <Link to={'/chat'}>
-                <button>go to chat</button>
-            </Link>
         </div>
     )
 }

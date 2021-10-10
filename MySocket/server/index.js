@@ -9,11 +9,10 @@ const corsOptions = {
     optionsSuccessStatus: 200 // For legacy browser support
 }
 
-// Middleware that recognize the incoming Request Object as a JSON Object
 app.use(cors(corsOptions));
-app.use(express.json());
-app.use(authRoutes);
+app.use(express.json()); // Middleware that recognize the incoming Request Object as a JSON Object
 app.use(cookieParser());
+app.use(authRoutes);
 
 const http = require('http').createServer(app);
 const mongoose = require('mongoose');

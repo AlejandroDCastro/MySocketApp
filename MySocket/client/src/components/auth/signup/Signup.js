@@ -1,6 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { UserContext } from '../../../UserContext';
+import {Redirect} from 'react-router-dom';
 
 const Signup = () => {
+    const { user, setUser } = useContext(UserContext);
+
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -25,18 +29,34 @@ const Signup = () => {
 
     const submitHandler = async e => {
         e.preventDefault();
+        setEmailError('');
+        setNameError('');
+        setPasswordError('');
+
         console.log(name, email, password);
         try {
             const res = await fetch('http://localhost:5000/signup', {
                 method: 'POST',
+                credentials: 'include', // include data to the browser
                 body: JSON.stringify({ name, email, password }),
                 headers: { 'Content-Type': 'application/json' }
             });
             const data = await res.json();
             console.log(data);
+            if (data.errors) {
+                setEmailError(data.errors.email);
+                setNameError(data.errors.name);
+                setPasswordError(data.errors.password);
+            } else if (data.user) {
+                setUser(data.user);
+            }
         } catch (error) {
             console.log(error);
         }
+    }
+
+    if (user) {
+        return <Redirect to="/" />
     }
 
 
@@ -47,17 +67,17 @@ const Signup = () => {
                 <div>
                     <label htmlFor="name">Enter a name</label>
                     <input id="name" type="text" placeholder="Name" value={name} onChange={changeName} />
-                    <p></p>
+                    <p>{nameError}</p>
                 </div>
                 <div>
                     <label htmlFor="email">Enter a email</label>
                     <input id="email" type="email" placeholder="Email" value={email} onChange={changeEmail} />
-                    <p></p>
+                    <p>{emailError}</p>
                 </div>
                 <div>
                     <label htmlFor="password">Enter a password</label>
                     <input id="password" type="password" value={password} onChange={changePassword} />
-                    <p></p>
+                    <p>{passwordError}</p>
                 </div>
                 <div>
                     <input type="submit" value="Sign Up" />

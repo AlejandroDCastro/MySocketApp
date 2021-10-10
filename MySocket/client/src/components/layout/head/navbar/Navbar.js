@@ -1,11 +1,31 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { UserContext } from '../../../../UserContext';
+import SignedInMenu from './SignedInMenu';
+import SignedOutMenu from './SignedOutMenu';
 import './Navbar.css';
 
 const Navbar = () => {
+    const { user, setUser } = useContext(UserContext);
+
+    const logout = async () => {
+        try {
+            const res = await fetch('http://localhost:5000/logout', {
+                credentials: 'include'
+            });
+            const data = res.json();
+            console.log('logout data', data);
+            setUser(null);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     const handleFirstTransition = isTransition => {
-        
         document.getElementById('btn-menu').dataset.dissapear = 'false';
     }
+
+    const menu = (user) ? <SignedInMenu logout={logout} /> : <SignedOutMenu />;
+
 
     return (
         <>
@@ -15,9 +35,7 @@ const Navbar = () => {
             </div>
             <nav id="navbar">
                 <ul>
-                    <li><a href="/login" className="letter-blue">Login</a></li>
-                    <li><a href="/signup" className="letter-blue">Signup</a></li>
-                    <li><a href="#" className="letter-blue">Logout</a></li>
+                    {menu}
                 </ul>
             </nav>
             <span id="nav-background"></span>
