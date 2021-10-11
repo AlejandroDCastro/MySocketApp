@@ -20,7 +20,7 @@ const Navbar = () => {
         }
     }
 
-    const handleFirstTransition = isTransition => {
+    const handleFirstTransition = e => {
         document.getElementById('btn-menu').dataset.dissapear = 'false';
     }
 

@@ -22,15 +22,15 @@ const userSchema = new mongoose.Schema({
 });
 
 // Mongoose hook
-userSchema.pre('save', async function(next) {
+userSchema.pre('save', async function (next) {
     const salt = await bcrypt.genSalt();
     this.password = await bcrypt.hash(this.password, salt);
     next();
 });
 
 // Check if user exists
-userSchema.statics.login = async function(email,password) {
-    const user = await this.findOne({email});
+userSchema.statics.login = async function (email, password) {
+    const user = await this.findOne({ email });
     if (user) {
         const isAuthenticated = await bcrypt.compare(password, user.password);
         if (isAuthenticated) return user;

@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { UserContext } from '../../UserContext';
-import { Link, Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import RoomList from './RoomList/RoomList';
 import io from 'socket.io-client';
 import './Home.css';
@@ -56,7 +56,8 @@ const Home = () => {
         setRoom(e.target.value);
     }
 
-    // Login first if user is not identified
+    
+    // Login page first if user is not identified
     if (!user) {
         return <Redirect to="/login" />
     }
@@ -69,8 +70,8 @@ const Home = () => {
                     <h2>Welcome {user ? user.name : ''}</h2>
                     <form onSubmit={handleSubmit}>
                         <div>
-                            <label htmlFor="room">Room</label>
-                            <input type="text" id="room" placeholder="Enter a room name" required value={room} onChange={changeRoomValue} />
+                            <input type="text" id="room" required value={room} onChange={changeRoomValue} />
+                            <label htmlFor="room">Enter a room name</label>
                         </div>
                         <input type="submit" value="CREATE ROOM" />
                     </form>
