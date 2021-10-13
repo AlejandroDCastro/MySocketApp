@@ -12,6 +12,18 @@ const Home = () => {
     const [room, setRoom] = useState('');
     const [rooms, setRooms] = useState('');
 
+    useEffect(() => {
+        let inputDiv = document.querySelector('form>div:first-child');
+        
+        if (inputDiv) {
+            if (room !== '') {
+                inputDiv.classList.replace('labelDown', 'labelUp');
+            } else {
+                inputDiv.classList.replace('labelUp', 'labelDown');
+            }
+        }
+    }, [room]);
+
     // Run after render DOM
     useEffect(() => {
 
@@ -56,9 +68,15 @@ const Home = () => {
         setRoom(e.target.value);
     }
 
-    
     // Login page first if user is not identified
     if (!user) {
+
+        // Hide menu
+        let button = document.getElementById('btn-menu')
+        if (button) {
+            button.checked = false;
+        }
+        
         return <Redirect to="/login" />
     }
 
@@ -66,10 +84,10 @@ const Home = () => {
     return (
         <div>
             <div id="home-view">
-                <section id="create-room">
+                <section className="formData" id="create-room">
                     <h2>Welcome {user ? user.name : ''}</h2>
                     <form onSubmit={handleSubmit}>
-                        <div>
+                        <div className="inputData labelDown">
                             <input type="text" id="room" required value={room} onChange={changeRoomValue} />
                             <label htmlFor="room">Enter a room name</label>
                         </div>

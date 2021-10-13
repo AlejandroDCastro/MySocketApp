@@ -133,3 +133,26 @@
     }
 
 }
+
+
+@media all and (max-width: 530px) {
+
+    #navbar {
+        width: 50%;
+        margin-left: -50%;
+    }
+
+    #btn-menu:checked {
+        left: 50%;
+        width: 50%;
+    }
+
+        #btn-menu:checked~nav {
+            transition: all .5s;
+        }
+
+        #btn-menu[data-dissapear="false"]:not(:checked)~nav {
+            margin-left: -50%;
+            transition: all .5s;
+        }
+}

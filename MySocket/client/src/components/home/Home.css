@@ -1,10 +1,4 @@
 
-:root {
-    --blue-background: #3e00b1;
-    --bottom-color: #5ce0e0;
-    --button-border: rgb(139, 139, 139);
-}
-
 #home-view {
     width: 100%;
     display: flex;
@@ -21,96 +15,30 @@
             font-weight: normal;
         }
 
+
 #create-room {
-    background-color: var(--blue-background);
-    border-radius: 1%;
     height: 220px;
-    color: white;
 }
 
-    #create-room>form {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        margin: 35px 0;
-    }
-
-    #create-room>form,
     #room-list {
         width: 100%;
     }
-
-        #create-room>form>input {
-            padding: 10px;
-            margin: 35px 0;
-            background-color: var(--bottom-color);
-            border-style: none;
-            border-radius: 2%;
-            border-bottom: 2px solid var(--button-border);
-            border-right: 2px solid var(--button-border);
-        }
-        
-        #create-room>form>input:hover {
-            cursor: pointer;
-        }
-
-        #create-room>form>input:focus {
-            position: relative;
-            left: 1px;
-            top: 1px;
-            border-top: 2px solid var(--button-border);
-            border-left: 2px solid var(--button-border);
-            border-right: none;
-            border-bottom: none;
-        }
-
-        #create-room>form>div {
-            width: 93%;
-            height: 40px;
-            position: relative;
-        }
-
-            #create-room>form>div>label {
-                display: block;
-                text-align: left;
-                opacity: .6;
-                position: absolute;
-                top: 10px;
-                left: 3px;
-            }
-
-            #create-room>form>div>input:not(:focus)~label {
-                cursor: text;
-            }
-
-            #create-room>form>div>input:focus~label {
-                top: -15px;
-                left: 0px;
-                font-size: .7em;
-                transition: all .3s;
-            }
-
-            #create-room>form>div>input {
-                width: 100%;
-                height: 100%;
-                background-color: var(--blue-background);
-                border-style: none;
-                border-bottom: 1px solid white;
-                border-radius: 3%;
-                font-size: 1.2em;
-                color: white;
-            }
 
     #room-section>h2 {
         margin-bottom: 20px;
     }
 
+        #room-list>div>a,
+        #room-list>div>a:visited {
+            text-decoration: none;
+            color: var(--blue-background);
+        }
+
 
 
 /* Media Queries */
 
-@media all and (max-width: 530px) {
+@media all and (max-width: 600px) {
     
     #home-view {
         flex-direction: column;

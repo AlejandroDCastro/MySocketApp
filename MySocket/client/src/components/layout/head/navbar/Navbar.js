@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { UserContext } from '../../../../UserContext';
 import SignedInMenu from './SignedInMenu';
 import SignedOutMenu from './SignedOutMenu';
@@ -6,6 +6,7 @@ import './Navbar.css';
 
 const Navbar = () => {
     const { user, setUser } = useContext(UserContext);
+
 
     const logout = async () => {
         try {

@@ -1,6 +1,7 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { UserContext } from '../../../UserContext';
 import { Redirect } from 'react-router-dom';
+import '../Authentication.css';
 
 const Login = () => {
     const { user, setUser } = useContext(UserContext);
@@ -9,6 +10,30 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [emailError, setEmailError] = useState('');
     const [passwordError, setPasswordError] = useState('');
+
+
+    // Hooks
+
+    useEffect(() => {
+        let inputDiv = document.querySelector('form>div:first-child');
+        
+        if (email !== '') {
+            inputDiv.classList.replace('labelDown', 'labelUp');
+        } else {
+            inputDiv.classList.replace('labelUp', 'labelDown');
+        }
+    }, [email])
+
+    useEffect(() => {
+        let inputDiv = document.querySelector('form>div:nth-child(2)');
+        
+        if (password !== '') {
+            inputDiv.classList.replace('labelDown', 'labelUp');
+        } else {
+            inputDiv.classList.replace('labelUp', 'labelDown');
+        }
+    }, [password])
+
 
 
     // Functions
@@ -47,28 +72,27 @@ const Login = () => {
         }
     }
 
+
     if (user) {
         return <Redirect to="/" />
     }
 
 
     return (
-        <div>
+        <div className="formData formView">
             <h2>Login</h2>
             <form onSubmit={submitHandler}>
-                <div>
-                    <label htmlFor="email">Enter a email</label>
-                    <input id="email" type="email" placeholder="Email" value={email} onChange={changeEmail} />
+                <div className="inputData labelDown">
+                    <input id="email" type="email" value={email} onChange={changeEmail} />
+                    <label htmlFor="email">Enter an email</label>
                     <p>{emailError}</p>
                 </div>
-                <div>
-                    <label htmlFor="password">Enter a password</label>
+                <div className="inputData labelDown">
                     <input id="password" type="password" value={password} onChange={changePassword} />
+                    <label htmlFor="password">Enter a password</label>
                     <p>{passwordError}</p>
                 </div>
-                <div>
-                    <input type="submit" value="Log In" />
-                </div>
+                <input type="submit" value="Log In" />
             </form>
         </div>
     )

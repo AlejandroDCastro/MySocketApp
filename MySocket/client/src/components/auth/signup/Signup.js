@@ -1,6 +1,7 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { UserContext } from '../../../UserContext';
-import {Redirect} from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
+import '../Authentication.css';
 
 const Signup = () => {
     const { user, setUser } = useContext(UserContext);
@@ -11,6 +12,39 @@ const Signup = () => {
     const [nameError, setNameError] = useState('');
     const [emailError, setEmailError] = useState('');
     const [passwordError, setPasswordError] = useState('');
+
+
+    // Hooks
+
+    useEffect(() => {
+        let inputDiv = document.querySelector('form>div:first-child');
+        
+        if (name !== '') {
+            inputDiv.classList.replace('labelDown', 'labelUp');
+        } else {
+            inputDiv.classList.replace('labelUp', 'labelDown');
+        }
+    }, [name]);
+
+    useEffect(() => {
+        let inputDiv = document.querySelector('form>div:nth-child(2)');
+        
+        if (email !== '') {
+            inputDiv.classList.replace('labelDown', 'labelUp');
+        } else {
+            inputDiv.classList.replace('labelUp', 'labelDown');
+        }
+    }, [email]);
+
+    useEffect(() => {
+        let inputDiv = document.querySelector('form>div:nth-child(3)');
+        
+        if (password !== '') {
+            inputDiv.classList.replace('labelDown', 'labelUp');
+        } else {
+            inputDiv.classList.replace('labelUp', 'labelDown');
+        }
+    }, [password]);
 
 
     // Functions
@@ -61,27 +95,25 @@ const Signup = () => {
 
 
     return (
-        <div>
+        <div className="formData formView">
             <h2>Signup</h2>
             <form onSubmit={submitHandler}>
-                <div>
+                <div className="inputData labelDown">
+                    <input id="name" type="text" value={name} onChange={changeName} />
                     <label htmlFor="name">Enter a name</label>
-                    <input id="name" type="text" placeholder="Name" value={name} onChange={changeName} />
                     <p>{nameError}</p>
                 </div>
-                <div>
+                <div className="inputData labelDown">
+                    <input id="email" type="email" value={email} onChange={changeEmail} />
                     <label htmlFor="email">Enter a email</label>
-                    <input id="email" type="email" placeholder="Email" value={email} onChange={changeEmail} />
                     <p>{emailError}</p>
                 </div>
-                <div>
-                    <label htmlFor="password">Enter a password</label>
+                <div className="inputData labelDown">
                     <input id="password" type="password" value={password} onChange={changePassword} />
+                    <label htmlFor="password">Enter a password</label>
                     <p>{passwordError}</p>
                 </div>
-                <div>
-                    <input type="submit" value="Sign Up" />
-                </div>
+                <input type="submit" value="Sign Up" />
             </form>
         </div>
     )

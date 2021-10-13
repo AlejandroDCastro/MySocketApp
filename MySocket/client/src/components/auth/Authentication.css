@@ -1,0 +1,17 @@
+
+.formView>h2 {
+    margin-top: 15px;
+}
+
+    .formView>form>div:not(:first-child) {
+        margin-top: 45px;
+    }
+
+    .formView>form>div:nth-last-child(2) {
+        margin-bottom: 20px;
+    }
+
+        .formView>form>div>p {
+            margin: 7px 0;
+            color: #ff3838;
+        }

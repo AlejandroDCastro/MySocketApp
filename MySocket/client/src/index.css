@@ -24,6 +24,9 @@ code {
 :root {
   --mySocketPurple: #9801fc;
   --mySocketBlue: #f6f8ff;
+  --blue-background: #3e00b1;
+  --bottom-color: #5ce0e0;
+  --button-border: rgb(139, 139, 139);
 }
 
 .background-purple {
@@ -32,4 +35,103 @@ code {
 
 .letter-blue {
   color: var(--mySocketBlue);
+}
+
+input:focus {
+  outline: none;
+}
+
+
+.formData {
+  background-color: var(--blue-background);
+  border-radius: 1%;
+  color: white;
+  margin: 10px;
+  padding: 10px 0;
+}
+
+.formData>form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 35px;
+}
+
+  .formData>form>input {
+      padding: 10px;
+      margin: 35px 0;
+      background-color: var(--bottom-color);
+      border-style: none;
+      border-radius: 2%;
+      border-bottom: 2px solid var(--button-border);
+      border-right: 2px solid var(--button-border);
+      border-top: 1px solid var(--button-border);
+      border-left: 1px solid var(--button-border);
+  }
+  
+  .formData>form>input:hover {
+      cursor: pointer;
+  }
+
+  .formData>form>input:focus {
+      position: relative;
+      left: 1px;
+      top: 1px;
+      border-top: 2px solid var(--button-border);
+      border-left: 2px solid var(--button-border);
+      border-right: 1px solid var(--button-border);
+      border-bottom: 1px solid var(--button-border);
+  }
+
+
+.inputData {
+    width: 93%;
+    height: 40px;
+    position: relative;
+}
+
+    .inputData>input {
+        width: 100%;
+        height: 100%;
+        background-color: var(--blue-background);
+        border-style: none;
+        border-bottom: 1px solid white;
+        border-radius: 3%;
+        font-size: 1.2em;
+        color: white;
+    }
+
+    .inputData>input:hover {
+        border-bottom-color: orange;
+        transition: all .2s;
+    }
+
+
+.labelDown>label,
+.labelUp>label,
+.labelDown>input:not(:focus)~label {
+  display: block;
+  text-align: left;
+  opacity: .6;
+  position: absolute;
+  top: 10px;
+  left: 3px;
+}
+
+.labelDown>input:not(:focus)~label {
+  cursor: text;
+}
+
+.labelDown>input:focus~label,
+.labelDown>input:not(:focus)~label {
+  transition: all .3s;
+}
+
+.labelDown>input:focus~label,
+.labelUp>label {
+  top: -15px;
+  left: 0px;
+  font-size: .7em;
 }
