@@ -1,8 +1,42 @@
 
+
+.left-msg,
 .right-msg {
-    text-align: right;
+    width: 100%;
+    height: 100%;
+    margin: 20px 0px;
+    display: flex;
+
+}
+
+.right-msg {
+    justify-content: right;
 }
 
 .left-msg {
-    text-align: left;
+    padding-left: 12px;
 }
+
+    .left-msg>div,
+    .right-msg>div {
+        max-width: 80%;
+        height: 100%;
+        padding: 10px;
+        word-wrap: break-word; /*Avoid the long word to break the message*/
+    }
+
+    .right-msg>div {
+        background-color: var(--blue-background);
+        border-radius: 15px 0px 15px 15px;
+    }
+
+    .left-msg>div {
+        background-color: rgb(90, 90, 90);
+        border-radius: 0px 15px 15px 15px;
+    }
+
+        .left-msg>div>p,
+        .right-msg>div>p {
+            text-align: left;
+            color: #fff;
+        }

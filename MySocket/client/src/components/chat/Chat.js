@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import io from 'socket.io-client';
 import Messages from './messages/Messages';
 import Input from './input/Input';
+import './Chat.css';
 
 let socket;
 const Chat = () => {
@@ -48,9 +49,16 @@ const Chat = () => {
 
 
     return (
-        <div>
-            <Messages messages={messages} user_id={user._id} />
-            <Input message={message} setMessage={setMessage} sendMessage={sendMessage} />
+        <div id="chat-view">
+            <div>
+                <div>
+                    <h2>Chat</h2>
+                    <div>
+                        <Messages messages={messages} user_id={user._id} />
+                        <Input message={message} setMessage={setMessage} sendMessage={sendMessage} />
+                    </div>
+                </div>
+            </div>
         </div>
     )
 }
