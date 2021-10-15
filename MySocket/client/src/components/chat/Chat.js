@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../../UserContext';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import io from 'socket.io-client';
 import Messages from './messages/Messages';
 import Input from './input/Input';
@@ -14,6 +14,28 @@ const Chat = () => {
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
 
+
+    // Functions
+
+    const scrollToTheEnd = e => {
+        let divScroll = document.querySelector('#chat-view>div>div>div');
+        if (divScroll) {
+            divScroll.scrollTop = divScroll.scrollHeight;
+        }
+    }
+
+    const sendMessage = e => {
+        e.preventDefault();
+        if (message) {
+            console.log(message);
+            socket.emit('sendMessage', message, room_id, () => {
+                scrollToTheEnd();
+                setMessage('');
+            });
+        }
+    }
+
+
     // Hooks
 
     useEffect(() => {
@@ -25,6 +47,7 @@ const Chat = () => {
         socket.emit('get-messages-history', room_id);
         socket.on('output-messages', messages => {
             setMessages(messages)
+            scrollToTheEnd();
         });
     }, [])
 
@@ -36,16 +59,6 @@ const Chat = () => {
         });
     }, [messages])
 
-
-    // Functions
-
-    const sendMessage = e => {
-        e.preventDefault();
-        if (message) {
-            console.log(message);
-            socket.emit('sendMessage', message, room_id, () => setMessage(''));
-        }
-    }
 
 
     return (

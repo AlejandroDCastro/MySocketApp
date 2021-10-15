@@ -16,14 +16,16 @@ const Input = ({ message, setMessage, sendMessage }) => {
 
 
     return (
-        <form id="send-message" action="" onSubmit={sendMessage}>
-            <div>
-                <input type="text" placeholder="Type a message" value={message} onChange={changeMessage} onKeyPress={pressMessage} />
-            </div>
-            <div>
-                <input type="submit" value="Sendfs" />
-            </div>
-        </form>
+        <div id="form-chat">
+            <form id="send-message" action="" onSubmit={sendMessage}>
+                <div>
+                    <input type="text" placeholder="Type a message" value={message} onChange={changeMessage} onKeyPress={pressMessage} />
+                </div>
+                <div onClick={sendMessage}>
+                    <i class="fas fa-plug"></i>
+                </div>
+            </form>
+        </div>
     )
 }
 

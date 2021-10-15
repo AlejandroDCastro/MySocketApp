@@ -22,4 +22,6 @@
         border-radius: .5%;
         box-shadow: 0 0 12px -2px var(--mySocketPurple);
         overflow-y: scroll;
+        overflow-x: hidden;
+        scrollbar-width: none;
     }

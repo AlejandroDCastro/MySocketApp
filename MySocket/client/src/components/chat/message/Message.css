@@ -4,17 +4,17 @@
 .right-msg {
     width: 100%;
     height: 100%;
-    /*margin: 20px 0;*/
     display: flex;
 
 }
 
 .right-msg {
     justify-content: right;
+    padding-right: 10px;
 }
 
 .left-msg {
-    padding-left: 12px;
+    padding-left: 10px;
 }
 
     .left-msg>div,

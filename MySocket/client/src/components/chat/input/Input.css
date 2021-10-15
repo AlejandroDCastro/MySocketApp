@@ -1,19 +1,20 @@
 
-#send-message {
-    display: flex;
+#form-chat {
+ /*   width: 100%;
+    height: 100%;
+    position: absolute;*/
 }
 
-    #send-message {
-        position: sticky; /*Move with scroll*/
-        left: 0;
-        right: 0;
-        bottom: 0;
-        height: 43px;
-        background-color: rgb(199, 199, 199);
-    }
+#send-message {
+    position: sticky; /*Move with scroll*/
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 43px;
+    background-color: white;
+}
 
     #send-message>div {
-        background-color: tomato;
         position: absolute;
         top: 2px;
         bottom: 2px;
@@ -26,17 +27,32 @@
 
         #send-message>div:nth-child(2) {
             right: 2px;
+            width: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: var(--blue-background);
+        }
+
+        #send-message>div:nth-child(2):hover {
+            cursor: pointer;
+            background-color: var(--mySocketPurple);
+            transition: background-color .3s;
         }
 
             #send-message>div:nth-child(1)>input {
                 width: 100%;
                 height: 100%;
                 border-radius: 50px;
+                border: none;
                 font-size: 1.1em;
-                text-indent: 5px; /*Sangria*/
+                text-indent: 10px; /*Sangria*/
+                color: white;
+                background-color: rgb(90, 90, 90);
             }
 
-            #send-message>div:nth-child(2)>input {
-                width: 100%;
-                height: 100%;
+            #send-message>div:nth-child(2)>i {
+                font-size: 30px;
+                color: white;
             }

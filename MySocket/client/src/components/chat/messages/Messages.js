@@ -1,6 +1,5 @@
 import React from 'react';
 import Message from '../message/Message';
-import STB from 'react-scroll-to-bottom';
 
 const Messages = ({ messages, user_id }) => {
     let lastUserID = null;
