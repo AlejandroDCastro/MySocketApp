@@ -17,10 +17,23 @@ const Chat = () => {
 
     // Functions
 
+    // Go to the chat end
     const scrollToTheEnd = e => {
         let divScroll = document.querySelector('#chat-view>div>div>div');
         if (divScroll) {
             divScroll.scrollTop = divScroll.scrollHeight;
+        }
+    }
+
+    // Chat Input always on the bottom
+    const stickySendMessageBox = e => {
+        let formSendMsg = document.getElementById('send-message');
+        let lastMsg = document.querySelector('#chat-view>div>div>div>div>div:last-child');
+
+        if ( formSendMsg  &&  lastMsg ) {
+            if (formSendMsg.getBoundingClientRect().top < lastMsg.getBoundingClientRect().bottom) {
+                formSendMsg.classList.replace('absolute-bottom', 'sticky-bottom');
+            }
         }
     }
 
@@ -29,8 +42,9 @@ const Chat = () => {
         if (message) {
             console.log(message);
             socket.emit('sendMessage', message, room_id, () => {
-                scrollToTheEnd();
                 setMessage('');
+                stickySendMessageBox();
+                scrollToTheEnd();
             });
         }
     }
@@ -47,6 +61,7 @@ const Chat = () => {
         socket.emit('get-messages-history', room_id);
         socket.on('output-messages', messages => {
             setMessages(messages)
+            stickySendMessageBox();
             scrollToTheEnd();
         });
     }, [])
@@ -56,6 +71,7 @@ const Chat = () => {
 
             // Spread operator to append all messages inside array
             setMessages([...messages, message]);
+            stickySendMessageBox();
         });
     }, [messages])
 

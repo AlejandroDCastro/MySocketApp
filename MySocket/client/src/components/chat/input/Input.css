@@ -1,12 +1,14 @@
 
-#form-chat {
- /*   width: 100%;
-    height: 100%;
-    position: absolute;*/
+.absolute-bottom {
+    position: absolute;
+}
+
+.sticky-bottom {
+    position: sticky; /*Move with scroll*/
 }
 
 #send-message {
-    position: sticky; /*Move with scroll*/
+    
     left: 0;
     right: 0;
     bottom: 0;
