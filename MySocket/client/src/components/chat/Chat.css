@@ -25,3 +25,22 @@
         overflow-x: hidden;
         scrollbar-width: none;
     }
+
+
+/*Media Queries*/
+
+@media all and (min-width: 930px) {
+
+    #chat-view>div>div>div {
+        left: 100px;
+        right: 100px;
+    }
+}
+
+@media all and (min-width: 1470px) {
+
+    #chat-view>div>div>div {
+        left: 250px;
+        right: 250px;
+    }
+}

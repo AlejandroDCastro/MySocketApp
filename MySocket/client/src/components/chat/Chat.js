@@ -71,7 +71,6 @@ const Chat = () => {
 
             // Spread operator to append all messages inside array
             setMessages([...messages, message]);
-            stickySendMessageBox();
         });
     }, [messages])
 
