@@ -55,7 +55,7 @@ const Chat = () => {
     useEffect(() => {
         socket = io(ENDPT);
         socket.emit('join', { name: user.name, room_id, user_id: user._id });
-    }, [])
+    }, []) // Empty array for executing one only time
 
     useEffect(() => {
         socket.emit('get-messages-history', room_id);
@@ -72,6 +72,11 @@ const Chat = () => {
             // Spread operator to append all messages inside array
             setMessages([...messages, message]);
         });
+        return () => {
+
+            // Cleanup function to avoid the effects accumulation
+            socket.off('message');
+        }
     }, [messages])
 
 
