@@ -72,9 +72,11 @@ const Chat = () => {
             // Spread operator to append all messages inside array
             setMessages([...messages, message]);
         });
+
+        // Cleanup function
         return () => {
 
-            // Cleanup function to avoid the effects accumulation
+            // Avoid the listener accumulation
             socket.off('message');
         }
     }, [messages])
