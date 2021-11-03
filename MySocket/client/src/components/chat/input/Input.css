@@ -7,6 +7,7 @@
     position: sticky; /*Move with scroll*/
 }
 
+
 #send-message {
     left: 0;
     right: 0;
@@ -54,6 +55,12 @@
             }
 
             #send-message>div:nth-child(2)>i {
-                font-size: 30px;
+                font-size: 1px;
                 color: white;
+                position: absolute;
+                transition: font-size .2s;
+            }
+
+            #send-message>div:nth-child(2)>i[data-show="true"] {
+                font-size: 30px;
             }
