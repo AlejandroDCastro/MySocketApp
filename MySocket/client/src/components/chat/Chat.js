@@ -13,6 +13,7 @@ const Chat = () => {
     let { room_id, room_name } = useParams();
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
+    const [chunks, setChunks] = useState([]);
 
 
     // Functions
@@ -30,7 +31,7 @@ const Chat = () => {
         let formSendMsg = document.getElementById('send-message');
         let lastMsg = document.querySelector('#chat-view>div>div>div>div>div:last-child');
 
-        if ( formSendMsg  &&  lastMsg ) {
+        if (formSendMsg && lastMsg) {
             if (formSendMsg.getBoundingClientRect().top < lastMsg.getBoundingClientRect().bottom) {
                 formSendMsg.classList.replace('absolute-bottom', 'sticky-bottom');
             }
@@ -39,13 +40,56 @@ const Chat = () => {
 
     const sendMessage = e => {
         e.preventDefault();
+
+        // Send a text message or audio recorded
         if (message) {
             console.log(message);
+
+            // Emit a listener to the server
             socket.emit('sendMessage', message, room_id, () => {
                 setMessage('');
                 stickySendMessageBox();
                 scrollToTheEnd();
             });
+        } else {
+
+            // Give permission to the App for using microphone
+            navigator.mediaDevices.getUserMedia({ audio: true }).then(function (mediaStream) {
+                let mediaRecorder = new MediaRecorder(mediaStream, {
+                    mimeType: 'audio/webm'
+                });
+
+                mediaRecorder.start();
+
+                // Audio recording splitted in items and save them
+                mediaRecorder.ondataavailable = function (e) {
+                    chunks.push(e.data);
+                };
+
+                mediaRecorder.onstop = function () {
+
+                    let audioBlob = new Blob(chunks, { type: 'audio/webm' });
+                    setChunks([]);
+
+                    // Download audio
+                    let link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(audioBlob);
+                    link.setAttribute('download', 'video_recorded.webm');
+                    link.style.display = 'none';
+                    document.getElementById('chat-view').appendChild(link);
+
+                    link.click();
+                    link.remove();
+                };
+
+                setTimeout(() => {
+                    mediaRecorder.stop();
+                }, 5000);
+
+            }).catch(function (error) {
+                console.log("Permission error: ", error);
+            });
+
         }
     }
 
