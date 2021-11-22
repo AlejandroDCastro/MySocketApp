@@ -26,18 +26,6 @@ const Room = require('./models/Room');
 const Message = require('./models/Message');
 
 
-app.get('set-cookies', (req, res) => {
-    res.cookie('username', 'Tony');
-    res.cookie('isAuthenticated', true, { maxAge: 24 * 60 * 60 * 1000 });
-    res.send('cookies are set');
-});
-
-app.get('get-cookies', (req, res) => {
-    const cookies = req.cookies;
-    console.log(cookies);
-    res.json(cookies);
-});
-
 
 io.on('connection', (socket) => {
     console.log(socket.id);

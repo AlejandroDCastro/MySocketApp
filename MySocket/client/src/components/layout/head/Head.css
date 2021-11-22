@@ -7,3 +7,10 @@
     justify-content: center;
     padding: 25px;
 }
+
+#head>p {
+    position: fixed;
+    left: 15px;
+    font-size: 20px;
+    color: #f6f8ff;
+}

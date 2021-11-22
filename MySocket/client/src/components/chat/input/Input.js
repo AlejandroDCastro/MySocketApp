@@ -2,21 +2,7 @@ import React from 'react';
 import './Input.css';
 
 
-const Input = ({ message, setMessage, sendMessage }) => {
-
-    const showSocketIcon = _ => {
-        let icons = document.querySelectorAll('#send-message>div:last-child>i');
-
-        icons[1].dataset.show = "false";
-        icons[0].dataset.show = "true";
-    }
-
-    const showAudioIcon = _ => {
-        let icons = document.querySelectorAll('#send-message>div:last-child>i');
-        
-        icons[0].dataset.show = "false";
-        icons[1].dataset.show = "true";
-    }
+const Input = ({ message, setMessage, setFile, sendMessage, showAudioIcon, showSocketIcon }) => {
 
     const changeMessage = e => {
         let message = e.target.value;
@@ -38,6 +24,10 @@ const Input = ({ message, setMessage, sendMessage }) => {
         }
     }
 
+    const changeFileValue = e => {
+        setFile(e.target.files[0]);
+    }
+
     const clickSendMessage = e => {
         sendMessage(e);
         showAudioIcon();
@@ -49,7 +39,11 @@ const Input = ({ message, setMessage, sendMessage }) => {
             <div>
                 <input type="text" placeholder="Type a message" value={message} onChange={changeMessage} onKeyPress={pressMessage} />
             </div>
-            <div onClick={clickSendMessage}>
+            <div className="send-msg-text">
+                <input type="file" onChange={changeFileValue} />
+                <i className="fas fa-paperclip"></i>
+            </div>
+            <div className="send-msg-text" onClick={clickSendMessage}>
                 <i data-show="false" className="fas fa-plug"></i>
                 <i data-show="true" className="fas fa-microphone"></i>
             </div>

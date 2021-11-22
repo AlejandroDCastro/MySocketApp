@@ -55,7 +55,7 @@ input:focus {
 
 .formData {
   background-color: var(--blue-background);
-  border-radius: 10px;
+  /*border-radius: 10px;*/
   color: white;
   margin: 10px;
   padding: 10px 0;
@@ -75,7 +75,7 @@ input:focus {
       margin: 35px 0;
       background-color: var(--bottom-color);
       border-style: none;
-      border-radius: 2%;
+      /*border-radius: 2%;*/
       border-bottom: 2px solid var(--button-border);
       border-right: 2px solid var(--button-border);
       border-top: 1px solid var(--button-border);
@@ -109,7 +109,7 @@ input:focus {
         background-color: var(--blue-background);
         border-style: none;
         border-bottom: 1px solid white;
-        border-radius: 3%;
+        /*border-radius: 3%;*/
         font-size: 1.2em;
         color: white;
     }

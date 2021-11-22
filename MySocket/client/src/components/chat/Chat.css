@@ -1,4 +1,5 @@
 
+/*Style Sheet*/
 
 #chat-view,
 #chat-view>div,
@@ -20,7 +21,7 @@
         height: 700px;
         border: solid 1px rgb(177, 177, 177);
         border-radius: .5%;
-        box-shadow: 0 0 12px -2px var(--mySocketPurple);
+        box-shadow: 0 0 12px -4px var(--mySocketPurple);
         overflow-y: scroll;
         overflow-x: hidden;
         scrollbar-width: none;

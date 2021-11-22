@@ -10,13 +10,39 @@ let socket;
 const Chat = () => {
     const ENDPT = 'localhost:5000';
     const { user, setUser } = useContext(UserContext);
-    let { room_id, room_name } = useParams();
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
+    const [file, setFile] = useState(null);
     const [chunks, setChunks] = useState([]);
+    let { room_id, room_name } = useParams();
 
 
     // Functions
+
+    const setInputPlaceholder = (placeholder, color, readonly) => {
+        let inputPlaceholder = document.querySelector('#send-message>div:first-child>input');
+        inputPlaceholder.setAttribute('placeholder', placeholder);
+        inputPlaceholder.style.color = color;
+        if (readonly) {
+            inputPlaceholder.setAttribute('readonly', 'readonly');
+        } else {
+            inputPlaceholder.removeAttribute('readonly');
+        }
+    }
+
+    const showSocketIcon = _ => {
+        let icons = document.querySelectorAll('#send-message>div:last-child>i');
+
+        icons[1].dataset.show = "false";
+        icons[0].dataset.show = "true";
+    }
+
+    const showAudioIcon = _ => {
+        let icons = document.querySelectorAll('#send-message>div:last-child>i');
+
+        icons[0].dataset.show = "false";
+        icons[1].dataset.show = "true";
+    }
 
     // Go to the chat end
     const scrollToTheEnd = e => {
@@ -41,8 +67,10 @@ const Chat = () => {
     const sendMessage = e => {
         e.preventDefault();
 
-        // Send a text message or audio recorded
-        if (message) {
+        // Send a text message or audio recorded or attached file
+        if (file) {
+            
+        } else if (message) {
             console.log(message);
 
             // Emit a listener to the server
@@ -55,10 +83,21 @@ const Chat = () => {
 
             // Give permission to the App for using microphone
             navigator.mediaDevices.getUserMedia({ audio: true }).then(function (mediaStream) {
+                let divIcon = document.querySelector('#send-message>div:last-child');
+                let micIcon = document.querySelector('#send-message>div:last-child>i:last-child');
                 let mediaRecorder = new MediaRecorder(mediaStream, {
                     mimeType: 'audio/webm'
                 });
 
+                mediaRecorder.onstart = function () {
+
+                    // Start some animations
+                    divIcon.classList.replace('send-msg-text', 'send-msg-audio');
+                    setInputPlaceholder('Recording audio...', 'red', true);
+                    if (!micIcon.classList.replace('stop-animation', 'run-animation')) {
+                        micIcon.classList.add('run-animation');
+                    }
+                }
                 mediaRecorder.start();
 
                 // Audio recording splitted in items and save them
@@ -67,6 +106,11 @@ const Chat = () => {
                 };
 
                 mediaRecorder.onstop = function () {
+
+                    // Restart animations
+                    divIcon.classList.replace('send-msg-audio', 'send-msg-text');
+                    micIcon.classList.replace('run-animation', 'stop-animation');
+                    setInputPlaceholder('Type a message', 'white', false);
 
                     let audioBlob = new Blob(chunks, { type: 'audio/webm' });
                     setChunks([]);
@@ -108,6 +152,10 @@ const Chat = () => {
             stickySendMessageBox();
             scrollToTheEnd();
         });
+
+        return () => {
+            socket.off('output-messages');
+        }
     }, [])
 
     useEffect(() => {
@@ -125,6 +173,29 @@ const Chat = () => {
         }
     }, [messages])
 
+    // Prepare an attached message
+    useEffect(() => {
+        let divFile = document.querySelector('#send-message>div:first-child');
+        let iconFile = document.querySelector('#send-message>div:first-child>i');
+
+        if (file) {
+            setInputPlaceholder(file.name, 'yellow', true);
+            showSocketIcon();
+            if (divFile.childNodes.length === 1) {
+                divFile.innerHTML += `<i class="fas fa-times"></i>`;
+                divFile.lastChild.onclick = () => {
+                    setFile(null);
+                    // ERROR: Para cuando se esta escribiendo y se adjunta, y cuando se ajunta y se cierra (no se cambia el icono mientras se escribe)
+                }
+            }
+        } else {
+            setInputPlaceholder('Type a message', 'white', false);
+            showAudioIcon();
+            if (iconFile) {
+                divFile.removeChild(iconFile);
+            }
+        }
+    }, [file])
 
 
     return (
@@ -134,7 +205,7 @@ const Chat = () => {
                     <h2>Chat</h2>
                     <div>
                         <Messages messages={messages} user_id={user._id} />
-                        <Input message={message} setMessage={setMessage} sendMessage={sendMessage} />
+                        <Input message={message} setMessage={setMessage} setFile={setFile} sendMessage={sendMessage} showAudioIcon={showAudioIcon} showSocketIcon={showSocketIcon} />
                     </div>
                 </div>
             </div>

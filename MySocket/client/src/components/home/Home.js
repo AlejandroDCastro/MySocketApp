@@ -12,18 +12,6 @@ const Home = () => {
     const [room, setRoom] = useState('');
     const [rooms, setRooms] = useState('');
 
-    useEffect(() => {
-        let inputDiv = document.querySelector('form>div:first-child');
-        
-        if (inputDiv) {
-            if (room !== '') {
-                inputDiv.classList.replace('labelDown', 'labelUp');
-            } else {
-                inputDiv.classList.replace('labelUp', 'labelDown');
-            }
-        }
-    }, [room]);
-
     // Run after render DOM
     useEffect(() => {
 
@@ -38,22 +26,42 @@ const Home = () => {
     }, [ENDPT]);
 
     useEffect(() => {
+        let inputDiv = document.querySelector('form>div:first-child');
+
+        if (inputDiv) {
+            if (room !== '') {
+                inputDiv.classList.replace('labelDown', 'labelUp');
+            } else {
+                inputDiv.classList.replace('labelUp', 'labelDown');
+            }
+        }
+    }, [room]);
+
+    useEffect(() => {
         socket.on('output-rooms', rooms => {
             setRooms(rooms);
         });
+
+        return () => {
+            socket.off('output-rooms');
+        }
     }, [])
 
     useEffect(() => {
         socket.on('room-created', room => {
             setRooms([...rooms, room]);
         });
+
+        return () => {
+            socket.off('room-created');
+        }
     }, [rooms]);
 
     useEffect(() => {
         console.log(rooms);
     }, [rooms]);
 
-    const handleSubmit = e => {
+    const handleSubmitUser = e => {
 
         // Cancel the event if can
         e.preventDefault();
@@ -76,7 +84,7 @@ const Home = () => {
         if (button) {
             button.checked = false;
         }
-        
+
         return <Redirect to="/login" />
     }
 
@@ -84,14 +92,14 @@ const Home = () => {
     return (
         <div>
             <div id="home-view">
-                <section className="formData" id="create-room">
-                    <h2>Welcome {user ? user.name : ''}</h2>
-                    <form onSubmit={handleSubmit}>
+                <section className="formData" id="add-new-user">
+                    <h2>Add new user</h2>
+                    <form onSubmit={handleSubmitUser}>
                         <div className="inputData labelDown">
                             <input type="text" id="room" required value={room} onChange={changeRoomValue} />
-                            <label htmlFor="room">Enter a room name</label>
+                            <label htmlFor="room">Enter a user email</label>
                         </div>
-                        <input type="submit" value="CREATE ROOM" />
+                        <input type="submit" value="OPEN CHAT" />
                     </form>
                 </section>
                 <section id="room-section">

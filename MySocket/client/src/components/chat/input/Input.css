@@ -1,4 +1,23 @@
 
+/*Animations*/
+
+@keyframes redflickering {
+    from {
+        color: #fff;
+    }
+
+    50% {
+        color: red;
+    }
+
+    to {
+        color: #fff;
+    }
+}
+
+
+/*Classes*/
+
 .absolute-bottom {
     position: absolute;
 }
@@ -7,6 +26,30 @@
     position: sticky; /*Move with scroll*/
 }
 
+.run-animation {
+    animation-play-state: running;
+    animation-duration: 2s;
+}
+
+.stop-animation {
+    animation-play-state: paused;
+    animation-duration: 0s;
+}
+
+.send-msg-text {
+    background-color: var(--blue-background);
+}
+
+    .send-msg-text:hover {
+        background-color: var(--mySocketPurple);
+    }
+
+.send-msg-audio {
+    background-color: var(--mySocketPurple);
+}
+
+
+/*Style Sheet*/
 
 #send-message {
     left: 0;
@@ -24,24 +67,44 @@
 
         #send-message>div:nth-child(1) {
             left: 2px;
-            right: 50px;
+            right: 96px;
         }
 
         #send-message>div:nth-child(2) {
+            right: 49px;
+            width: 45px;
+            z-index: 1;
+        }
+
+        #send-message>div:nth-child(3) {
             right: 2px;
             width: 45px;
+        }
+
+        #send-message>div:nth-child(2),
+        #send-message>div:nth-child(3) {
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
-            background-color: var(--blue-background);
-        }
-
-        #send-message>div:nth-child(2):hover {
-            cursor: pointer;
-            background-color: var(--mySocketPurple);
             transition: background-color .3s;
         }
+
+        #send-message>div:nth-child(2):hover,
+        #send-message>div:nth-child(3):hover {
+            cursor: pointer;
+        }
+
+            #send-message>div:nth-child(1)>i {
+                color: yellow;
+                position: absolute;
+                right: 15px;
+                top: 5px;
+            }
+
+            #send-message>div:nth-child(1)>i:hover {
+                cursor: pointer;
+            }
 
             #send-message>div:nth-child(1)>input {
                 width: 100%;
@@ -54,13 +117,40 @@
                 background-color: rgb(90, 90, 90);
             }
 
-            #send-message>div:nth-child(2)>i {
-                font-size: 1px;
-                color: white;
+            #send-message>div:nth-child(2)>input {
+                width: 45px;
+                border-radius: 50%;
                 position: absolute;
+                right: 0;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                z-index: 2;
+                opacity: 0;
+            }
+
+            #send-message>div:nth-child(2)>input:hover {
+                cursor: pointer;
+            }
+
+            #send-message>div:nth-child(3)>i {
+                font-size: 1px;
                 transition: font-size .2s;
             }
 
-            #send-message>div:nth-child(2)>i[data-show="true"] {
-                font-size: 30px;
+            #send-message>div:nth-child(2)>i,
+            #send-message>div:nth-child(3)>i {
+                color: white;
+                position: absolute;
+            }
+
+            #send-message>div:nth-child(3)>i[data-show="true"],
+            #send-message>div:nth-child(2)>i,
+            #send-message>div:nth-child(1)>i {
+                font-size: 28px;
+            }
+
+            #send-message>div:nth-child(3)>i:last-child[data-show="true"] {
+                animation-name: redflickering;
+                animation-iteration-count: infinite;
             }
