@@ -100,6 +100,7 @@
                 position: absolute;
                 right: 15px;
                 top: 5px;
+                display: none;
             }
 
             #send-message>div:nth-child(1)>i:hover {
