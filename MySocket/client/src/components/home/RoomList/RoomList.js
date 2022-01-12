@@ -3,6 +3,13 @@ import Room from '../Room/Room';
 import { Link } from 'react-router-dom';
 
 const RoomList = ({ rooms }) => {
+
+    /*
+    const getBodyFromEmail = (email) => {
+        console.log(email);
+        return email.split('@')[0];
+    }
+    */
     return (
         <div>
             {rooms && rooms.map(room => (

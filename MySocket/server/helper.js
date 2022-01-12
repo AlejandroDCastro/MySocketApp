@@ -11,10 +11,14 @@ const addUser = ({ socket_id, name, user_id, room_id }) => {
     return { user: user };
 }
 
+/**
+ * getUser
+ * To know who is in each room while connnected.
+ */
 const getUser = (socket_id) => users.find(user => user.socket_id === socket_id);
 
 const removeUser = (socket_id) => {
-    const index = users.findIndex(user=>user.socket_id === socket_id);
+    const index = users.findIndex(user => user.socket_id === socket_id);
     if (index !== -1) {
         return users.splice(index, 1)[0];
     }

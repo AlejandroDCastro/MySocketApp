@@ -22,18 +22,41 @@ const mongoDB = "mongodb+srv://mysocket:BbEToh01@mysocket-chatapp.jkcv8.mongodb.
 mongoose.connect(mongoDB).then(() => console.log('connected')).catch(err => console.log(err));
 const { addUser, getUser, removeUser } = require('./helper');
 const PORT = process.env.PORT || 5000;
-const Room = require('./models/Room');
+const PrivateRoom = require('./models/PrivateRoom');
 const Message = require('./models/Message');
+const User = require('./models/User');
 
 
 
 io.on('connection', (socket) => {
     console.log(socket.id);
 
-    Room.find().then(result => {
-        socket.emit('output-rooms', result);
+    /**
+     * data from client
+     * email: invited user email
+     * user_id: applicant ID
+     */
+    socket.on('create-private-room', data => {
+
+        // Look for guest user
+        User.find({ email: data.email }).then(guest => {
+            const privateRoom = new PrivateRoom({
+                users_id: [data.user_id, guest[0].id]
+            });
+            privateRoom.save().then(result => {
+                io.to(result.id).emit('private-room-created', {
+                    room_id: result.id,
+                    name: guest[0].name
+                });
+            });
+        });
     });
 
+    
+    PrivateRoom.find().then(result => {
+        socket.emit('output-rooms', result);
+    });
+/*
     // Socket listeners for events
 
     socket.on('create-room', name => {
@@ -52,7 +75,7 @@ io.on('connection', (socket) => {
             user_id
         });
 
-        // Add the Room id to the socket list
+        // Add the Room ID to the socket list
         socket.join(room_id);
 
         if (error) {
@@ -86,10 +109,11 @@ io.on('connection', (socket) => {
         Message.find({ room_id }).then(result => {
             socket.emit('output-messages', result);
         });
-    });
+    });*/
 
     socket.on('disconnect', () => {
         const user = removeUser(socket.id);
+        console.log('User disconnected...');
     });
 });
 

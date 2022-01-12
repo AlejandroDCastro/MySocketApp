@@ -48,12 +48,12 @@ const Home = () => {
     }, [])
 
     useEffect(() => {
-        socket.on('room-created', room => {
+        socket.on('private-room-created', room => {
             setRooms([...rooms, room]);
         });
 
         return () => {
-            socket.off('room-created');
+            socket.off('private-room-created');
         }
     }, [rooms]);
 
@@ -67,7 +67,10 @@ const Home = () => {
         e.preventDefault();
 
         // Emit a socket event
-        socket.emit('create-room', room);
+        socket.emit('create-private-room', {
+            user_id: user._id,
+            email: room
+        });
         console.log(room);
         setRoom('');
     }
@@ -88,7 +91,6 @@ const Home = () => {
         return <Redirect to="/login" />
     }
 
-
     return (
         <div>
             <div id="home-view">
@@ -96,7 +98,7 @@ const Home = () => {
                     <h2>Add new user</h2>
                     <form onSubmit={handleSubmitUser}>
                         <div className="inputData labelDown">
-                            <input type="text" id="room" required value={room} onChange={changeRoomValue} />
+                            <input type="email" id="room" required value={room} onChange={changeRoomValue} />
                             <label htmlFor="room">Enter a user email</label>
                         </div>
                         <input type="submit" value="OPEN CHAT" />
