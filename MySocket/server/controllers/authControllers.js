@@ -32,6 +32,7 @@ const alertError = (err) => {
     return errors;
 }
 
+/*
 // Save user connected to the App on server
 const saveUserConnected = (user_id) => {
     Home.addUser({
@@ -39,6 +40,7 @@ const saveUserConnected = (user_id) => {
         user_id
     });
 }
+*/
 
 // Each request to the backend is eventually executed by a controller
 module.exports.signup = async (req, res) => {
@@ -48,7 +50,7 @@ module.exports.signup = async (req, res) => {
         const token = createJWT(user._id);
         res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 })
         res.status(201).json({ user });
-        saveUserConnected(user.id);
+        //saveUserConnected(user.id);
     } catch (error) {
         let errors = alertError(error);
         res.status(400).json({ errors });
@@ -62,7 +64,7 @@ module.exports.login = async (req, res) => {
         const token = createJWT(user._id);
         res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 })
         res.status(201).json({ user });
-        saveUserConnected(user.id);
+        //saveUserConnected(user.id);
     } catch (error) {
         let errors = alertError(error);
         res.status(400).json({ errors });
@@ -80,7 +82,7 @@ module.exports.verifyuser = (req, res, next) => {
                 let user = await User.findById(decodedToken.id);
                 res.json(user);
                 next();
-                saveUserConnected(user.id);
+                //saveUserConnected(user.id);
             }
         });
     } else {

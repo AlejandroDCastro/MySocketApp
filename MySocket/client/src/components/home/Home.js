@@ -12,6 +12,21 @@ const Home = () => {
     const [privateRoom, setPrivateRoom] = useState('');
     const [privateRooms, setPrivateRooms] = useState('');
 
+    const handleSubmitPrivateRoom = e => {
+
+        // Cancel the event if can
+        e.preventDefault();
+
+        // Emit a socket event
+        socket.emit('create-private-room', privateRoom);
+        console.log(privateRoom);
+        setPrivateRoom('');
+    }
+
+    const changePrivateRoomValue = e => {
+        setPrivateRoom(e.target.value);
+    }
+
     // Run after render DOM
     useEffect(() => {
 
@@ -25,6 +40,17 @@ const Home = () => {
             socket.off();
         }
     }, [ENDPT]);
+
+    useEffect(() => {
+        socket.emit('connect-data-server', {
+            socket_id: socket.id,
+            user_id: user.id
+        });
+
+        return () => {
+            socket.off('connect-data-server');
+        }
+    }, [ENDPT])
 
     useEffect(() => {
         let inputDiv = document.querySelector('form>div:first-child');
@@ -61,24 +87,6 @@ const Home = () => {
     useEffect(() => {
         console.log(privateRooms);
     }, [privateRooms]);
-
-    const handleSubmitPrivateRoom = e => {
-
-        // Cancel the event if can
-        e.preventDefault();
-
-        // Emit a socket event
-        socket.emit('create-private-room', {
-            user_id: user._id,
-            email: privateRoom
-        });
-        console.log(privateRoom);
-        setPrivateRoom('');
-    }
-
-    const changePrivateRoomValue = e => {
-        setPrivateRoom(e.target.value);
-    }
 
     // Login page first if user is not identified
     if (!user) {
