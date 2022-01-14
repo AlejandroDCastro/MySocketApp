@@ -17,7 +17,7 @@ const Home = () => {
 
         // Get the existing socket from server created for this client
         socket = io(ENDPT);
-        console.log('el socket es: ', socket);
+        console.log('my socket is: ', socket);
 
         // Callback function after each refresh or update
         return () => {

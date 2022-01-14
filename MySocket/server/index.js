@@ -20,12 +20,11 @@ const socketio = require('socket.io');
 const io = socketio(http);
 const mongoDB = "mongodb+srv://mysocket:BbEToh01@mysocket-chatapp.jkcv8.mongodb.net/mysocket-database?retryWrites=true&w=majority";
 mongoose.connect(mongoDB).then(() => console.log('connected')).catch(err => console.log(err));
-const { addUser, getUser, removeUser } = require('./helper');
+const { Home, Chat } = require('./helper');
 const PORT = process.env.PORT || 5000;
 const PrivateRoom = require('./models/PrivateRoom');
 const Message = require('./models/Message');
 const User = require('./models/User');
-
 
 
 io.on('connection', (socket) => {
@@ -112,7 +111,7 @@ io.on('connection', (socket) => {
     });*/
 
     socket.on('disconnect', () => {
-        const user = removeUser(socket.id);
+        const user = Chat.removeUser(socket.id);
         console.log('User disconnected...');
     });
 });
