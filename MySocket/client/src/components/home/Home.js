@@ -9,14 +9,15 @@ let socket;
 const Home = () => {
     const ENDPT = 'localhost:5000';
     const { user, setUser } = useContext(UserContext);
-    const [room, setRoom] = useState('');
-    const [rooms, setRooms] = useState('');
+    const [privateRoom, setPrivateRoom] = useState('');
+    const [privateRooms, setPrivateRooms] = useState('');
 
     // Run after render DOM
     useEffect(() => {
 
-        // Looks up an existing Manager for multiplexing
+        // Get the existing socket from server created for this client
         socket = io(ENDPT);
+        console.log('el socket es: ', socket);
 
         // Callback function after each refresh or update
         return () => {
@@ -29,39 +30,39 @@ const Home = () => {
         let inputDiv = document.querySelector('form>div:first-child');
 
         if (inputDiv) {
-            if (room !== '') {
+            if (privateRoom !== '') {
                 inputDiv.classList.replace('labelDown', 'labelUp');
             } else {
                 inputDiv.classList.replace('labelUp', 'labelDown');
             }
         }
-    }, [room]);
+    }, [privateRoom]);
 
     useEffect(() => {
-        socket.on('output-rooms', rooms => {
-            setRooms(rooms);
+        socket.on('output-private-rooms', privateRooms => {
+            setPrivateRooms(privateRooms);
         });
 
         return () => {
-            socket.off('output-rooms');
+            socket.off('output-private-rooms');
         }
     }, [])
 
     useEffect(() => {
-        socket.on('private-room-created', room => {
-            setRooms([...rooms, room]);
+        socket.on('private-room-created', privateRoom => {
+            setPrivateRooms([...privateRooms, privateRoom]);
         });
 
         return () => {
             socket.off('private-room-created');
         }
-    }, [rooms]);
+    }, [privateRooms]);
 
     useEffect(() => {
-        console.log(rooms);
-    }, [rooms]);
+        console.log(privateRooms);
+    }, [privateRooms]);
 
-    const handleSubmitUser = e => {
+    const handleSubmitPrivateRoom = e => {
 
         // Cancel the event if can
         e.preventDefault();
@@ -69,14 +70,14 @@ const Home = () => {
         // Emit a socket event
         socket.emit('create-private-room', {
             user_id: user._id,
-            email: room
+            email: privateRoom
         });
-        console.log(room);
-        setRoom('');
+        console.log(privateRoom);
+        setPrivateRoom('');
     }
 
-    const changeRoomValue = e => {
-        setRoom(e.target.value);
+    const changePrivateRoomValue = e => {
+        setPrivateRoom(e.target.value);
     }
 
     // Login page first if user is not identified
@@ -96,9 +97,9 @@ const Home = () => {
             <div id="home-view">
                 <section className="formData" id="add-new-user">
                     <h2>Add new user</h2>
-                    <form onSubmit={handleSubmitUser}>
+                    <form onSubmit={handleSubmitPrivateRoom}>
                         <div className="inputData labelDown">
-                            <input type="email" id="room" required value={room} onChange={changeRoomValue} />
+                            <input type="email" id="room" required value={privateRoom} onChange={changePrivateRoomValue} />
                             <label htmlFor="room">Enter a user email</label>
                         </div>
                         <input type="submit" value="OPEN CHAT" />
@@ -107,7 +108,7 @@ const Home = () => {
                 <section id="room-section">
                     <h2>Avaliable Rooms</h2>
                     <div id="room-list">
-                        <RoomList rooms={rooms} />
+                        <RoomList rooms={privateRooms} />
                     </div>
                 </section>
             </div>

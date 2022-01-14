@@ -1,13 +1,14 @@
-const users = [];
+const usersChatting  = [];
+const usersConnected = [];
 
 const addUser = ({ socket_id, name, user_id, room_id }) => {
-    const exist = users.find(user => (user.room_id === room_id && user.user_id === user_id));
+    const exist = usersChatting.find(user => (user.room_id === room_id && user.user_id === user_id));
     if (exist) {
         return { error: 'User already exist in this room' }
     }
     const user = { socket_id, name, user_id, room_id };
-    users.push(user);
-    console.log('user list', users);
+    usersChatting.push(user);
+    console.log('user list', usersChatting);
     return { user: user };
 }
 
@@ -15,12 +16,12 @@ const addUser = ({ socket_id, name, user_id, room_id }) => {
  * getUser
  * To know who is in each room while connnected.
  */
-const getUser = (socket_id) => users.find(user => user.socket_id === socket_id);
+const getUser = (socket_id) => usersChatting.find(user => user.socket_id === socket_id);
 
 const removeUser = (socket_id) => {
-    const index = users.findIndex(user => user.socket_id === socket_id);
+    const index = usersChatting.findIndex(user => user.socket_id === socket_id);
     if (index !== -1) {
-        return users.splice(index, 1)[0];
+        return usersChatting.splice(index, 1)[0];
     }
 }
 

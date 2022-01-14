@@ -44,7 +44,7 @@ io.on('connection', (socket) => {
                 users_id: [data.user_id, guest[0].id]
             });
             privateRoom.save().then(result => {
-                io.to(result.id).emit('private-room-created', {
+                io.emit('private-room-created', {
                     room_id: result.id,
                     name: guest[0].name
                 });
