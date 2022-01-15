@@ -22,6 +22,7 @@ const Home = {
         if (index !== -1) {
             return usersConnected.splice(index, 1)[0];
         }
+        console.log('users connected: ', usersConnected);
     },
 
     getSocketID: (user_id) => {

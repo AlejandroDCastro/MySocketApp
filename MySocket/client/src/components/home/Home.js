@@ -42,9 +42,10 @@ const Home = () => {
     }, [ENDPT]);
 
     useEffect(() => {
-        socket.emit('connect-data-server', {
-            socket_id: socket.id,
-            user_id: user.id
+        socket.on('connect-data-server', (callback) => {
+            return callback({
+                user_id: user._id
+            });
         });
 
         return () => {
