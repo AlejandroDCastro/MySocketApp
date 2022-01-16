@@ -1,7 +1,6 @@
 const User = require('../models/User');
 // JSON Web Token is a compact, URL-safe means of representing claims to be transferred between two parties
 const jwt = require('jsonwebtoken');
-const { Home } = require('../helper');
 const maxAge = 5 * 24 * 60 * 60 // seconds
 
 const createJWT = id => {

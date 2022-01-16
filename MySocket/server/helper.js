@@ -1,63 +1,50 @@
 
-const usersConnected = [];
-const usersChatting = [];
+const users = [];
 
+const Helper = {
 
-// Users connected to the App in Home Page
-const Home = {
-
-    addUser: ({ socket_id, user_id }) => {
-        const exist = usersConnected.find(user => (user.user_id === user_id));
-        if (exist) {
-            return { error: 'User already exist in the connection' }
+    addUser: ({ socket_id, name, user_id, room_id }) => {
+        const oldUserIndex = users.findIndex(user => (user.user_id === user_id));
+        if (oldUserIndex !== -1) {
+            users[oldUserIndex].socket_id = socket_id;
+            users[oldUserIndex].room_id = '';
+            return { error: 'User already exist...' }
+        } else {
+            const user = { socket_id, name, user_id, room_id };
+            users.push(user);
+            console.log('user list', users);
+            return { user: user };
         }
-        const user = { socket_id, user_id };
-        usersConnected.push(user);
-        console.log('users connected: ', usersConnected);
-        return { user };
     },
 
-    removeUser: (socket_id) => {
-        const index = usersConnected.findIndex(user => user.socket_id === socket_id);
-        if (index !== -1) {
-            return usersConnected.splice(index, 1)[0];
+    getUser: (socket_id) => users.find(user => user.socket_id === socket_id),
+
+    removeUserBySocketID: (socket_id) => {
+        const userIndex = users.findIndex(user => user.socket_id === socket_id);
+        if (userIndex !== -1) {
+            return users.splice(userIndex, 1)[0];
         }
-        console.log('users connected: ', usersConnected);
+    },
+
+    removeUserByUserID: (user_id) => {
+        const userIndex = users.findIndex(user => user.user_id === user_id);
+        if (userIndex !== -1) {
+            return users.splice(userIndex, 1)[0];
+        }
+    },
+
+    joinRoom: (user_id, room_id) => {
+        const userIndex = users.findIndex(user => user.user_id === user_id);
+        if (userIndex !== -1) {
+            users[userIndex].room_id = room_id;
+            return users[userIndex];
+        }
     },
 
     getSocketID: (user_id) => {
-        return usersConnected.find(user => user.user_id === user_id).socket_id;
-    },
-
-    getUserID: (socket_id) => {
-        return usersConnected.find(user => user.socket_id === socket_id).user_id;
-    }
-}
-
-
-// Users while chatting in rooms
-const Chat = {
-
-    addUser: ({ socket_id, name, user_id, room_id }) => {
-        const exist = usersChatting.find(user => (user.room_id === room_id && user.user_id === user_id));
-        if (exist) {
-            return { error: 'User already exist in this room' }
-        }
-        const user = { socket_id, name, user_id, room_id };
-        usersChatting.push(user);
-        console.log('user list', usersChatting);
-        return { user: user };
-    },
-
-    getUser: (socket_id) => usersChatting.find(user => user.socket_id === socket_id),
-
-    removeUser: (socket_id) => {
-        const index = usersChatting.findIndex(user => user.socket_id === socket_id);
-        if (index !== -1) {
-            return usersChatting.splice(index, 1)[0];
-        }
+        return users.find(user => user.user_id === user_id).socket_id;
     }
 
 }
 
-module.exports = { Home, Chat };
+module.exports = { Helper };
