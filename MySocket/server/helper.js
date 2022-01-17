@@ -17,7 +17,11 @@ const Helper = {
         }
     },
 
-    getUser: (socket_id) => users.find(user => user.socket_id === socket_id),
+    getUserBySocketID: (socket_id) => users.find(user => user.socket_id === socket_id),
+
+    getUserByID: (user_id) => {
+        return users.find(user => user.user_id === user_id);
+    },
 
     removeUserBySocketID: (socket_id) => {
         const userIndex = users.findIndex(user => user.socket_id === socket_id);
@@ -39,10 +43,6 @@ const Helper = {
             users[userIndex].room_id = room_id;
             return users[userIndex];
         }
-    },
-
-    getSocketID: (user_id) => {
-        return users.find(user => user.user_id === user_id).socket_id;
     }
 
 }
