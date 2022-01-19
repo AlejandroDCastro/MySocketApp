@@ -53,7 +53,7 @@ const Home = () => {
 
     useEffect(() => {
         socket.on('output-private-rooms', privateRooms => {
-            //setPrivateRooms(privateRooms);
+            setPrivateRooms(privateRooms);
         });
 
         return () => {

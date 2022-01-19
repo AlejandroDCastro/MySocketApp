@@ -40,10 +40,21 @@ io.on('connection', (socket) => {
             user_id: response.user_id,
             room_id: ''
         });
-      /*  Response
-        socket.emit('output-private-rooms', () => {
-            console.log('FFFFFFFFFFFFFFFFFFFFFFFFFFFFF');
-        });*/
+
+        // Show its rooms avaliable
+        PrivateRoom.find({
+            members: user.user_id
+        }).populate('members').then(result => {
+            const privateRooms = [];
+            result.forEach(room => {
+                privateRooms.push({
+                    _id: room.id,
+                    name: (room.members[0].id === user.user_id) ? room.members[1].name : room.members[0].name
+                });
+            });
+            console.log('private rooms', privateRooms);
+            socket.emit('output-private-rooms', privateRooms);
+        });
     });
 
 
@@ -52,17 +63,25 @@ io.on('connection', (socket) => {
         // Look for guest user
         User.findOne({ email }).then(guest => {
             const applicant = Helper.getUserBySocketID(socket.id);
+            let applicant_id = undefined;
 
-            // Check if user is introducing its email
-            if (applicant.user_id === guest.id) {
-                console.log('Introduce an existing user...');
-                return;
+            // Check if user is introducing a correct email
+            if (guest) {
+                applicant_id = new mongoose.mongo.ObjectId(applicant.user_id);
+            } else {
+                throw 'The user introduced does not exists...';
             }
-
+            if (applicant.user_id === guest.id) {
+                throw 'You cannot talk with yourself...';
+            } else if (PrivateRoom.findOne({ members: { $all: [applicant_id, guest._id] } })) {
+                throw 'This chat is already opened';
+            }
+            
+            // Finally create the Private Room
             const privateRoom = new PrivateRoom({
-                users_id: [
-                    applicant.user_id,
-                    guest.id
+                members: [
+                    new mongoose.mongo.ObjectId(applicant.user_id),
+                    guest._id
                 ]
             });
             privateRoom.save().then(result => {
@@ -87,24 +106,12 @@ io.on('connection', (socket) => {
             });
         }).catch(error => {
             console.log(error);
-            console.log('The user entered does not exist...');
         });
     });
 
+    //socket.on('join',)
+
     /*
-        PrivateRoom.find().then(result => {
-            socket.emit('output-private-rooms', result);
-        });*/
-    /*
-    
-        socket.on('create-room', name => {
-            //console.log('Then room name received is', name);
-            const room = new Room({ name });
-            room.save().then(result => {
-                io.emit('room-created', result);
-            });
-        });
-    
         socket.on('join', ({ name, room_id, user_id }) => {
             const { error, user } = addUser({
                 socket_id: socket.id,

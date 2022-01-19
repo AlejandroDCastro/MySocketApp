@@ -13,7 +13,7 @@ const Helper = {
             const user = { socket_id, name, user_id, room_id };
             users.push(user);
             console.log('user list', users);
-            return { user: user };
+            return user;
         }
     },
 
