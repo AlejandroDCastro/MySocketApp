@@ -142,18 +142,18 @@ const Chat = () => {
             user_id: user._id,
             room_id
         });
-    }, []) // Empty array for executing one only time
+    }, []) // Empty array for executing one only time each refresh
 
     useEffect(() => {
-        socket.emit('get-messages-history', room_id);
-        socket.on('output-messages', messages => {
+        socket.on('get-messages-history', messages => {
+            console.log('malditos mensajes',messages);
             setMessages(messages)
             stickySendMessageBox();
             scrollToTheEnd();
         });
 
         return () => {
-            socket.off('output-messages');
+            socket.off('get-messages-history');
         }
     }, [])
 

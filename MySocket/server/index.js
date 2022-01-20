@@ -111,7 +111,8 @@ io.on('connection', (socket) => {
 
 
     socket.on('join-room', ({ user_id, room_id }) => {
-        const { user, error } = Helper.setRoomID({
+        const { user, error } = Helper.joinRoom({
+            socket_id: socket.id,
             user_id,
             room_id
         });
@@ -124,12 +125,17 @@ io.on('connection', (socket) => {
         } else {
             console.log('join user:', user);
         }
+
+        // Send room messages to the client
+        Message.find({ room_id }).then(result => {
+            console.log('resultado', result);
+            socket.emit('get-message-history', result);
+        });
     });
 
 
     socket.on('send-message', (message, room_id, callback) => {
         const user = Helper.getUserBySocketID(socket.id);
-        console.log('EL USUARIO:',user);// AQUI PETAAAA
         const msgData = {
             name: user.name,
             user_id: user.user_id,
@@ -145,13 +151,6 @@ io.on('connection', (socket) => {
             // Send event to the clients in the same room
             io.to(room_id).emit('new-message', result);
             callback();
-        });
-    });
-
-
-    socket.on('get-message-history', room_id => {
-        Message.find({ room_id }).then(result => {
-            socket.emit('output-messages', result);
         });
     });
 

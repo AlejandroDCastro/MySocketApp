@@ -39,9 +39,10 @@ const Helper = {
         }
     },
 
-    setRoomID: ({ user_id, room_id }) => {
+    joinRoom: ({ socket_id, user_id, room_id }) => {
         const userIndex = users.findIndex(user => user.user_id === user_id);
         if (userIndex !== -1) {
+            users[userIndex].socket_id = socket_id;
             users[userIndex].room_id = room_id;
             return { user: users[userIndex] };
         } else {
