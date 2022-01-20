@@ -66,11 +66,11 @@ const Chat = () => {
 
         // Send a text message or audio recorded or attached file
         if (file) {
-            
+            // For DO IT
         } else if (message) {
 
             // Emit a listener to the server
-            socket.emit('sendMessage', message, room_id, () => {
+            socket.emit('send-message', message, room_id, () => {
                 setMessage('');
                 stickySendMessageBox();
                 scrollToTheEnd();
@@ -138,7 +138,10 @@ const Chat = () => {
 
     useEffect(() => {
         socket = io(ENDPT);
-        socket.emit('join', { name: user.name, room_id, user_id: user._id });
+        socket.emit('join-room', {
+            user_id: user._id,
+            room_id
+        });
     }, []) // Empty array for executing one only time
 
     useEffect(() => {
@@ -155,7 +158,7 @@ const Chat = () => {
     }, [])
 
     useEffect(() => {
-        socket.on('message', message => {
+        socket.on('new-message', message => {
 
             // Spread operator to append all messages inside array
             setMessages([...messages, message]);
@@ -165,7 +168,7 @@ const Chat = () => {
         return () => {
 
             // Avoid the listener accumulation
-            socket.off('message');
+            socket.off('new-message');
         }
     }, [messages])
 
@@ -194,7 +197,7 @@ const Chat = () => {
         <div id="chat-view">
             <div>
                 <div>
-                    <h2>Chat</h2>
+                    <h2>{room_name}</h2>
                     <div>
                         <Messages messages={messages} user_id={user._id} />
                         <Input message={message} setMessage={setMessage} setFile={setFile} sendMessage={sendMessage} showAudioIcon={showAudioIcon} showSocketIcon={showSocketIcon} />

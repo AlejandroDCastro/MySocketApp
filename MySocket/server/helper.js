@@ -6,9 +6,11 @@ const Helper = {
     addUser: ({ socket_id, name, user_id, room_id }) => {
         const oldUserIndex = users.findIndex(user => (user.user_id === user_id));
         if (oldUserIndex !== -1) {
+
+            // Reset user connection values
             users[oldUserIndex].socket_id = socket_id;
             users[oldUserIndex].room_id = '';
-            return { error: 'User already exist...' }
+            return users[oldUserIndex];
         } else {
             const user = { socket_id, name, user_id, room_id };
             users.push(user);
@@ -37,11 +39,13 @@ const Helper = {
         }
     },
 
-    joinRoom: (user_id, room_id) => {
+    setRoomID: ({ user_id, room_id }) => {
         const userIndex = users.findIndex(user => user.user_id === user_id);
         if (userIndex !== -1) {
             users[userIndex].room_id = room_id;
-            return users[userIndex];
+            return { user: users[userIndex] };
+        } else {
+            return { error: 'The user is not connected or does not exists...' };
         }
     }
 

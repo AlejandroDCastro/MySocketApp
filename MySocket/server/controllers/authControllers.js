@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const { Helper } = require('../helper');
 // JSON Web Token is a compact, URL-safe means of representing claims to be transferred between two parties
 const jwt = require('jsonwebtoken');
 const maxAge = 5 * 24 * 60 * 60 // seconds
@@ -90,6 +91,16 @@ module.exports.verifyuser = (req, res, next) => {
 }
 
 module.exports.logout = (req, res) => {
+    const token = req.cookies.jwt;
+
+    // Delete user connected in server
+    if (token) {
+        const user_id = jwt.decode(token).id;
+        const user = Helper.removeUserByUserID(user_id);
+        console.log('user removed:', user);
+    }
+
+    // Delete token with user login data from client
     res.cookie('jwt', "", { maxAge: 1 });
     res.status(200).json({ logout: true });
 }

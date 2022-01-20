@@ -41,7 +41,7 @@ io.on('connection', (socket) => {
             room_id: ''
         });
 
-        // Show its rooms avaliable
+        // Show user private rooms avaliable
         PrivateRoom.find({
             members: user.user_id
         }).populate('members').then(result => {
@@ -76,7 +76,7 @@ io.on('connection', (socket) => {
             } else if (PrivateRoom.findOne({ members: { $all: [applicant_id, guest._id] } })) {
                 throw 'This chat is already opened';
             }
-            
+
             // Finally create the Private Room
             const privateRoom = new PrivateRoom({
                 members: [
@@ -109,52 +109,52 @@ io.on('connection', (socket) => {
         });
     });
 
-    //socket.on('join',)
 
-    /*
-        socket.on('join', ({ name, room_id, user_id }) => {
-            const { error, user } = addUser({
-                socket_id: socket.id,
-                name,
-                room_id,
-                user_id
-            });
-    
-            // Add the Room ID to the socket list
-            socket.join(room_id);
-    
-            if (error) {
-                console.log('join error', error);
-            } else {
-                console.log('join user', user);
-            }
+    socket.on('join-room', ({ user_id, room_id }) => {
+        const { user, error } = Helper.setRoomID({
+            user_id,
+            room_id
         });
-    
-        socket.on('sendMessage', (message, room_id, callback) => {
-            const user = getUser(socket.id);
-            const msgToStore = {
-                name: user.name,
-                user_id: user.user_id,
-                room_id,
-                text: message
-            };
-            console.log('message', msgToStore);
-    
-            // Save message
-            const msg = new Message(msgToStore);
-            msg.save().then(result => {
-    
-                // Send event to the clients in the same room
-                io.to(room_id).emit('message', result);
-                callback();
-            });
+
+        // Add the Room ID to the socket list
+        socket.join(room_id);
+
+        if (error) {
+            console.log('join error:', error);
+        } else {
+            console.log('join user:', user);
+        }
+    });
+
+
+    socket.on('send-message', (message, room_id, callback) => {
+        const user = Helper.getUserBySocketID(socket.id);
+        console.log('EL USUARIO:',user);// AQUI PETAAAA
+        const msgData = {
+            name: user.name,
+            user_id: user.user_id,
+            room_id,
+            text: message
+        };
+        console.log('message', msgData);
+
+        // Save message
+        const newMessage = new Message(msgData);
+        newMessage.save().then(result => {
+
+            // Send event to the clients in the same room
+            io.to(room_id).emit('new-message', result);
+            callback();
         });
-    
-        socket.on('get-messages-history', room_id => {
-            Message.find({ room_id }).then(result => {
-                socket.emit('output-messages', result);
-            });
-        });*/
+    });
+
+
+    socket.on('get-message-history', room_id => {
+        Message.find({ room_id }).then(result => {
+            socket.emit('output-messages', result);
+        });
+    });
+
 
     socket.on('disconnect', () => {
         Helper.removeUserBySocketID(socket.id);
