@@ -119,6 +119,11 @@ input:focus {
         transition: all .2s;
     }
 
+    .inputData>p {
+        margin: 7px 0;
+        color: #ff3838;
+    }
+
 
 .labelDown>label,
 .labelUp>label,

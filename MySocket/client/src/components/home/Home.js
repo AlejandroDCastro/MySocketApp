@@ -11,6 +11,7 @@ const Home = () => {
     const { user, setUser } = useContext(UserContext);
     const [privateRoom, setPrivateRoom] = useState('');
     const [privateRooms, setPrivateRooms] = useState('');
+    const [privateRoomError, setPrivateRoomError] = useState('');
 
     // Run after render DOM
     useEffect(() => {
@@ -63,6 +64,7 @@ const Home = () => {
 
     useEffect(() => {
         socket.on('private-room-created', privateRoom => {
+            console.log('private:',privateRoom);
             setPrivateRooms([...privateRooms, privateRoom]);
         });
 
@@ -82,9 +84,18 @@ const Home = () => {
         e.preventDefault();
 
         // Emit a socket event
-        socket.emit('create-private-room', privateRoom);
-        console.log(privateRoom);
-        setPrivateRoom('');
+        socket.emit('check-correct-room', privateRoom, (response) => {
+            if (response.valid) {
+                socket.emit('create-private-room', {
+                    applicant_id: user._id,
+                    applicant_name: user.name,
+                    guest_id: response.data.guest_id,
+                    guest_name: response.data.guest_name
+                });
+                setPrivateRoom('');
+            }
+            setPrivateRoomError(response.body);
+        });
     }
 
     const changePrivateRoomValue = e => {
@@ -113,6 +124,7 @@ const Home = () => {
                         <div className="inputData labelDown">
                             <input type="email" id="room" required value={privateRoom} onChange={changePrivateRoomValue} />
                             <label htmlFor="room">Enter a user email</label>
+                            <p>{privateRoomError}</p>
                         </div>
                         <input type="submit" value="OPEN CHAT" />
                     </form>

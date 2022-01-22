@@ -138,6 +138,7 @@ const Chat = () => {
 
     useEffect(() => {
         socket = io(ENDPT);
+        console.log('my socket is: ', socket);
         socket.emit('join-room', {
             user_id: user._id,
             room_id
@@ -145,8 +146,7 @@ const Chat = () => {
     }, []) // Empty array for executing one only time each refresh
 
     useEffect(() => {
-        socket.on('get-messages-history', messages => {
-            console.log('malditos mensajes',messages);
+        socket.on('get-message-history', messages => {
             setMessages(messages)
             stickySendMessageBox();
             scrollToTheEnd();

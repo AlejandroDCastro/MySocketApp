@@ -58,7 +58,7 @@ io.on('connection', (socket) => {
     });
 
 
-    socket.on('create-private-room', email => {
+    socket.on('check-correct-room', (email, callback) => {
 
         // Look for guest user
         User.findOne({ email }).then(guest => {
@@ -73,39 +73,67 @@ io.on('connection', (socket) => {
             }
             if (applicant.user_id === guest.id) {
                 throw 'You cannot talk with yourself...';
-            } else if (PrivateRoom.findOne({ members: { $all: [applicant_id, guest._id] } })) {
-                throw 'This chat is already opened';
             }
-
-            // Finally create the Private Room
-            const privateRoom = new PrivateRoom({
-                members: [
-                    new mongoose.mongo.ObjectId(applicant.user_id),
-                    guest._id
-                ]
-            });
-            privateRoom.save().then(result => {
-
-                // Emit new Room at the moment
-                console.log('private room', result);
-                socket.emit('private-room-created', {
-                    room_id: result.id,
-                    name: guest.name
-                });
-
-                // Check if other user is connected
-                const guestConnected = Helper.getUserByID(guest.id);
-                if (guestConnected) {
-                    io.to(guestConnected.socket_id).emit('private-room-created', {
-                        room_id: result.id,
-                        name: applicant.name
-                    });
-                } else {
-                    console.log('The guest user is not connected right now...');
+            PrivateRoom.exists({
+                members: {
+                    $all: [
+                        applicant_id,
+                        guest._id
+                    ]
                 }
+            }).then(result => {
+                return callback(
+                    (result) ? {
+                        valid: false,
+                        body: 'This chat is already opened'
+                    } : {
+                        valid: true,
+                        body: '',
+                        data: {
+                            guest_id: guest.id,
+                            guest_name: guest.name
+                        }
+                    }
+                );
             });
         }).catch(error => {
             console.log(error);
+            return callback({
+                valid: false,
+                body: error
+            });
+        });
+    });
+
+
+    socket.on('create-private-room', data => {
+
+        const privateRoom = new PrivateRoom({
+            members: [
+                new mongoose.mongo.ObjectId(data.applicant_id),
+                data.guest_id
+            ]
+        });
+        privateRoom.save().then(result => {
+
+            // Emit new Room at the moment
+            console.log('private room', result);
+            console.log(result.id);
+            socket.emit('private-room-created', {
+                _id: result.id,
+                name: data.guest_name
+            });
+
+            // Check if other user is connected
+            const guestConnected = Helper.getUserByID(data.guest_id);
+            if (guestConnected) {
+                io.to(guestConnected.socket_id).emit('private-room-created', {
+                    _id: result.id,
+                    name: data.applicant_name
+                });
+            } else {
+                console.log('The guest user is not connected right now...');
+            }
         });
     });
 
@@ -128,7 +156,7 @@ io.on('connection', (socket) => {
 
         // Send room messages to the client
         Message.find({ room_id }).then(result => {
-            console.log('resultado', result);
+            console.log('messages history', result);
             socket.emit('get-message-history', result);
         });
     });
