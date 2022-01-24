@@ -13,6 +13,13 @@ const Home = () => {
     const [privateRooms, setPrivateRooms] = useState('');
     const [privateRoomError, setPrivateRoomError] = useState('');
 
+    const [sharedRoom, setSharedRoom] = useState('');
+    const [sharedRooms, setSharedRooms] = useState('');
+    const [groupMember, setGroupMember] = useState('');
+    const [groupMemberError, setGroupMemberError] = useState('');
+    const [groupMembers, setGroupMembers] = useState('');
+
+
     // Run after render DOM
     useEffect(() => {
 
@@ -98,8 +105,21 @@ const Home = () => {
         });
     }
 
+    const handleSubmitSharedRoom = e => {
+        e.preventDefault();
+
+    }
+
     const changePrivateRoomValue = e => {
         setPrivateRoom(e.target.value);
+    }
+
+    const changeSharedRoomValue = e => {
+        setSharedRoom(e.target.value);
+    }
+
+    const changeGroupMemberValue = e => {
+        setGroupMember(e.target.value);
     }
 
     // Login page first if user is not identified
@@ -118,23 +138,56 @@ const Home = () => {
     return (
         <div>
             <div id="home-view">
-                <section className="formData" id="add-new-user">
-                    <h2>Add new user</h2>
-                    <form onSubmit={handleSubmitPrivateRoom}>
-                        <div className="inputData labelDown">
-                            <input type="email" id="room" required value={privateRoom} onChange={changePrivateRoomValue} />
-                            <label htmlFor="room">Enter a user email</label>
-                            <p>{privateRoomError}</p>
-                        </div>
-                        <input type="submit" value="OPEN CHAT" />
-                    </form>
-                </section>
-                <section id="room-section">
-                    <h2>Avaliable Rooms</h2>
-                    <div id="room-list">
-                        <RoomList rooms={privateRooms} />
+                <div>
+                    <section className="formData" id="add-new-user">
+                        <h2>Add new user</h2>
+                        <form onSubmit={handleSubmitPrivateRoom}>
+                            <div className="inputData labelDown">
+                                <input type="email" id="privateRoom" required value={privateRoom} onChange={changePrivateRoomValue} />
+                                <label htmlFor="privateRoom">Enter a user email</label>
+                                <p>{privateRoomError}</p>
+                            </div>
+                            <input type="submit" value="OPEN CHAT" />
+                        </form>
+                    </section>
+                    <section className="formData" id="add-new-group">
+                        <h2>Add new group</h2>
+                        <form onSubmit={handleSubmitSharedRoom}>
+                            <div className="inputData labelDown">
+                                <input type="text" id="sharedRoom" required value={sharedRoom} onChange={changeSharedRoomValue} />
+                                <label htmlFor="sharedRoom">Enter a room name</label>
+                            </div>
+                            <input type="submit" value="OPEN CHAT" />
+                        </form>
+                    </section>
+                    <div className="formData" id="group-list">
+                        <form onSubmit={handleSubmitSharedRoom}>
+                            <div className="inputData labelDown">
+                                <input type="email" id="groupMember" required value={groupMember} onChange={changeGroupMemberValue} />
+                                <label htmlFor="groupMember">Enter a user email</label>
+                                <p>{groupMemberError}rrrrrrrrrrrrrrrr</p>
+                            </div>
+                            <input type="submit" value="OPEN CHAT" />
+                        </form>
+                        <ul>
+                            No users at the moment...
+                        </ul>
                     </div>
-                </section>
+                </div>
+                <div>
+                    <section id="room-section">
+                        <h2>Private Rooms</h2>
+                        <div id="room-list">
+                            <RoomList rooms={privateRooms} />
+                        </div>
+                    </section>
+                    <section id="room-section">
+                        <h2>Private Rooms</h2>
+                        <div id="room-list">
+                            <RoomList rooms={privateRooms} />
+                        </div>
+                    </section>
+                </div>
             </div>
         </div>
     )

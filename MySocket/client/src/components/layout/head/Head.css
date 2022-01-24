@@ -6,10 +6,11 @@
     align-items: center;
     justify-content: center;
     padding: 25px;
+    position: relative;
 }
 
 #head>p {
-    position: fixed;
+    position: absolute;
     left: 15px;
     font-size: 20px;
     color: #f6f8ff;
