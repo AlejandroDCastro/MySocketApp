@@ -10,14 +10,15 @@ const Home = () => {
     const ENDPT = 'localhost:5000';
     const { user, setUser } = useContext(UserContext);
     const [privateRoom, setPrivateRoom] = useState('');
-    const [privateRooms, setPrivateRooms] = useState('');
+    const [privateRooms, setPrivateRooms] = useState([]);
     const [privateRoomError, setPrivateRoomError] = useState('');
 
     const [sharedRoom, setSharedRoom] = useState('');
-    const [sharedRooms, setSharedRooms] = useState('');
+    const [sharedRoomError, setSharedRoomError] = useState('');
+    const [sharedRooms, setSharedRooms] = useState([]);
     const [groupMember, setGroupMember] = useState('');
     const [groupMemberError, setGroupMemberError] = useState('');
-    const [groupMembers, setGroupMembers] = useState('');
+    const [groupMembers, setGroupMembers] = useState([]);
 
 
     // Run after render DOM
@@ -48,7 +49,7 @@ const Home = () => {
     }, [ENDPT])
 
     useEffect(() => {
-        let inputDiv = document.querySelector('form>div:first-child');
+        let inputDiv = document.querySelector('#add-new-user>form>div:first-child');
 
         if (inputDiv) {
             if (privateRoom !== '') {
@@ -58,6 +59,30 @@ const Home = () => {
             }
         }
     }, [privateRoom]);
+
+    useEffect(() => {
+        let inputDiv = document.querySelector('#add-new-group>form>div:first-child');
+
+        if (inputDiv) {
+            if (sharedRoom !== '') {
+                inputDiv.classList.replace('labelDown', 'labelUp');
+            } else {
+                inputDiv.classList.replace('labelUp', 'labelDown');
+            }
+        }
+    }, [sharedRoom]);
+
+    useEffect(() => {
+        let inputDiv = document.querySelector('#group-list>form>div:first-child');
+
+        if (inputDiv) {
+            if (groupMember !== '') {
+                inputDiv.classList.replace('labelDown', 'labelUp');
+            } else {
+                inputDiv.classList.replace('labelUp', 'labelDown');
+            }
+        }
+    }, [groupMember]);
 
     useEffect(() => {
         socket.on('output-private-rooms', privateRooms => {
@@ -108,6 +133,17 @@ const Home = () => {
     const handleSubmitSharedRoom = e => {
         e.preventDefault();
 
+        if (groupMembers && groupMembers.length > 0) {
+            setSharedRoomError('');
+        } else {
+            setSharedRoomError('Add some user below to create room');
+        }
+    }
+
+    const handleSubmitGroupMembers = e => {
+        e.preventDefault();
+
+
     }
 
     const changePrivateRoomValue = e => {
@@ -156,35 +192,37 @@ const Home = () => {
                             <div className="inputData labelDown">
                                 <input type="text" id="sharedRoom" required value={sharedRoom} onChange={changeSharedRoomValue} />
                                 <label htmlFor="sharedRoom">Enter a room name</label>
+                                <p>{sharedRoomError}</p>
                             </div>
                             <input type="submit" value="OPEN CHAT" />
                         </form>
                     </section>
                     <div className="formData" id="group-list">
-                        <form onSubmit={handleSubmitSharedRoom}>
+                        <form onSubmit={handleSubmitGroupMembers}>
                             <div className="inputData labelDown">
                                 <input type="email" id="groupMember" required value={groupMember} onChange={changeGroupMemberValue} />
                                 <label htmlFor="groupMember">Enter a user email</label>
-                                <p>{groupMemberError}rrrrrrrrrrrrrrrr</p>
+                                <p>{groupMemberError}</p>
                             </div>
-                            <input type="submit" value="OPEN CHAT" />
+                            <input type="submit" value="ADD USER" />
                         </form>
+                        <p>User list:</p>
                         <ul>
-                            No users at the moment...
+                            <li>No users at the moment...</li>
                         </ul>
                     </div>
                 </div>
                 <div>
-                    <section id="room-section">
+                    <section className="roomSection" id="private-room-section">
                         <h2>Private Rooms</h2>
-                        <div id="room-list">
+                        <div className="roomList" id="private-room-list">
                             <RoomList rooms={privateRooms} />
                         </div>
                     </section>
-                    <section id="room-section">
-                        <h2>Private Rooms</h2>
-                        <div id="room-list">
-                            <RoomList rooms={privateRooms} />
+                    <section className="roomSection" id="shared-room-section">
+                        <h2>Shared Rooms</h2>
+                        <div className="roomList" id="shared-room-list">
+                            <RoomList rooms={sharedRooms} />
                         </div>
                     </section>
                 </div>

@@ -33,20 +33,43 @@
         margin-top: 0;
     }
 
+    #group-list>p {
+        text-align: left;
+        padding: 10px;
+        font-size: 1.2em;
+    }
 
-#room-list {
+    #group-list>ul {
+        text-align: left;
+        padding-left: 20px;
+    }
+
+        #group-list>ul>li {
+            list-style: none;
+        }
+
+        #group-list>form>input {
+            padding: 5px;
+        }
+
+
+#shared-room-section {
+    margin-top: 40px;
+}
+
+.roomSection>h2 {
+    margin-bottom: 20px;
+}
+
+.roomList {
     width: 100%;
 }
 
-    #room-section>h2 {
-        margin-bottom: 20px;
+    .roomList>div>a,
+    .roomList>div>a:visited {
+        text-decoration: none;
+        color: var(--blue-background);
     }
-
-        #room-list>div>a,
-        #room-list>div>a:visited {
-            text-decoration: none;
-            color: var(--blue-background);
-        }
 
 
 
