@@ -4,7 +4,8 @@ const privateRoomSchema = new mongoose.Schema({
     members: {
         type: [mongoose.Schema.Types.ObjectId],
         ref: 'user',
-        validate: [arrayLimit, 'Private Rooms are only for 2 users']
+        validate: [arrayLimit, 'Private Rooms are only for 2 users'],
+        required: [true, 'You need to add some user']
     }
 });
 

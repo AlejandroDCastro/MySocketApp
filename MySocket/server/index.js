@@ -23,6 +23,7 @@ mongoose.connect(mongoDB).then(() => console.log('database connected')).catch(er
 const { Helper } = require('./helper');
 const PORT = process.env.PORT || 5000;
 const PrivateRoom = require('./models/PrivateRoom');
+const SharedRoom = require('./models/SharedRoom');
 const Message = require('./models/Message');
 const User = require('./models/User');
 
@@ -134,6 +135,42 @@ io.on('connection', (socket) => {
             } else {
                 console.log('The guest user is not connected right now...');
             }
+        });
+    });
+
+
+    socket.on('create-shared-room', (name, members, callback) => {
+        const user = Helper.getUserBySocketID(socket.id);
+        
+        const sharedRoom = new SharedRoom({
+            name: name,
+            members: [...members, user.user_id]
+        });
+        sharedRoom.save().then(result => {
+            console.log('result', result);
+        }).catch(error => {
+            console.log('error', error);
+        });
+    });
+
+
+    socket.on('check-correct-user', (email, callback) => {
+        User.findOne({ email }).then(guest => {
+            const user = Helper.getUserBySocketID(socket.id);
+            return callback(
+                (guest) ? (
+                    (user.user_id === guest.id) ? {
+                        valid: false,
+                        body: 'You cannot talk with yourself...'
+                    } : {
+                        valid: true,
+                        user: guest
+                    }
+                ) : {
+                    valid: false,
+                    body: 'The user introduced does not exists...'
+                }
+            );
         });
     });
 

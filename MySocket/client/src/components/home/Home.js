@@ -96,7 +96,7 @@ const Home = () => {
 
     useEffect(() => {
         socket.on('private-room-created', privateRoom => {
-            console.log('private:',privateRoom);
+            console.log('private:', privateRoom);
             setPrivateRooms([...privateRooms, privateRoom]);
         });
 
@@ -133,17 +133,35 @@ const Home = () => {
     const handleSubmitSharedRoom = e => {
         e.preventDefault();
 
-        if (groupMembers && groupMembers.length > 0) {
-            setSharedRoomError('');
-        } else {
-            setSharedRoomError('Add some user below to create room');
+        socket.emit('create-shared-room', sharedRoom, groupMembers, (response) => {
+            console.log(response);
+        });
+    }
+
+    const addUserToList = (user) => {
+        let listElement = document.querySelector('#group-list>ul')
+        let newChild = document.createElement('li');
+
+        if (groupMembers.length === 0) {
+            listElement.removeChild(listElement.firstChild);
         }
+        newChild.textContent = user.email + ' (' + user.name + ')';
+        listElement.appendChild(newChild);
+        groupMembers.push(user._id);
+        console.log('group members', groupMembers);
     }
 
     const handleSubmitGroupMembers = e => {
         e.preventDefault();
-
-
+        socket.emit('check-correct-user', groupMember, (response) => {
+            if (response.valid) {
+                addUserToList(response.user);
+                setGroupMemberError('');
+                setGroupMember('');
+            } else {
+                setGroupMemberError(response.body);
+            }
+        });
     }
 
     const changePrivateRoomValue = e => {
