@@ -130,16 +130,31 @@ const Home = () => {
         });
     }
 
+    const clearUsersFromList = e => {
+        let listElement = document.querySelector('#group-list>ul');
+        listElement.innerHTML = ``;
+        let letter = document.createElement('li');
+        letter.textContent = 'No users at the moment...';
+        listElement.appendChild(letter);
+    }
+
     const handleSubmitSharedRoom = e => {
         e.preventDefault();
 
         socket.emit('create-shared-room', sharedRoom, groupMembers, (response) => {
-            console.log(response);
+            if (response.valid) {
+                setSharedRoomError('');
+                setSharedRoom('');
+                setGroupMembers([]);
+                clearUsersFromList();
+            } else {
+                setSharedRoomError(response.body);
+            }
         });
     }
 
     const addUserToList = (user) => {
-        let listElement = document.querySelector('#group-list>ul')
+        let listElement = document.querySelector('#group-list>ul');
         let newChild = document.createElement('li');
 
         if (groupMembers.length === 0) {

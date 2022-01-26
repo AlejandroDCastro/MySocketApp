@@ -147,9 +147,17 @@ io.on('connection', (socket) => {
             members: [...members, user.user_id]
         });
         sharedRoom.save().then(result => {
-            console.log('result', result);
+            return callback({
+                valid: true,
+                body: result
+            });
         }).catch(error => {
-            console.log('error', error);
+            const errorMessage = error.errors.members.properties.message;
+            console.log('error', errorMessage);
+            return callback({
+                valid: false,
+                body: errorMessage
+            });
         });
     });
 
