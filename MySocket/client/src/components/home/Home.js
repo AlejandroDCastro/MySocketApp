@@ -109,6 +109,21 @@ const Home = () => {
         console.log(privateRooms);
     }, [privateRooms]);
 
+    useEffect(() => {
+        socket.on('shared-room-created', sharedRoom => {
+            console.log('shared:', sharedRoom);
+            setSharedRooms([...sharedRooms, sharedRoom]);
+        });
+
+        return () => {
+            socket.off('shared-room-created');
+        }
+    }, [sharedRooms]);
+
+    useEffect(() => {
+        console.log(sharedRooms);
+    }, [sharedRooms]);
+
 
     const handleSubmitPrivateRoom = e => {
 

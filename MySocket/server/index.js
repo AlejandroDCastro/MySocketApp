@@ -119,7 +119,6 @@ io.on('connection', (socket) => {
 
             // Emit new Room at the moment
             console.log('private room', result);
-            console.log(result.id);
             socket.emit('private-room-created', {
                 _id: result.id,
                 name: data.guest_name
@@ -147,9 +146,22 @@ io.on('connection', (socket) => {
             members: [...members, user.user_id]
         });
         sharedRoom.save().then(result => {
+            console.log('new shared room:', result);
+            const roomData = {
+                _id : result.id,
+                name: result.name
+            }
+            result.members.forEach(member_id => {
+                const userConnected = Helper.getUserByID(member_id.toString());
+                if (userConnected) {
+                    io.to(userConnected.socket_id).emit('shared-room-created', roomData);
+                } else {
+                    console.log('The user ' + member_id.toString() + ' is not connected right now');
+                }
+            });
             return callback({
                 valid: true,
-                body: result
+                body: roomData
             });
         }).catch(error => {
             const errorMessage = error.errors.members.properties.message;
