@@ -56,6 +56,21 @@ io.on('connection', (socket) => {
             console.log('private rooms', privateRooms);
             socket.emit('output-private-rooms', privateRooms);
         });
+
+        // Show user shared rooms avaliable
+        SharedRoom.find({
+            members: user.user_id
+        }).then(result => {
+            const sharedRoom = [];
+            result.forEach(room => {
+                sharedRoom.push({
+                    _id: room.id,
+                    name: room.name
+                });
+            });
+            console.log('shared rooms', sharedRoom);
+            socket.emit('output-shared-rooms', sharedRoom);
+        });
     });
 
 

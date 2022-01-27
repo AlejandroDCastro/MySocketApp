@@ -88,9 +88,13 @@ const Home = () => {
         socket.on('output-private-rooms', privateRooms => {
             setPrivateRooms(privateRooms);
         });
+        socket.on('output-shared-rooms', sharedRooms => {
+            setSharedRooms(sharedRooms);
+        });
 
         return () => {
             socket.off('output-private-rooms');
+            socket.off('output-shared-rooms');
         }
     }, []);
 
