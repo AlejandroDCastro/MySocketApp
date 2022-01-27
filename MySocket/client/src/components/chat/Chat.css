@@ -13,6 +13,12 @@
         top: 22px;
     }
 
+        #chat-view>div>div>h2>span:last-child {
+            margin-left: 10px;
+            font-weight: initial;
+            font-size: .6em;
+        }
+
     #chat-view>div>div>div {
         position: absolute;
         left: 10px;

@@ -55,7 +55,7 @@
         }
 
 
-#shared-room-section {
+#home-view>div:last-child>section:last-child {
     margin-top: 40px;
 }
 

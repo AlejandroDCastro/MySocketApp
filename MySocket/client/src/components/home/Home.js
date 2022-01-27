@@ -265,16 +265,16 @@ const Home = () => {
                     </div>
                 </div>
                 <div>
-                    <section className="roomSection" id="private-room-section">
-                        <h2>Private Rooms</h2>
-                        <div className="roomList" id="private-room-list">
-                            <RoomList rooms={privateRooms} />
-                        </div>
-                    </section>
                     <section className="roomSection" id="shared-room-section">
                         <h2>Shared Rooms</h2>
                         <div className="roomList" id="shared-room-list">
-                            <RoomList rooms={sharedRooms} />
+                            <RoomList rooms={sharedRooms} type="Shared" />
+                        </div>
+                    </section>
+                    <section className="roomSection" id="private-room-section">
+                        <h2>Private Rooms</h2>
+                        <div className="roomList" id="private-room-list">
+                            <RoomList rooms={privateRooms} type="Private" />
                         </div>
                     </section>
                 </div>

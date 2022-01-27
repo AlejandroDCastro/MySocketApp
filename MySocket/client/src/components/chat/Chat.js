@@ -14,7 +14,7 @@ const Chat = () => {
     const [messages, setMessages] = useState([]);
     const [file, setFile] = useState(null);
     const [chunks, setChunks] = useState([]);
-    let { room_id, room_name } = useParams();
+    let { privacy, room_id, room_name } = useParams();
 
     // Functions
 
@@ -197,7 +197,10 @@ const Chat = () => {
         <div id="chat-view">
             <div>
                 <div>
-                    <h2>{room_name}</h2>
+                    <h2>
+                        <span>{room_name}</span>
+                        <span>[{privacy}]</span>
+                    </h2>
                     <div>
                         <Messages messages={messages} user_id={user._id} />
                         <Input message={message} setMessage={setMessage} setFile={setFile} sendMessage={sendMessage} showAudioIcon={showAudioIcon} showSocketIcon={showSocketIcon} />
