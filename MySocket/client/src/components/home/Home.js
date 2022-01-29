@@ -125,7 +125,7 @@ const Home = () => {
     }, [sharedRooms]);
 
     useEffect(() => {
-        console.log(sharedRooms);
+        console.log('shared rooms', sharedRooms);
     }, [sharedRooms]);
 
 
@@ -160,6 +160,7 @@ const Home = () => {
     const handleSubmitSharedRoom = e => {
         e.preventDefault();
 
+        addUserIDToArray(user._id);
         socket.emit('create-shared-room', sharedRoom, groupMembers, (response) => {
             if (response.valid) {
                 setSharedRoomError('');
@@ -172,6 +173,18 @@ const Home = () => {
         });
     }
 
+    const getRandomColour = _ => {
+        return ("#" + ((1 << 24) * Math.random() | 0).toString(16));
+    }
+
+    const addUserIDToArray = (user_id) => {
+        groupMembers.push({
+            _id: user_id,
+            colour: getRandomColour()
+        });
+        console.log('group members', groupMembers);
+    }
+
     const addUserToList = (user) => {
         let listElement = document.querySelector('#group-list>ul');
         let newChild = document.createElement('li');
@@ -181,8 +194,6 @@ const Home = () => {
         }
         newChild.textContent = user.email + ' (' + user.name + ')';
         listElement.appendChild(newChild);
-        groupMembers.push(user._id);
-        console.log('group members', groupMembers);
     }
 
     const handleSubmitGroupMembers = e => {
@@ -190,6 +201,7 @@ const Home = () => {
         socket.emit('check-correct-user', groupMember, (response) => {
             if (response.valid) {
                 addUserToList(response.user);
+                addUserIDToArray(response.user._id)
                 setGroupMemberError('');
                 setGroupMember('');
             } else {
@@ -265,16 +277,16 @@ const Home = () => {
                     </div>
                 </div>
                 <div>
-                    <section className="roomSection" id="shared-room-section">
-                        <h2>Shared Rooms</h2>
-                        <div className="roomList" id="shared-room-list">
-                            <RoomList rooms={sharedRooms} type="Shared" />
-                        </div>
-                    </section>
                     <section className="roomSection" id="private-room-section">
                         <h2>Private Rooms</h2>
                         <div className="roomList" id="private-room-list">
                             <RoomList rooms={privateRooms} type="Private" />
+                        </div>
+                    </section>
+                    <section className="roomSection" id="shared-room-section">
+                        <h2>Shared Rooms</h2>
+                        <div className="roomList" id="shared-room-list">
+                            <RoomList rooms={sharedRooms} type="Shared" />
                         </div>
                     </section>
                 </div>

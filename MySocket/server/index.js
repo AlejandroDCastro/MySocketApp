@@ -58,7 +58,7 @@ io.on('connection', (socket) => {
         });
 
         // Show user shared rooms avaliable
-        SharedRoom.find({
+/*        SharedRoom.find({
             members: user.user_id
         }).then(result => {
             const sharedRoom = [];
@@ -70,7 +70,7 @@ io.on('connection', (socket) => {
             });
             console.log('shared rooms', sharedRoom);
             socket.emit('output-shared-rooms', sharedRoom);
-        });
+        });*/
     });
 
 
@@ -155,10 +155,10 @@ io.on('connection', (socket) => {
 
     socket.on('create-shared-room', (name, members, callback) => {
         const user = Helper.getUserBySocketID(socket.id);
-        
+
         const sharedRoom = new SharedRoom({
             name: name,
-            members: [...members, user.user_id]
+            members: members
         });
         sharedRoom.save().then(result => {
             console.log('new shared room:', result);
@@ -166,12 +166,12 @@ io.on('connection', (socket) => {
                 _id : result.id,
                 name: result.name
             }
-            result.members.forEach(member_id => {
-                const userConnected = Helper.getUserByID(member_id.toString());
+            result.members.forEach(member => {
+                const userConnected = Helper.getUserByID(member.id);
                 if (userConnected) {
                     io.to(userConnected.socket_id).emit('shared-room-created', roomData);
                 } else {
-                    console.log('The user ' + member_id.toString() + ' is not connected right now');
+                    console.log('The user ' + member.id + ' is not connected right now');
                 }
             });
             return callback({

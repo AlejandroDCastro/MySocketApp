@@ -11,6 +11,7 @@ const Message = ({ message: { name, user_id, text }, current_uid, same_user }) =
     return (
         <div className={styleClasses}>
             <div>
+                <p>{name}</p>
                 <p>{text}</p>
             </div>
         </div>

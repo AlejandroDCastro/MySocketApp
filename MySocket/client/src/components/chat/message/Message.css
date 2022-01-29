@@ -5,7 +5,7 @@
     width: 100%;
     height: 100%;
     display: flex;
-
+    font-size: 1.1em;
 }
 
 .right-msg {
@@ -19,7 +19,7 @@
 
     .left-msg>div,
     .right-msg>div {
-        max-width: 80%;
+        max-width: 70%;
         height: 100%;
         padding: 10px;
         word-wrap: break-word; /*Avoid the long word to break the message*/
@@ -31,9 +31,18 @@
     }
 
     .left-msg>div {
-        background-color: rgb(90, 90, 90);
+        background-color: rgba(0, 0, 0, 0.438);
         border-radius: 0px 12px 12px 12px;
     }
+
+        .left-msg>div>p:first-child {
+            font-size: .8em;
+            margin-bottom: 6px;
+        }
+
+        .right-msg>div>p:first-child {
+            display: none;
+        }
 
         .left-msg>div>p,
         .right-msg>div>p {
@@ -45,6 +54,10 @@
 .same-user {
     margin-top: 2px;
 }
+
+    .same-user>div>p:first-child {
+        display: none;
+    }
 
 .diff-user {
     margin-top: 15px;
