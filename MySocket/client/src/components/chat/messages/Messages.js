@@ -1,7 +1,7 @@
 import React from 'react';
 import Message from '../message/Message';
 
-const Messages = ({ messages, user_id }) => {
+const Messages = ({ messages, user_id, privacy }) => {
     let lastUserID = null;
 
     // Check if the last message printed is from the same user than before one
@@ -17,7 +17,7 @@ const Messages = ({ messages, user_id }) => {
     return (
         <div>
             {messages.map((message, i) => (
-                <Message key={message._id} message={message} current_uid={user_id} same_user={checkLastUserMessage(message.user_id)} />
+                <Message key={message._id} message={message} current_uid={user_id} same_user={checkLastUserMessage(message.user_id)} privacy={privacy} />
             ))}
         </div>
     )

@@ -36,7 +36,7 @@ function App() {
           <Head />
           <Switch>
             <Route exact path="/" component={Home} />
-            <Route path="/chat/:privacy/:room_id/:room_name" component={Chat} />
+            <Route path="/chat/:color/:privacy/:room_id/:room_name" component={Chat} />
             <Route path="/signup" component={Signup} />
             <Route path="/login" component={Login} />
           </Switch>

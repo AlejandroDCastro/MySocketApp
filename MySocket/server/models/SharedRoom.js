@@ -6,9 +6,9 @@ const memberSchema = new mongoose.Schema({
         ref: 'user',
         required: [true, 'A ID from user is needed']
     },
-    colour: {
+    color: {
         type: String,
-        default: '#000'
+        default: '000'
     }
 });
 

@@ -165,22 +165,22 @@ const Home = () => {
             if (response.valid) {
                 setSharedRoomError('');
                 setSharedRoom('');
-                setGroupMembers([]);
                 clearUsersFromList();
             } else {
                 setSharedRoomError(response.body);
             }
+            setGroupMembers([]);
         });
     }
 
     const getRandomColour = _ => {
-        return ("#" + ((1 << 24) * Math.random() | 0).toString(16));
+        return (((1 << 24) * Math.random() | 0).toString(16));
     }
 
     const addUserIDToArray = (user_id) => {
         groupMembers.push({
             _id: user_id,
-            colour: getRandomColour()
+            color: getRandomColour()
         });
         console.log('group members', groupMembers);
     }

@@ -4,10 +4,15 @@ import { Link } from 'react-router-dom';
 
 const RoomList = ({ rooms, type }) => {
 
-    return ( (rooms && rooms.length > 0) ?
+    // To clear URL
+    const hasHexColor = (color) => {
+        return ((!color) ? '#' : color);
+    }
+
+    return ((rooms && rooms.length > 0) ?
         <div>
             {rooms.map(room => (
-                <Link to={'/chat/' + type + '/' + room._id + '/' + room.name} key={room._id}>
+                <Link to={'/chat/' + hasHexColor(room.color) + '/' + type + '/' + room._id + '/' + room.name} key={room._id}>
                     <Room name={room.name} />
                 </Link>
             ))}

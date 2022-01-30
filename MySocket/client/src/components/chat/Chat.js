@@ -14,7 +14,7 @@ const Chat = () => {
     const [messages, setMessages] = useState([]);
     const [file, setFile] = useState(null);
     const [chunks, setChunks] = useState([]);
-    let { privacy, room_id, room_name } = useParams();
+    let { color, privacy, room_id, room_name } = useParams();
 
     // Functions
 
@@ -68,9 +68,10 @@ const Chat = () => {
         if (file) {
             // For DO IT
         } else if (message) {
+            const nameColor = (color === '#') ? (color + '000') : ('#' + color);
 
             // Emit a listener to the server
-            socket.emit('send-message', message, room_id, () => {
+            socket.emit('send-message', { message, color: nameColor }, room_id, () => {
                 setMessage('');
                 stickySendMessageBox();
                 scrollToTheEnd();
@@ -141,7 +142,7 @@ const Chat = () => {
         console.log('my socket is: ', socket);
         socket.emit('join-room', {
             user_id: user._id,
-            room_id
+            room_id: room_id
         });
     }, []) // Empty array for executing one only time each refresh
 
@@ -175,7 +176,7 @@ const Chat = () => {
     // Prepare an attached message
     useEffect(() => {
         let divFile = document.querySelector('#send-message>div:first-child');
-        
+
         if (file) {
             setInputPlaceholder(file.name, 'yellow', true);
             showSocketIcon();
@@ -202,7 +203,7 @@ const Chat = () => {
                         <span>[{privacy}]</span>
                     </h2>
                     <div>
-                        <Messages messages={messages} user_id={user._id} />
+                        <Messages messages={messages} user_id={user._id} privacy={privacy} />
                         <Input message={message} setMessage={setMessage} setFile={setFile} sendMessage={sendMessage} showAudioIcon={showAudioIcon} showSocketIcon={showSocketIcon} />
                     </div>
                 </div>

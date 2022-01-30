@@ -59,10 +59,11 @@ io.on('connection', (socket) => {
 
         // Show user shared rooms avaliable
 /*        SharedRoom.find({
-            members: user.user_id
+            "members._id": user.user_id
         }).then(result => {
+            console.log(result);
             const sharedRoom = [];
-            result.forEach(room => {
+            result.forEach(room => {    EL FIND TAMBINE FALLA PUEDE SER AL PONER DOS PUNTOS EN CONSOLELOG
                 sharedRoom.push({
                     _id: room.id,
                     name: room.name
@@ -70,6 +71,8 @@ io.on('connection', (socket) => {
             });
             console.log('shared rooms', sharedRoom);
             socket.emit('output-shared-rooms', sharedRoom);
+        }).catch(error => {
+            console.log('Output shared rooms:', error);
         });*/
     });
 
@@ -154,21 +157,26 @@ io.on('connection', (socket) => {
 
 
     socket.on('create-shared-room', (name, members, callback) => {
-        const user = Helper.getUserBySocketID(socket.id);
 
         const sharedRoom = new SharedRoom({
             name: name,
             members: members
         });
         sharedRoom.save().then(result => {
-            console.log('new shared room:', result);
-            const roomData = {
-                _id : result.id,
-                name: result.name
+            console.log('new shared room', result);
+            const myRoomData = {
+                _id: result.id,
+                name: result.name,
+                color: '' //AQUI TAMBIEN PONER COLOR PERO FALLA
             }
             result.members.forEach(member => {
                 const userConnected = Helper.getUserByID(member.id);
                 if (userConnected) {
+                    const roomData = {
+                        _id: result.id,
+                        name: result.name,
+                        color: member.color
+                    }
                     io.to(userConnected.socket_id).emit('shared-room-created', roomData);
                 } else {
                     console.log('The user ' + member.id + ' is not connected right now');
@@ -176,15 +184,16 @@ io.on('connection', (socket) => {
             });
             return callback({
                 valid: true,
-                body: roomData
+                body: myRoomData
             });
         }).catch(error => {
             const errorMessage = error.errors.members.properties.message;
             console.log('error', errorMessage);
             return callback({
                 valid: false,
-                body: errorMessage
+                body: errorMessage//ESTO FALLA
             });
+            //console.log('errores', error)
         });
     });
 
@@ -234,13 +243,14 @@ io.on('connection', (socket) => {
     });
 
 
-    socket.on('send-message', (message, room_id, callback) => {
+    socket.on('send-message', (data, room_id, callback) => {
         const user = Helper.getUserBySocketID(socket.id);
         const msgData = {
             name: user.name,
             user_id: user.user_id,
             room_id,
-            text: message
+            text: data.message,
+            color: data.color
         };
         console.log('message', msgData);
 

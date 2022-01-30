@@ -16,6 +16,10 @@ const messageSchema = new mongoose.Schema({
     room_id: {
         type: String,
         required: true
+    },
+    color: {
+        type: String,
+        default: '#000'
     }
 }, { timestamps: true })
 
