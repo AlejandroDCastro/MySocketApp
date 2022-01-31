@@ -50,7 +50,8 @@ io.on('connection', (socket) => {
             result.forEach(room => {
                 privateRooms.push({
                     _id: room.id,
-                    name: (room.members[0].id === user.user_id) ? room.members[1].name : room.members[0].name
+                    name: ((room.members[0].id === user.user_id) ? room.members[1].name : room.members[0].name),
+                    color: '000'
                 });
             });
             console.log('private rooms', privateRooms);
@@ -58,22 +59,24 @@ io.on('connection', (socket) => {
         });
 
         // Show user shared rooms avaliable
-/*        SharedRoom.find({
+        SharedRoom.find({
             "members._id": user.user_id
         }).then(result => {
             console.log(result);
             const sharedRoom = [];
-            result.forEach(room => {    EL FIND TAMBINE FALLA PUEDE SER AL PONER DOS PUNTOS EN CONSOLELOG
+            result.forEach(room => {
+                let me = room.members.filter(member => member.id === user.user_id);
                 sharedRoom.push({
                     _id: room.id,
-                    name: room.name
+                    name: room.name,
+                    color: me[0].color
                 });
             });
             console.log('shared rooms', sharedRoom);
             socket.emit('output-shared-rooms', sharedRoom);
         }).catch(error => {
             console.log('Output shared rooms:', error);
-        });*/
+        });
     });
 
 
@@ -139,7 +142,8 @@ io.on('connection', (socket) => {
             console.log('private room', result);
             socket.emit('private-room-created', {
                 _id: result.id,
-                name: data.guest_name
+                name: data.guest_name,
+                color: '000'
             });
 
             // Check if other user is connected
@@ -147,7 +151,8 @@ io.on('connection', (socket) => {
             if (guestConnected) {
                 io.to(guestConnected.socket_id).emit('private-room-created', {
                     _id: result.id,
-                    name: data.applicant_name
+                    name: data.applicant_name,
+                    color: '000'
                 });
             } else {
                 console.log('The guest user is not connected right now...');
@@ -164,11 +169,6 @@ io.on('connection', (socket) => {
         });
         sharedRoom.save().then(result => {
             console.log('new shared room', result);
-            const myRoomData = {
-                _id: result.id,
-                name: result.name,
-                color: '' //AQUI TAMBIEN PONER COLOR PERO FALLA
-            }
             result.members.forEach(member => {
                 const userConnected = Helper.getUserByID(member.id);
                 if (userConnected) {
@@ -183,8 +183,7 @@ io.on('connection', (socket) => {
                 }
             });
             return callback({
-                valid: true,
-                body: myRoomData
+                valid: true
             });
         }).catch(error => {
             const errorMessage = error.errors.members.properties.message;

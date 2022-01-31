@@ -14,8 +14,9 @@ const Chat = () => {
     const [messages, setMessages] = useState([]);
     const [file, setFile] = useState(null);
     const [chunks, setChunks] = useState([]);
+    console.log('holaaa');
     let { color, privacy, room_id, room_name } = useParams();
-
+    console.log('el color', color);
     // Functions
 
     const setInputPlaceholder = (placeholder, color, readonly) => {
@@ -68,6 +69,7 @@ const Chat = () => {
         if (file) {
             // For DO IT
         } else if (message) {
+            console.log('color2', color);
             const nameColor = (color === '#') ? (color + '000') : ('#' + color);
 
             // Emit a listener to the server

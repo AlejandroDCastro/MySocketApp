@@ -8,7 +8,7 @@ const Message = ({ message: { name, user_id, text, color }, current_uid, same_us
     const classMarginFromLast = same_user ? 'same-user' : 'diff-user';
     const styleClasses = classNameAlign + ' ' + classMarginFromLast;
     const display = (styleClasses === 'left-msg diff-user' && privacy === 'Shared') ? 'flex' : 'none';
-    const nameColour = {
+    const nameStyle = {
         color: color,
         display: display
     };
@@ -17,7 +17,7 @@ const Message = ({ message: { name, user_id, text, color }, current_uid, same_us
     return (
         <div className={styleClasses}>
             <div>
-                <p style={nameColour}>{name}</p>
+                <p style={nameStyle}>{name}</p>
                 <p>{text}</p>
             </div>
         </div>
