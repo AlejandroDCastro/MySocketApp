@@ -7,7 +7,7 @@ const privateRoomSchema = new mongoose.Schema({
         validate: [arrayLimit, 'Private Rooms are only for 2 users'],
         required: [true, 'You need to add some user']
     }
-});
+}, { timestamps: true });
 
 function arrayLimit(array) {
     return (array.length === 2);

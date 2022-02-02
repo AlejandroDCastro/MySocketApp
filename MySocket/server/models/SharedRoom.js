@@ -22,7 +22,7 @@ const sharedRoomSchema = new mongoose.Schema({
         validate: [arrayLimit, 'You need to add one user below at least'],
         required: [true, 'Please, add some user below to create room']
     }
-});
+}, { timestamps: true });
 
 function arrayLimit(array) {
     return (array.length >= 2);

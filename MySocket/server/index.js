@@ -41,39 +41,67 @@ io.on('connection', (socket) => {
             user_id: response.user_id,
             room_id: ''
         });
+        const objUserID = new mongoose.mongo.ObjectId(user.user_id);
 
         // Show user private rooms avaliable
-        PrivateRoom.find({
-            members: user.user_id
-        }).populate('members').then(result => {
-            const privateRooms = [];
-            result.forEach(room => {
-                privateRooms.push({
-                    _id: room.id,
-                    name: ((room.members[0].id === user.user_id) ? room.members[1].name : room.members[0].name),
-                    color: '000'
-                });
-            });
-            console.log('private rooms', privateRooms);
-            socket.emit('output-private-rooms', privateRooms);
+        PrivateRoom.aggregate([
+            { $match: { members: objUserID } },
+            { $lookup: { from: 'users', localField: 'members', foreignField: '_id', as: 'users' } },
+            {
+                $project: {
+                    _id: true,
+                    users: true,
+                    createdAt: true
+                }
+            },
+            { $unwind: "$users" },
+            {
+                $redact: {
+                    $cond: {
+                        if: { $eq: ["$users._id", objUserID] },
+                        then: "$$PRUNE",
+                        else: "$$DESCEND"
+                    }
+                }
+            },
+            { $sort: { createdAt: 1 } },
+            {
+                $group: {
+                    _id: "$_id",
+                    name: { $first: "$users.name" },
+                    color: { $first: "000" }
+                }
+            }
+        ]).then(result => {
+            console.log('private rooms', result);
+            socket.emit('output-private-rooms', result);
+        }).catch(error => {
+            console.log('Output public rooms:', error);
         });
 
         // Show user shared rooms avaliable
-        SharedRoom.find({
-            "members._id": user.user_id
-        }).then(result => {
-            console.log(result);
-            const sharedRoom = [];
-            result.forEach(room => {
-                let me = room.members.filter(member => member.id === user.user_id);
-                sharedRoom.push({
-                    _id: room.id,
-                    name: room.name,
-                    color: me[0].color
-                });
-            });
-            console.log('shared rooms', sharedRoom);
-            socket.emit('output-shared-rooms', sharedRoom);
+        SharedRoom.aggregate([
+            { $match: { "members._id": objUserID } },
+            {
+                $project: {
+                    name: true,
+                    members: true,
+                    createdAt: true
+                }
+            },
+            { $unwind: "$members" },
+            { $match: { "members._id": objUserID } },
+            { $sort: { createdAt: 1 } },
+            {
+                $group: {
+                    _id: "$_id",
+                    name: { $first: "$name" },
+                    color: { $first: "$members.color" }
+                }
+            }
+        ]).then(result => {
+            console.log('shared rooms', result);
+            socket.emit('output-shared-rooms', result);
         }).catch(error => {
             console.log('Output shared rooms:', error);
         });
