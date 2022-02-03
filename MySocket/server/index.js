@@ -46,30 +46,38 @@ io.on('connection', (socket) => {
         // Show user private rooms avaliable
         PrivateRoom.aggregate([
             { $match: { members: objUserID } },
-            { $lookup: { from: 'users', localField: 'members', foreignField: '_id', as: 'users' } },
+            { $lookup: { from: 'users', localField: 'members', foreignField: '_id', as: 'user' } },
             {
                 $project: {
                     _id: true,
-                    users: true,
-                    createdAt: true
+                    user: true,
+                    updatedAt: true
                 }
             },
-            { $unwind: "$users" },
+            { $unwind: "$user" },
             {
                 $redact: {
                     $cond: {
-                        if: { $eq: ["$users._id", objUserID] },
+                        if: { $eq: ["$user._id", objUserID] },
                         then: "$$PRUNE",
                         else: "$$DESCEND"
                     }
                 }
             },
-            { $sort: { createdAt: 1 } },
             {
                 $group: {
                     _id: "$_id",
-                    name: { $first: "$users.name" },
-                    color: { $first: "000" }
+                    name: { $first: "$user.name" },
+                    color: { $first: "000" },
+                    updatedAt: { $first: "$updatedAt" }
+                }
+            },
+            { $sort: { updatedAt: 1 } },
+            {
+                $project: {
+                    _id: true,
+                    name: true,
+                    color: true
                 }
             }
         ]).then(result => {
@@ -86,17 +94,25 @@ io.on('connection', (socket) => {
                 $project: {
                     name: true,
                     members: true,
-                    createdAt: true
+                    updatedAt: true
                 }
             },
             { $unwind: "$members" },
             { $match: { "members._id": objUserID } },
-            { $sort: { createdAt: 1 } },
             {
                 $group: {
                     _id: "$_id",
                     name: { $first: "$name" },
-                    color: { $first: "$members.color" }
+                    color: { $first: "$members.color" },
+                    updatedAt: { $first: "$updatedAt" }
+                }
+            },
+            { $sort: { updatedAt: 1 } },
+            {
+                $project: {
+                    _id: true,
+                    name: true,
+                    color: true
                 }
             }
         ]).then(result => {
