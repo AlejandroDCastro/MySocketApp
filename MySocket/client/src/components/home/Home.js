@@ -7,7 +7,7 @@ import './Home.css';
 
 let socket;
 const Home = () => {
-    const ENDPT = 'localhost:5000';
+    const ENDPT = 'https://localhost:5000';
     const { user, setUser } = useContext(UserContext);
     const [privateRoom, setPrivateRoom] = useState('');
     const [privateRooms, setPrivateRooms] = useState([]);

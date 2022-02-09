@@ -53,7 +53,7 @@ const Login = () => {
 
         console.log(email, password);
         try {
-            const res = await fetch('http://localhost:5000/login', {
+            const res = await fetch('https://localhost:5000/login', {
                 method: 'POST',
                 credentials: 'include', // include data to the browser
                 body: JSON.stringify({ email, password }),

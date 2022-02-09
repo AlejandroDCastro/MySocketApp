@@ -8,7 +8,7 @@ import './Chat.css';
 
 let socket;
 const Chat = () => {
-    const ENDPT = 'localhost:5000';
+    const ENDPT = 'https://localhost:5000';
     const { user, setUser } = useContext(UserContext);
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);

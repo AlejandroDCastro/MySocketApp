@@ -1,10 +1,13 @@
 const express = require('express');
+const fs = require('fs');
+//const http = require('http');
+const https = require('https');
 const app = express();
 const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
 const cookieParser = require('cookie-parser');
 const corsOptions = {
-    origin: 'http://localhost:3000',
+    origin: 'https://localhost:3000',
     credentials: true,
     optionsSuccessStatus: 200 // For legacy browser support
 }
@@ -14,10 +17,14 @@ app.use(express.json()); // Middleware that recognize the incoming Request Objec
 app.use(cookieParser());
 app.use(authRoutes);
 
-const http = require('http').createServer(app);
+//const server = http.createServer(app);
+const server = https.createServer({
+    cert: fs.readFileSync('./certificates/server.crt'),
+    key: fs.readFileSync('./certificates/key.pem')
+}, app);
 const mongoose = require('mongoose');
 const socketio = require('socket.io');
-const io = socketio(http);
+const io = socketio(server);
 const mongoDB = "mongodb+srv://mysocket:BbEToh01@mysocket-chatapp.jkcv8.mongodb.net/mysocket-database?retryWrites=true&w=majority";
 mongoose.connect(mongoDB).then(() => console.log('database connected')).catch(err => console.log(err));
 const { Helper } = require('./helper');
@@ -26,7 +33,6 @@ const PrivateRoom = require('./models/PrivateRoom');
 const SharedRoom = require('./models/SharedRoom');
 const Message = require('./models/Message');
 const User = require('./models/User');
-
 
 // Socket listeners for events
 io.on('connection', (socket) => {
@@ -315,6 +321,6 @@ io.on('connection', (socket) => {
 });
 
 
-http.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`listening on port ${PORT}`);
 });

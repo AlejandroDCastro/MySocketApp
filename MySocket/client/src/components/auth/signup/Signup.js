@@ -69,7 +69,7 @@ const Signup = () => {
 
         console.log(name, email, password);
         try {
-            const res = await fetch('http://localhost:5000/signup', {
+            const res = await fetch('https://localhost:5000/signup', {
                 method: 'POST',
                 credentials: 'include', // include data to the browser
                 body: JSON.stringify({ name, email, password }),

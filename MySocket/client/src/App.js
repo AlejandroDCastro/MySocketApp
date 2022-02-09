@@ -14,7 +14,7 @@ function App() {
   useEffect(() => {
     const verifyuser = async () => {
       try {
-        const res = await fetch('http://localhost:5000/verifyuser', {
+        const res = await fetch('https://localhost:5000/verifyuser', {
           credentials: 'include', // include data to the browser
           headers: { 'Content-Type': 'application/json' }
         });
