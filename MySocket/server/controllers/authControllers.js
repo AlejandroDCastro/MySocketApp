@@ -1,7 +1,8 @@
 const User = require('../models/User');
 const { Helper } = require('../helper');
-// JSON Web Token is a compact, URL-safe means of representing claims to be transferred between two parties
-const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken'); // JSON Web Token is a compact, URL-safe means of representing claims to be transferred between two parties
+const CryptoJS = require('crypto-js');
+const NodeRSA = require('node-rsa');
 const maxAge = 5 * 24 * 60 * 60 // seconds
 
 const createJWT = id => {
@@ -32,25 +33,21 @@ const alertError = (err) => {
     return errors;
 }
 
-/*
-// Save user connected to the App on server
-const saveUserConnected = (user_id) => {
-    Home.addUser({
-        socket_id: '',
-        user_id
-    });
-}
-*/
 
 // Each request to the backend is eventually executed by a controller
 module.exports.signup = async (req, res) => {
-    const { name, email, password } = req.body;
-    try {
+    const { name, email, hash } = req.body;
+    try {/*
         const user = await User.create({ name, email, password });
         const token = createJWT(user._id);
         res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 })
-        res.status(201).json({ user });
-        //saveUserConnected(user.id);
+        res.status(201).json({ user });*/
+        console.log('Password hasheada:', hash);
+        const key = new NodeRSA({ b: 2048 });
+        const publicKey = key.exportKey('public');
+        const privateKey = key.exportKey('private');
+        const encryptedPrivateKey = CryptoJS.AES.encrypt(privateKey, hash.kdata);
+        const kloginHash = CryptoJS.SHA3(hash.klogin, { outputLength: 512 });
     } catch (error) {
         let errors = alertError(error);
         res.status(400).json({ errors });
@@ -64,7 +61,6 @@ module.exports.login = async (req, res) => {
         const token = createJWT(user._id);
         res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 })
         res.status(201).json({ user });
-        //saveUserConnected(user.id);
     } catch (error) {
         let errors = alertError(error);
         res.status(400).json({ errors });
@@ -82,7 +78,6 @@ module.exports.verifyuser = (req, res, next) => {
                 let user = await User.findById(decodedToken.id);
                 res.json(user);
                 next();
-                //saveUserConnected(user.id);
             }
         });
     } else {
