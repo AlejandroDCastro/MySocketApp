@@ -37,18 +37,23 @@ const alertError = (err) => {
 // Each request to the backend is eventually executed by a controller
 module.exports.signup = async (req, res) => {
     const { name, email, hash } = req.body;
-    try {/*
-        const user = await User.create({ name, email, password });
-        const token = createJWT(user._id);
-        res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 })
-        res.status(201).json({ user });*/
-        console.log('Password hasheada:', hash);
+    try {
+        const kloginHash = CryptoJS.SHA3(hash.klogin, { outputLength: 512 });
+
+        // Create RSA key pair
         const key = new NodeRSA({ b: 2048 });
         const publicKey = key.exportKey('public');
         const privateKey = key.exportKey('private');
-        const encryptedPrivateKey = CryptoJS.AES.encrypt(privateKey, hash.kdata);
-        const kloginHash = CryptoJS.SHA3(hash.klogin, { outputLength: 512 });
+        let encryptedPrivateKey = CryptoJS.AES.encrypt(privateKey, hash.kdata, CryptoJS.enc.Base64);
+
+        // Create user and set session
+        const user = await User.create({ name, email, kloginHash, publicKey, encryptedPrivateKey });
+        user.kloginHash = '';
+        const token = createJWT(user._id);
+        res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
+        res.status(201).json({ user });
     } catch (error) {
+        console.log(error);
         let errors = alertError(error);
         res.status(400).json({ errors });
     }

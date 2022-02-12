@@ -93,49 +93,62 @@ const Signup = () => {
                     }
                 }),
                 headers: { 'Content-Type': 'application/json' }
-        });
-        const data = await res.json();
-        console.log(data);
-        if (data.errors) {
-            setEmailError(data.errors.email);
-            setNameError(data.errors.name);
-            setPasswordError(data.errors.password);
-        } else if (data.user) {
-            setUser(data.user);
+            });
+            const data = await res.json();
+            console.log(data);
+            if (data.user) {
+
+                // Decrypt to the initial UTF8 enconding key
+                const privateKey = CryptoJS.AES.decrypt(data.user.encryptedPrivateKey, kdata).toString(CryptoJS.enc.Utf8);
+                localStorage.setItem('privateKey', privateKey);
+                setUser({
+                    _id: data.user._id,
+                    name: data.user.name,
+                    email: data.user.email,
+                    hash: {
+                        klogin,
+                        kdata
+                    },
+                    publicKey: data.user.publicKey
+                });
+            } else if (data.errors) {
+                setEmailError(data.errors.email);
+                setNameError(data.errors.name);
+                setPasswordError(data.errors.password);
+            }
+        } catch (error) {
+            console.log(error);
         }
-    } catch (error) {
-        console.log(error);
     }
-}
 
-if (user) {
-    return <Redirect to="/" />
-}
+    if (user) {
+        return <Redirect to="/" />
+    }
 
 
-return (
-    <div className="formData formView">
-        <h2>Signup</h2>
-        <form onSubmit={submitHandler}>
-            <div className="inputData labelDown">
-                <input id="name" type="text" value={name} onChange={changeName} />
-                <label htmlFor="name">Enter a name</label>
-                <p>{nameError}</p>
-            </div>
-            <div className="inputData labelDown">
-                <input id="email" type="email" value={email} onChange={changeEmail} />
-                <label htmlFor="email">Enter a email</label>
-                <p>{emailError}</p>
-            </div>
-            <div className="inputData labelDown">
-                <input id="password" type="password" value={password} onChange={changePassword} />
-                <label htmlFor="password">Enter a password</label>
-                <p>{passwordError}</p>
-            </div>
-            <input type="submit" value="Sign Up" />
-        </form>
-    </div>
-)
+    return (
+        <div className="formData formView">
+            <h2>Signup</h2>
+            <form onSubmit={submitHandler}>
+                <div className="inputData labelDown">
+                    <input id="name" type="text" value={name} onChange={changeName} />
+                    <label htmlFor="name">Enter a name</label>
+                    <p>{nameError}</p>
+                </div>
+                <div className="inputData labelDown">
+                    <input id="email" type="email" value={email} onChange={changeEmail} />
+                    <label htmlFor="email">Enter a email</label>
+                    <p>{emailError}</p>
+                </div>
+                <div className="inputData labelDown">
+                    <input id="password" type="password" value={password} onChange={changePassword} />
+                    <label htmlFor="password">Enter a password</label>
+                    <p>{passwordError}</p>
+                </div>
+                <input type="submit" value="Sign Up" />
+            </form>
+        </div>
+    )
 }
 
 export default Signup;

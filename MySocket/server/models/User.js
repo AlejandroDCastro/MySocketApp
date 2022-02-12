@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
         lowercase: true,
         validate: [isEmail, 'Please enter a valid email address']
     },
-    klogin: {
+    kloginHash: {
         type: String,
         required: [true, 'Please save a login key for user']
     },
