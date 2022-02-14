@@ -98,9 +98,10 @@ const Signup = () => {
             console.log(data);
             if (data.user) {
 
-                // Decrypt to the initial UTF8 enconding key
+                // Decrypt to the initial UTF-8 enconding key
                 const privateKey = CryptoJS.AES.decrypt(data.user.encryptedPrivateKey, kdata).toString(CryptoJS.enc.Utf8);
-                localStorage.setItem('privateKey', privateKey);
+                sessionStorage.setItem('privateKey', privateKey);
+                console.log('Private Key saved!');
                 setUser({
                     _id: data.user._id,
                     name: data.user.name,

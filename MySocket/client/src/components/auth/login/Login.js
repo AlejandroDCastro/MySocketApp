@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { UserContext } from '../../../UserContext';
 import { Redirect } from 'react-router-dom';
+import CryptoJS from 'crypto-js';
 import '../Authentication.css';
 
 const Login = () => {
@@ -53,10 +54,24 @@ const Login = () => {
 
         console.log(email, password);
         try {
+
+            // Apply hash function to password
+            const wArray = CryptoJS.SHA3(password, { outputLength: 512 });
+            console.log('WordArray:', wArray);
+            const hash = wArray.toString(CryptoJS.enc.Base64);
+            console.log('Hash:', hash);
+            const klogin = hash.slice(0, hash.length / 2);
+            const kdata = hash.slice(hash.length / 2, hash.length);
+            console.log('klogin:', klogin);
+            console.log('kdata:', kdata);
+
             const res = await fetch('https://localhost:5000/login', {
                 method: 'POST',
                 credentials: 'include', // include data to the browser
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify({
+                    email,
+                    klogin
+                }),
                 headers: { 'Content-Type': 'application/json' }
             });
             const data = await res.json();

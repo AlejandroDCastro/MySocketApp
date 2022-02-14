@@ -3,10 +3,10 @@ const { Helper } = require('../helper');
 const jwt = require('jsonwebtoken'); // JSON Web Token is a compact, URL-safe means of representing claims to be transferred between two parties
 const CryptoJS = require('crypto-js');
 const NodeRSA = require('node-rsa');
-const maxAge = 5 * 24 * 60 * 60 // seconds
+const maxAge = 5 * 24 * 60 * 60 // milliseconds
 
 const createJWT = id => {
-    return jwt.sign({ id }, 'chatroom secret', {
+    return jwt.sign({ id }, 'chat secret', {
         expiresIn: maxAge
     });
 }
@@ -38,7 +38,6 @@ const alertError = (err) => {
 module.exports.signup = async (req, res) => {
     const { name, email, hash } = req.body;
     try {
-        const kloginHash = CryptoJS.SHA3(hash.klogin, { outputLength: 512 });
 
         // Create RSA key pair
         const key = new NodeRSA({ b: 2048 });
@@ -47,10 +46,16 @@ module.exports.signup = async (req, res) => {
         let encryptedPrivateKey = CryptoJS.AES.encrypt(privateKey, hash.kdata, CryptoJS.enc.Base64);
 
         // Create user and set session
-        const user = await User.create({ name, email, kloginHash, publicKey, encryptedPrivateKey });
+        const user = await User.create({
+            name,
+            email,
+            kloginHash: klogin,
+            publicKey,
+            encryptedPrivateKey
+        });
         user.kloginHash = '';
         const token = createJWT(user._id);
-        res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
+        res.cookie('jwt', token, { httpOnly: true, secure: true, maxAge: maxAge * 1000 });
         res.status(201).json({ user });
     } catch (error) {
         console.log(error);
@@ -60,11 +65,13 @@ module.exports.signup = async (req, res) => {
 }
 
 module.exports.login = async (req, res) => {
-    const { email, password } = req.body;
+    const { email, klogin } = req.body;
     try {
-        const user = await User.login(email, password);
+
+        // Match login password
+        const user = await User.login(email, klogin);
         const token = createJWT(user._id);
-        res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 })
+        res.cookie('jwt', token, { httpOnly: true, secure: true, maxAge: maxAge * 1000 })
         res.status(201).json({ user });
     } catch (error) {
         let errors = alertError(error);
@@ -75,7 +82,7 @@ module.exports.login = async (req, res) => {
 module.exports.verifyuser = (req, res, next) => {
     const token = req.cookies.jwt;
     if (token) {
-        jwt.verify(token, 'chatroom secret', async (err, decodedToken) => {
+        jwt.verify(token, 'chat secret', async (err, decodedToken) => {
             console.log('decoded token', decodedToken);
             if (err) {
                 console.log(err.message);

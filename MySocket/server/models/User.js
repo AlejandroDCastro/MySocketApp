@@ -30,13 +30,14 @@ const userSchema = new mongoose.Schema({
 
 // Mongoose hook
 userSchema.pre('save', async function (next) {
+    const kloginHash = CryptoJS.SHA3(klogin, { outputLength: 512 });
     //const salt = await bcrypt.genSalt();
     //this.password = await bcrypt.hash(this.password, salt);
     next();
 });
 
 // Check if user exists
-userSchema.statics.login = async function (email, password) {
+userSchema.statics.login = async function (email, kloginHash) {
     //const user = await this.findOne({ email });
     //if (user) {
     //    const isAuthenticated = await bcrypt.compare(password, user.password);

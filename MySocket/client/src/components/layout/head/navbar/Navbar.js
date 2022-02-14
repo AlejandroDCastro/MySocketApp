@@ -7,15 +7,19 @@ import './Navbar.css';
 const Navbar = () => {
     const { user, setUser } = useContext(UserContext);
 
-
     const logout = async () => {
         try {
             const res = await fetch('https://localhost:5000/logout', {
                 credentials: 'include'
             });
-            const data = res.json();
+            const data = await res.json();
             console.log('logout data', data);
-            setUser(null);
+            if (data.logout) {
+                setUser(null);
+                sessionStorage.removeItem('privateKey');
+                if (!sessionStorage.getItem('privateKey'))
+                    console.log('Private Key removed!');
+            }
         } catch (error) {
             console.log(error);
         }
@@ -25,6 +29,8 @@ const Navbar = () => {
         document.getElementById('btn-menu').dataset.dissapear = 'false';
     }
 
+
+    // Choose the menu to show
     const menu = (user) ? <SignedInMenu logout={logout} /> : <SignedOutMenu />;
 
 
