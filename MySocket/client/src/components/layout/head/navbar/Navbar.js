@@ -16,9 +16,12 @@ const Navbar = () => {
             console.log('logout data', data);
             if (data.logout) {
                 setUser(null);
-                sessionStorage.removeItem('privateKey');
-                if (!sessionStorage.getItem('privateKey'))
+                localStorage.removeItem('privateKey');
+                if (!localStorage.getItem('privateKey'))
                     console.log('Private Key removed!');
+                localStorage.removeItem('kdata');
+                if (!localStorage.getItem('kdata'))
+                    console.log('Data Key removed!');
             }
         } catch (error) {
             console.log(error);

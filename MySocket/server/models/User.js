@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-//const bcrypt = require('bcrypt');
+const CryptoJS = require('crypto-js');
 const { isEmail } = require('validator');
 
 const userSchema = new mongoose.Schema({
@@ -30,22 +30,20 @@ const userSchema = new mongoose.Schema({
 
 // Mongoose hook
 userSchema.pre('save', async function (next) {
-    const kloginHash = CryptoJS.SHA3(klogin, { outputLength: 512 });
-    //const salt = await bcrypt.genSalt();
-    //this.password = await bcrypt.hash(this.password, salt);
+    this.kloginHash = CryptoJS.SHA3(this.kloginHash, { outputLength: 512 }).toString(CryptoJS.enc.Base64);
     next();
 });
 
 // Check if user exists
-userSchema.statics.login = async function (email, kloginHash) {
-    //const user = await this.findOne({ email });
-    //if (user) {
-    //    const isAuthenticated = await bcrypt.compare(password, user.password);
-    //    if (isAuthenticated) return user;
-    //    throw Error('incorrect pwd');
-    //} else {
-    //    throw Error('incorrect email');
-    //}
+userSchema.statics.login = async function (email, klogin) {
+    const user = await this.findOne({ email });
+    if (user) {
+        const kloginHash = CryptoJS.SHA3(klogin, { outputLength: 512 }).toString(CryptoJS.enc.Base64);
+        if (kloginHash === user.kloginHash) return user;
+        else throw Error('incorrect pwd');
+    } else {
+        throw Error('incorrect email');
+    }
 }
 
 

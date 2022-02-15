@@ -49,7 +49,7 @@ module.exports.signup = async (req, res) => {
         const user = await User.create({
             name,
             email,
-            kloginHash: klogin,
+            kloginHash: hash.klogin,
             publicKey,
             encryptedPrivateKey
         });
@@ -70,6 +70,7 @@ module.exports.login = async (req, res) => {
 
         // Match login password
         const user = await User.login(email, klogin);
+        user.kloginHash = '';
         const token = createJWT(user._id);
         res.cookie('jwt', token, { httpOnly: true, secure: true, maxAge: maxAge * 1000 })
         res.status(201).json({ user });
@@ -88,7 +89,8 @@ module.exports.verifyuser = (req, res, next) => {
                 console.log(err.message);
             } else {
                 let user = await User.findById(decodedToken.id);
-                res.json(user);
+                user.kloginHash = '';
+                res.json({ user });
                 next();
             }
         });

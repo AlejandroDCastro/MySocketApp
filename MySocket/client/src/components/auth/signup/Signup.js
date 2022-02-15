@@ -96,26 +96,25 @@ const Signup = () => {
             });
             const data = await res.json();
             console.log(data);
-            if (data.user) {
+            if (data.errors) {
+                setEmailError(data.errors.email);
+                setNameError(data.errors.name);
+                setPasswordError(data.errors.password);
+            } else if (data.user) {
 
                 // Decrypt to the initial UTF-8 enconding key
                 const privateKey = CryptoJS.AES.decrypt(data.user.encryptedPrivateKey, kdata).toString(CryptoJS.enc.Utf8);
-                sessionStorage.setItem('privateKey', privateKey);
+                localStorage.setItem('privateKey', privateKey);
                 console.log('Private Key saved!');
+                localStorage.setItem('kdata', kdata);
+                console.log('Data Key Saved!');
                 setUser({
                     _id: data.user._id,
                     name: data.user.name,
                     email: data.user.email,
-                    hash: {
-                        klogin,
-                        kdata
-                    },
+                    klogin,
                     publicKey: data.user.publicKey
                 });
-            } else if (data.errors) {
-                setEmailError(data.errors.email);
-                setNameError(data.errors.name);
-                setPasswordError(data.errors.password);
             }
         } catch (error) {
             console.log(error);

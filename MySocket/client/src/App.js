@@ -19,9 +19,20 @@ function App() {
           headers: { 'Content-Type': 'application/json' }
         });
         const data = await res.json();
-        setUser(data);
+        setUser({
+          _id: data.user._id,
+          name: data.user.name,
+          email: data.user.email,
+          publicKey: data.user.publicKey
+        });
       } catch (error) {
         console.log(error);
+        localStorage.removeItem('privateKey');
+        if (!localStorage.getItem('privateKey'))
+          console.log('Private Key removed!');
+        localStorage.removeItem('kdata');
+        if (!localStorage.getItem('kdata'))
+          console.log('Data Key removed!');
       }
     }
     verifyuser();

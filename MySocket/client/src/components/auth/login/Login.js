@@ -80,7 +80,20 @@ const Login = () => {
                 setEmailError(data.errors.email);
                 setPasswordError(data.errors.password);
             } else if (data.user) {
-                setUser(data.user);
+
+                // Decrypt to the initial UTF-8 enconding key
+                const privateKey = CryptoJS.AES.decrypt(data.user.encryptedPrivateKey, kdata).toString(CryptoJS.enc.Utf8);
+                localStorage.setItem('privateKey', privateKey);
+                console.log('Private Key saved!');
+                localStorage.setItem('kdata', kdata);
+                console.log('Data Key Saved!');
+                setUser({
+                    _id: data.user._id,
+                    name: data.user.name,
+                    email: data.user.email,
+                    klogin,
+                    publicKey: data.user.publicKey
+                });
             }
         } catch (error) {
             console.log(error);
