@@ -268,26 +268,65 @@ io.on('connection', (socket) => {
     });
 
 
-    socket.on('join-room', ({ user_id, room_id }) => {
+    socket.on('join-room', ({ user_id, room_id, privacy }, callback) => {
+
+        // Update the room for user connected
         const { user, error } = Helper.joinRoom({
             socket_id: socket.id,
             user_id,
             room_id
         });
-
-        // Add the Room ID to the socket list
-        socket.join(room_id);
-
         if (error) {
             console.log('join error:', error);
         } else {
             console.log('join user:', user);
         }
 
+        // Add the Room ID to the socket list
+        socket.join(room_id);
+
         // Send room messages to the client
         Message.find({ room_id }).then(result => {
             console.log('messages history', result);
             socket.emit('get-message-history', result);
+        });
+
+        // Get public keys from chat users
+        const objUserID = new mongoose.mongo.ObjectId(user_id);
+        const objRoomID = new mongoose.mongo.ObjectId(room_id);
+        let Room = null, localField = null;
+        if (privacy === 'Private') {
+            Room = PrivateRoom;
+            localField = 'members';
+        } else {
+            Room = SharedRoom;
+            localField = 'members._id';
+        }
+        Room.aggregate([
+            { $match: { _id: objRoomID } },
+            { $lookup: { from: 'users', localField: localField, foreignField: '_id', as: 'user' } },
+            { $project: { _id: false, user: true } },
+            { $unwind: "$user" },
+            {
+                $redact: {
+                    $cond: {
+                        if: { $eq: ["$user._id", objUserID] },
+                        then: "$$PRUNE",
+                        else: "$$DESCEND"
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: "$user._id",
+                    publicKey: { $first: "$user.publicKey" }
+                }
+            }
+        ]).then(result => {
+            console.log(result);
+            return callback(result);
+        }).catch(error => {
+            console.log(error);
         });
     });
 

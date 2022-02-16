@@ -110,7 +110,7 @@ const Home = () => {
     }, [privateRooms]);
 
     useEffect(() => {
-        console.log(privateRooms);
+        console.log('private rooms', privateRooms);
     }, [privateRooms]);
 
     useEffect(() => {

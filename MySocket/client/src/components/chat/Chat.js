@@ -14,9 +14,10 @@ const Chat = () => {
     const [messages, setMessages] = useState([]);
     const [file, setFile] = useState(null);
     const [chunks, setChunks] = useState([]);
-    console.log('holaaa');
+    const [publicKeys, setPublicKeys] = useState([]);
     let { color, privacy, room_id, room_name } = useParams();
-    console.log('el color', color);
+
+
     // Functions
 
     const setInputPlaceholder = (placeholder, color, readonly) => {
@@ -144,7 +145,11 @@ const Chat = () => {
         console.log('my socket is: ', socket);
         socket.emit('join-room', {
             user_id: user._id,
-            room_id: room_id
+            room_id: room_id,
+            privacy
+        }, (response) => {
+            setPublicKeys(response);
+            console.log(response);
         });
     }, []) // Empty array for executing one only time each refresh
 

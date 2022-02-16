@@ -91,7 +91,6 @@ const Login = () => {
                     _id: data.user._id,
                     name: data.user.name,
                     email: data.user.email,
-                    klogin,
                     publicKey: data.user.publicKey
                 });
             }
