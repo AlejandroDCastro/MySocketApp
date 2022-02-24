@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import io from 'socket.io-client';
 import Messages from './messages/Messages';
 import Input from './input/Input';
+import CryptoJS from 'crypto-js';
 import './Chat.css';
 
 let socket;
@@ -14,7 +15,8 @@ const Chat = () => {
     const [messages, setMessages] = useState([]);
     const [file, setFile] = useState(null);
     const [chunks, setChunks] = useState([]);
-    const [publicKeys, setPublicKeys] = useState([]);
+    //const [publicKeys, setPublicKeys] = useState([]);
+    //const [symmetricKey, setSymmetricKey] = useState('');
     let { color, privacy, room_id, room_name } = useParams();
 
 
@@ -61,6 +63,12 @@ const Chat = () => {
                 formSendMsg.classList.replace('absolute-bottom', 'sticky-bottom');
             }
         }
+    }
+
+    const getDecryptedKey = (key) => {
+        const privateKey = localStorage.getItem('privateKey');
+        const symmetricKey = CryptoJS.AES.decrypt(key, privateKey);
+        return symmetricKey.toString(CryptoJS.enc.Utf8);
     }
 
     const sendMessage = e => {
@@ -145,12 +153,22 @@ const Chat = () => {
         console.log('my socket is: ', socket);
         socket.emit('join-room', {
             user_id: user._id,
-            room_id: room_id,
-            privacy
-        }, (response) => {
-            setPublicKeys(response);
+            room_id: room_id
+        }/*, (response) => {
             console.log(response);
-        });
+            //setPublicKeys(response.publicKeys);
+            setSymmetricKey(getDecryptedKey(response.room_key));
+
+
+            // ESTO QUE VOY A ESCRIBIR AHORA NO VALE ES CODIGO QUE DEJO APUNTADO
+            // generando key aleatoria
+            const salt = CryptoJS.lib.WordArray.random(128 / 8);
+            const key = CryptoJS.PBKDF2(user._id, salt, {
+                keySize: 256/32,
+                iterations: 500
+            }).toString(CryptoJS.enc.Base64);
+            var worker = new Worker('./Worker/Encryption.js');
+        }*/);
     }, []) // Empty array for executing one only time each refresh
 
     useEffect(() => {

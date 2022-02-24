@@ -7,7 +7,7 @@ const maxAge = 5 * 24 * 60 * 60 // milliseconds
 
 const createJWT = id => {
     return jwt.sign({ id }, 'chat secret', {
-        expiresIn: maxAge
+        expiresIn: maxAge * 1000
     });
 }
 
@@ -36,27 +36,20 @@ const alertError = (err) => {
 
 // Each request to the backend is eventually executed by a controller
 module.exports.signup = async (req, res) => {
-    const { name, email, hash } = req.body;
+    const { name, email, klogin, publicKey, encryptedPrivateKey } = req.body;
     try {
-
-        // Create RSA key pair
-        const key = new NodeRSA({ b: 2048 });
-        const publicKey = key.exportKey('public');
-        const privateKey = key.exportKey('private');
-        let encryptedPrivateKey = CryptoJS.AES.encrypt(privateKey, hash.kdata, CryptoJS.enc.Base64);
 
         // Create user and set session
         const user = await User.create({
             name,
             email,
-            kloginHash: hash.klogin,
+            kloginHash: klogin,
             publicKey,
             encryptedPrivateKey
         });
-        user.kloginHash = '';
         const token = createJWT(user._id);
         res.cookie('jwt', token, { httpOnly: true, secure: true, maxAge: maxAge * 1000 });
-        res.status(201).json({ user });
+        res.status(201).json({ user_id: user._id });
     } catch (error) {
         console.log(error);
         let errors = alertError(error);
@@ -72,7 +65,7 @@ module.exports.login = async (req, res) => {
         const user = await User.login(email, klogin);
         user.kloginHash = '';
         const token = createJWT(user._id);
-        res.cookie('jwt', token, { httpOnly: true, secure: true, maxAge: maxAge * 1000 })
+        res.cookie('jwt', token, { httpOnly: true, secure: true, maxAge: maxAge * 1000 });
         res.status(201).json({ user });
     } catch (error) {
         let errors = alertError(error);

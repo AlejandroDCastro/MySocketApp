@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { UserContext } from '../../../UserContext';
 import { Redirect } from 'react-router-dom';
 import CryptoJS from 'crypto-js';
+import NodeRSA from 'node-rsa';
 import '../Authentication.css';
 
 const Signup = () => {
@@ -81,16 +82,21 @@ const Signup = () => {
             console.log('klogin:', klogin);
             console.log('kdata:', kdata);
 
+            // Create RSA key pair
+            const key = new NodeRSA({ b: 2048 });
+            const publicKey = key.exportKey('public');
+            const privateKey = key.exportKey('private');
+            let encryptedPrivateKey = CryptoJS.AES.encrypt(privateKey, kdata, CryptoJS.enc.Base64).toString();
+
             const res = await fetch('https://localhost:5000/signup', {
                 method: 'POST',
                 credentials: 'include', // include data to the browser
                 body: JSON.stringify({
                     name,
                     email,
-                    hash: {
-                        klogin,
-                        kdata
-                    }
+                    klogin,
+                    publicKey,
+                    encryptedPrivateKey
                 }),
                 headers: { 'Content-Type': 'application/json' }
             });
@@ -100,19 +106,16 @@ const Signup = () => {
                 setEmailError(data.errors.email);
                 setNameError(data.errors.name);
                 setPasswordError(data.errors.password);
-            } else if (data.user) {
+            } else if (data.user_id) {
 
-                // Decrypt to the initial UTF-8 enconding key
-                const privateKey = CryptoJS.AES.decrypt(data.user.encryptedPrivateKey, kdata).toString(CryptoJS.enc.Utf8);
+                // Save private key in browser hard disk
                 localStorage.setItem('privateKey', privateKey);
                 console.log('Private Key saved!');
-                localStorage.setItem('kdata', kdata);
-                console.log('Data Key Saved!');
                 setUser({
-                    _id: data.user._id,
-                    name: data.user.name,
-                    email: data.user.email,
-                    publicKey: data.user.publicKey
+                    _id: data.user_id,
+                    name: name,
+                    email: email,
+                    publicKey: publicKey
                 });
             }
         } catch (error) {

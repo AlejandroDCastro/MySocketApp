@@ -85,8 +85,6 @@ const Login = () => {
                 const privateKey = CryptoJS.AES.decrypt(data.user.encryptedPrivateKey, kdata).toString(CryptoJS.enc.Utf8);
                 localStorage.setItem('privateKey', privateKey);
                 console.log('Private Key saved!');
-                localStorage.setItem('kdata', kdata);
-                console.log('Data Key Saved!');
                 setUser({
                     _id: data.user._id,
                     name: data.user.name,

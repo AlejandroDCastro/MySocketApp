@@ -30,9 +30,6 @@ function App() {
         localStorage.removeItem('privateKey');
         if (!localStorage.getItem('privateKey'))
           console.log('Private Key removed!');
-        localStorage.removeItem('kdata');
-        if (!localStorage.getItem('kdata'))
-          console.log('Data Key removed!');
       }
     }
     verifyuser();

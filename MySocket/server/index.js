@@ -268,7 +268,7 @@ io.on('connection', (socket) => {
     });
 
 
-    socket.on('join-room', ({ user_id, room_id, privacy }, callback) => {
+    socket.on('join-room', ({ user_id, room_id }, callback) => {
 
         // Update the room for user connected
         const { user, error } = Helper.joinRoom({
@@ -289,45 +289,62 @@ io.on('connection', (socket) => {
         Message.find({ room_id }).then(result => {
             console.log('messages history', result);
             socket.emit('get-message-history', result);
-        });
-
-        // Get public keys from chat users
-        const objUserID = new mongoose.mongo.ObjectId(user_id);
-        const objRoomID = new mongoose.mongo.ObjectId(room_id);
-        let Room = null, localField = null;
-        if (privacy === 'Private') {
-            Room = PrivateRoom;
-            localField = 'members';
-        } else {
-            Room = SharedRoom;
-            localField = 'members._id';
-        }
-        Room.aggregate([
-            { $match: { _id: objRoomID } },
-            { $lookup: { from: 'users', localField: localField, foreignField: '_id', as: 'user' } },
-            { $project: { _id: false, user: true } },
-            { $unwind: "$user" },
-            {
-                $redact: {
-                    $cond: {
-                        if: { $eq: ["$user._id", objUserID] },
-                        then: "$$PRUNE",
-                        else: "$$DESCEND"
-                    }
-                }
-            },
-            {
-                $group: {
-                    _id: "$user._id",
-                    publicKey: { $first: "$user.publicKey" }
-                }
-            }
-        ]).then(result => {
-            console.log(result);
-            return callback(result);
         }).catch(error => {
             console.log(error);
         });
+/*
+        try {
+
+            // Get symmetric key for room
+            const key = Keys.getKey({ user_id, room_id });
+            if (!key) throw Error('Room key doesnt exist');
+            return callback({
+                room_key: key.room_key
+            })
+        } catch (error) {
+            console.log(error);
+        }*/
+        /*
+                // Get public keys from chat users
+                const objUserID = new mongoose.mongo.ObjectId(user_id);
+                const objRoomID = new mongoose.mongo.ObjectId(room_id);
+                let Room = null, localField = null;
+                if (privacy === 'Private') {
+                    Room = PrivateRoom;
+                    localField = 'members';
+                } else {
+                    Room = SharedRoom;
+                    localField = 'members._id';
+                }
+                Room.aggregate([
+                    { $match: { _id: objRoomID } },
+                    { $lookup: { from: 'users', localField: localField, foreignField: '_id', as: 'user' } },
+                    { $project: { _id: false, user: true } },
+                    { $unwind: "$user" },
+                    {
+                        $redact: {
+                            $cond: {
+                                if: { $eq: ["$user._id", objUserID] },
+                                then: "$$PRUNE",
+                                else: "$$DESCEND"
+                            }
+                        }
+                    },
+                    {
+                        $group: {
+                            _id: "$user._id",
+                            publicKey: { $first: "$user.publicKey" }
+                        }
+                    }
+                ]).then(result => {
+                    console.log(result);
+                    return callback({
+                        publicKeys: result,
+                        room_key
+                    });
+                }).catch(error => {
+                    console.log(error);
+                });*/
     });
 
 

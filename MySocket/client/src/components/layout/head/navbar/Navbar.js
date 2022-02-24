@@ -3,6 +3,7 @@ import { UserContext } from '../../../../UserContext';
 import SignedInMenu from './SignedInMenu';
 import SignedOutMenu from './SignedOutMenu';
 import './Navbar.css';
+import CryptoJS from 'crypto-js';
 
 const Navbar = () => {
     const { user, setUser } = useContext(UserContext);
@@ -19,9 +20,6 @@ const Navbar = () => {
                 localStorage.removeItem('privateKey');
                 if (!localStorage.getItem('privateKey'))
                     console.log('Private Key removed!');
-                localStorage.removeItem('kdata');
-                if (!localStorage.getItem('kdata'))
-                    console.log('Data Key removed!');
             }
         } catch (error) {
             console.log(error);

@@ -3,6 +3,8 @@ import { UserContext } from '../../UserContext';
 import { Redirect } from 'react-router-dom';
 import RoomList from './RoomList/RoomList';
 import io from 'socket.io-client';
+import CryptoJS from 'crypto-js';
+import NodeRSA from 'node-rsa';
 import './Home.css';
 
 let socket;
@@ -19,6 +21,8 @@ const Home = () => {
     const [groupMember, setGroupMember] = useState('');
     const [groupMemberError, setGroupMemberError] = useState('');
     const [groupMembers, setGroupMembers] = useState([]);
+
+    //const [symmetricKey, setSymmetricKey] = useState('');
 
 
     // Run after render DOM
@@ -128,6 +132,14 @@ const Home = () => {
         console.log('shared rooms', sharedRooms);
     }, [sharedRooms]);
 
+    const generateSymmetricKey = _ => {
+        const salt = CryptoJS.lib.WordArray.random(128 / 8);
+        const key = CryptoJS.PBKDF2(user._id, salt, {
+            keySize: 256/32,
+            iterations: 500
+        }).toString(CryptoJS.enc.Base64);
+        return key;
+    }
 
     const handleSubmitPrivateRoom = e => {
 
@@ -160,7 +172,7 @@ const Home = () => {
     const handleSubmitSharedRoom = e => {
         e.preventDefault();
 
-        addUserIDToArray(user._id);
+        addUserToArray(user._id, user.publicKey);
         socket.emit('create-shared-room', sharedRoom, groupMembers, (response) => {
             if (response.valid) {
                 setSharedRoomError('');
@@ -177,22 +189,25 @@ const Home = () => {
         return (((1 << 24) * Math.random() | 0).toString(16));
     }
 
-    const addUserIDToArray = (user_id) => {
+    const addUserToArray = (user_id, publicKey) => {
+        const nodePublicKey = new NodeRSA(publicKey);
+        //const encryptedRoomKey = nodePublicKey.encrypt(symmetricKey, 'base64');
         groupMembers.push({
             _id: user_id,
-            color: getRandomColour()
+            color: getRandomColour()/*,
+            encryptedRoomKey*/
         });
         console.log('group members', groupMembers);
     }
 
-    const addUserToList = (user) => {
+    const displayUserToList = (email, name) => {
         let listElement = document.querySelector('#group-list>ul');
         let newChild = document.createElement('li');
 
         if (groupMembers.length === 0) {
             listElement.removeChild(listElement.firstChild);
         }
-        newChild.textContent = user.email + ' (' + user.name + ')';
+        newChild.textContent = email + ' (' + name + ')';
         listElement.appendChild(newChild);
     }
 
@@ -200,8 +215,8 @@ const Home = () => {
         e.preventDefault();
         socket.emit('check-correct-user', groupMember, (response) => {
             if (response.valid) {
-                addUserToList(response.user);
-                addUserIDToArray(response.user._id)
+                displayUserToList(response.user.email, response.user.name);
+                addUserToArray(response.user._id, response.user.publicKey);
                 setGroupMemberError('');
                 setGroupMember('');
             } else {

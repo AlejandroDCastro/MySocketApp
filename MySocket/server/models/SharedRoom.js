@@ -4,12 +4,16 @@ const memberSchema = new mongoose.Schema({
     _id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user',
-        required: [true, 'A ID from user is needed']
+        required: [true, 'An ID from user is needed']
     },
     color: {
         type: String,
         default: '000'
-    }
+    }/*,
+    encryptedRoomKey: {
+        type: String,
+        required: [true, 'Please save the encrypted room key for user']
+    }*/
 });
 
 const sharedRoomSchema = new mongoose.Schema({

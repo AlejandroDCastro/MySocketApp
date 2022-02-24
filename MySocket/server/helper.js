@@ -1,6 +1,7 @@
 
 const users = [];
 
+
 const Helper = {
 
     addUser: ({ socket_id, name, user_id, room_id }) => {
@@ -23,6 +24,10 @@ const Helper = {
 
     getUserByID: (user_id) => {
         return users.find(user => user.user_id === user_id);
+    },
+
+    getUserByRoomID: (room_id) => {
+        return users.find(user => user.room_id === room_id);
     },
 
     removeUserBySocketID: (socket_id) => {
