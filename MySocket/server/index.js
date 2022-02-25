@@ -134,22 +134,22 @@ io.on('connection', (socket) => {
 
         // Look for guest user
         User.findOne({ email }).then(guest => {
-            const applicant = Helper.getUserBySocketID(socket.id);
-            let applicant_id = undefined;
+            const host = Helper.getUserBySocketID(socket.id);
+            let host_id = undefined;
 
             // Check if user is introducing a correct email
             if (guest) {
-                applicant_id = new mongoose.mongo.ObjectId(applicant.user_id);
+                host_id = new mongoose.mongo.ObjectId(host.user_id);
             } else {
                 throw 'The user introduced does not exists...';
             }
-            if (applicant.user_id === guest.id) {
+            if (host.user_id === guest.id) {
                 throw 'You cannot talk with yourself...';
             }
             PrivateRoom.exists({
                 members: {
                     $all: [
-                        applicant_id,
+                        host_id,
                         guest._id
                     ]
                 }
@@ -160,10 +160,10 @@ io.on('connection', (socket) => {
                         body: 'This chat is already opened'
                     } : {
                         valid: true,
-                        body: '',
-                        data: {
+                        body: {
                             guest_id: guest.id,
-                            guest_name: guest.name
+                            guest_name: guest.name,
+                            guest_publicKey: guest.publicKey
                         }
                     }
                 );
@@ -182,8 +182,14 @@ io.on('connection', (socket) => {
 
         const privateRoom = new PrivateRoom({
             members: [
-                new mongoose.mongo.ObjectId(data.applicant_id),
-                data.guest_id
+                {
+                    _id: data.host.id,
+                    encryptedChatKey: data.host.encryptedChatKey
+                },
+                {
+                    _id: data.guest.id,
+                    encryptedChatKey: data.guest.encryptedChatKey
+                }
             ]
         });
         privateRoom.save().then(result => {
@@ -192,16 +198,16 @@ io.on('connection', (socket) => {
             console.log('private room', result);
             socket.emit('private-room-created', {
                 _id: result.id,
-                name: data.guest_name,
+                name: data.guest.name,
                 color: '000'
             });
 
             // Check if other user is connected
-            const guestConnected = Helper.getUserByID(data.guest_id);
+            const guestConnected = Helper.getUserByID(data.guest.id);
             if (guestConnected) {
                 io.to(guestConnected.socket_id).emit('private-room-created', {
                     _id: result.id,
-                    name: data.applicant_name,
+                    name: data.host.name,
                     color: '000'
                 });
             } else {
@@ -257,7 +263,12 @@ io.on('connection', (socket) => {
                         body: 'You cannot talk with yourself...'
                     } : {
                         valid: true,
-                        user: guest
+                        user: {
+                            _id: guest._id,
+                            email: guest.email,
+                            name: guest.name,
+                            publicKey: guest.publicKey
+                        }
                     }
                 ) : {
                     valid: false,

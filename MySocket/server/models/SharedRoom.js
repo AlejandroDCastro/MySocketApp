@@ -9,11 +9,11 @@ const memberSchema = new mongoose.Schema({
     color: {
         type: String,
         default: '000'
-    }/*,
-    encryptedRoomKey: {
+    },
+    encryptedChatKey: {
         type: String,
         required: [true, 'Please save the encrypted room key for user']
-    }*/
+    }
 });
 
 const sharedRoomSchema = new mongoose.Schema({

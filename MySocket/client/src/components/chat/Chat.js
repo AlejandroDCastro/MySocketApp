@@ -65,7 +65,7 @@ const Chat = () => {
         }
     }
 
-    const getDecryptedKey = (key) => {
+    const decryptKey = (key) => {
         const privateKey = localStorage.getItem('privateKey');
         const symmetricKey = CryptoJS.AES.decrypt(key, privateKey);
         return symmetricKey.toString(CryptoJS.enc.Utf8);

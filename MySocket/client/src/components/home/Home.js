@@ -22,7 +22,7 @@ const Home = () => {
     const [groupMemberError, setGroupMemberError] = useState('');
     const [groupMembers, setGroupMembers] = useState([]);
 
-    //const [symmetricKey, setSymmetricKey] = useState('');
+    const [symmetricKey, setSymmetricKey] = useState('');
 
 
     // Run after render DOM
@@ -41,6 +41,8 @@ const Home = () => {
 
     useEffect(() => {
         socket.on('connect-data-server', (callback) => {
+            // Create a chat key for encrypt messages
+            setSymmetricKey(generateSymmetricKey());               // ESTO ES TEMPORAL!!!!!
             return callback({
                 name: user.name,
                 user_id: user._id
@@ -141,6 +143,12 @@ const Home = () => {
         return key;
     }
 
+    const encryptionChatKey = (message, publicKey) => {
+        const encryptionKey = new NodeRSA(publicKey);
+        const encryptedChatKey = encryptionKey.encrypt(message, 'base64');
+        return encryptedChatKey;
+    }
+
     const handleSubmitPrivateRoom = e => {
 
         // Cancel the event if can
@@ -149,15 +157,28 @@ const Home = () => {
         // Emit a socket event
         socket.emit('check-correct-room', privateRoom, (response) => {
             if (response.valid) {
+
+                // Encryption for both host and guest
+                const hostEncryptedChatKey = encryptionChatKey(symmetricKey, user.publicKey);
+                const guestEncryptedChatKey = encryptionChatKey(symmetricKey, response.body.guest_publicKey);
+
                 socket.emit('create-private-room', {
-                    applicant_id: user._id,
-                    applicant_name: user.name,
-                    guest_id: response.data.guest_id,
-                    guest_name: response.data.guest_name
+                    host: {
+                        id: user._id,
+                        name: user.name,
+                        encryptedChatKey: hostEncryptedChatKey
+                    },
+                    guest: {
+                        id: response.body.guest_id,
+                        name: response.body.guest_name,
+                        encryptedChatKey: guestEncryptedChatKey
+                    }
                 });
                 setPrivateRoom('');
+                setSymmetricKey('');
+            } else {
+                setPrivateRoomError('');
             }
-            setPrivateRoomError(response.body);
         });
     }
 
@@ -178,6 +199,7 @@ const Home = () => {
                 setSharedRoomError('');
                 setSharedRoom('');
                 clearUsersFromList();
+                setSymmetricKey('');
             } else {
                 setSharedRoomError(response.body);
             }
@@ -190,12 +212,11 @@ const Home = () => {
     }
 
     const addUserToArray = (user_id, publicKey) => {
-        const nodePublicKey = new NodeRSA(publicKey);
-        //const encryptedRoomKey = nodePublicKey.encrypt(symmetricKey, 'base64');
+        const encryptedChatKey = encryptionChatKey(symmetricKey, publicKey);
         groupMembers.push({
             _id: user_id,
-            color: getRandomColour()/*,
-            encryptedRoomKey*/
+            color: getRandomColour(),
+            encryptedChatKey
         });
         console.log('group members', groupMembers);
     }
@@ -213,6 +234,7 @@ const Home = () => {
 
     const handleSubmitGroupMembers = e => {
         e.preventDefault();
+
         socket.emit('check-correct-user', groupMember, (response) => {
             if (response.valid) {
                 displayUserToList(response.user.email, response.user.name);

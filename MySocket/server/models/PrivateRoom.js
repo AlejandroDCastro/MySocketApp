@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
-/*
+
 const memberSchema = new mongoose.Schema({
     _id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user',
         required: [true, 'An ID from user is needed']
     },
-    encryptedRoomKey: {
+    encryptedChatKey: {
         type: String,
         required: [true, 'Please save the encrypted room key for user']
     }
@@ -18,8 +18,8 @@ const privateRoomSchema = new mongoose.Schema({
         validate: [arrayLimit, 'Private Rooms are only for 2 users'],
         required: [true, 'You need to add some user']
     }
-}, { timestamps: true });*/
-
+}, { timestamps: true });
+/*
 const privateRoomSchema = new mongoose.Schema({
     members: {
         type: [mongoose.Schema.Types.ObjectId],
@@ -28,7 +28,7 @@ const privateRoomSchema = new mongoose.Schema({
         required: [true, 'You need to add some user']
     }
 }, { timestamps: true });
-
+*/
 function arrayLimit(array) {
     return (array.length === 2);
 }
