@@ -11,6 +11,7 @@ let socket;
 const Home = () => {
     const ENDPT = 'https://localhost:5000';
     const { user, setUser } = useContext(UserContext);
+
     const [privateRoom, setPrivateRoom] = useState('');
     const [privateRooms, setPrivateRooms] = useState([]);
     const [privateRoomError, setPrivateRoomError] = useState('');
@@ -144,8 +145,8 @@ const Home = () => {
     }
 
     const encryptionChatKey = (message, publicKey) => {
-        const encryptionKey = new NodeRSA(publicKey);
-        const encryptedChatKey = encryptionKey.encrypt(message, 'base64');
+        const encryptionNode = new NodeRSA(publicKey);
+        const encryptedChatKey = encryptionNode.encrypt(message, 'base64');
         return encryptedChatKey;
     }
 
@@ -161,7 +162,8 @@ const Home = () => {
                 // Encryption for both host and guest
                 const hostEncryptedChatKey = encryptionChatKey(symmetricKey, user.publicKey);
                 const guestEncryptedChatKey = encryptionChatKey(symmetricKey, response.body.guest_publicKey);
-
+                console.log('host', hostEncryptedChatKey);
+                console.log('guest', guestEncryptedChatKey);
                 socket.emit('create-private-room', {
                     host: {
                         id: user._id,
@@ -175,9 +177,10 @@ const Home = () => {
                     }
                 });
                 setPrivateRoom('');
+                setPrivateRoomError('');
                 setSymmetricKey('');
             } else {
-                setPrivateRoomError('');
+                setPrivateRoomError(response.body);
             }
         });
     }

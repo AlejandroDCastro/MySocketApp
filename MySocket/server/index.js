@@ -51,8 +51,8 @@ io.on('connection', (socket) => {
 
         // Show user private rooms avaliable
         PrivateRoom.aggregate([
-            { $match: { members: objUserID } },
-            { $lookup: { from: 'users', localField: 'members', foreignField: '_id', as: 'user' } },
+            { $match: { 'members._id': objUserID } },
+            { $lookup: { from: 'users', localField: 'members._id', foreignField: '_id', as: 'user' } },
             {
                 $project: {
                     _id: true,
@@ -147,7 +147,7 @@ io.on('connection', (socket) => {
                 throw 'You cannot talk with yourself...';
             }
             PrivateRoom.exists({
-                members: {
+                'members._id': {
                     $all: [
                         host_id,
                         guest._id
@@ -279,7 +279,7 @@ io.on('connection', (socket) => {
     });
 
 
-    socket.on('join-room', ({ user_id, room_id }, callback) => {
+    socket.on('join-room', ({ user_id, room_id, privacy }, callback) => {
 
         // Update the room for user connected
         const { user, error } = Helper.joinRoom({
@@ -303,59 +303,29 @@ io.on('connection', (socket) => {
         }).catch(error => {
             console.log(error);
         });
-/*
-        try {
 
-            // Get symmetric key for room
-            const key = Keys.getKey({ user_id, room_id });
-            if (!key) throw Error('Room key doesnt exist');
-            return callback({
-                room_key: key.room_key
-            })
-        } catch (error) {
-            console.log(error);
-        }*/
-        /*
-                // Get public keys from chat users
-                const objUserID = new mongoose.mongo.ObjectId(user_id);
-                const objRoomID = new mongoose.mongo.ObjectId(room_id);
-                let Room = null, localField = null;
-                if (privacy === 'Private') {
-                    Room = PrivateRoom;
-                    localField = 'members';
-                } else {
-                    Room = SharedRoom;
-                    localField = 'members._id';
+        // Get encrypted room key for user
+        const objUserID = new mongoose.mongo.ObjectId(user_id);
+        const objRoomID = new mongoose.mongo.ObjectId(room_id);
+        const Room = (privacy === 'Private') ? PrivateRoom : SharedRoom;
+        Room.aggregate([
+            { $match: { _id: objRoomID } },
+            { $unwind: "$members" },
+            { $match: { 'members._id': objUserID}},
+            {
+                $group: {
+                    _id: "$members._id",
+                    encryptedChatKey: { $first: "$members.encryptedChatKey" }
                 }
-                Room.aggregate([
-                    { $match: { _id: objRoomID } },
-                    { $lookup: { from: 'users', localField: localField, foreignField: '_id', as: 'user' } },
-                    { $project: { _id: false, user: true } },
-                    { $unwind: "$user" },
-                    {
-                        $redact: {
-                            $cond: {
-                                if: { $eq: ["$user._id", objUserID] },
-                                then: "$$PRUNE",
-                                else: "$$DESCEND"
-                            }
-                        }
-                    },
-                    {
-                        $group: {
-                            _id: "$user._id",
-                            publicKey: { $first: "$user.publicKey" }
-                        }
-                    }
-                ]).then(result => {
-                    console.log(result);
-                    return callback({
-                        publicKeys: result,
-                        room_key
-                    });
-                }).catch(error => {
-                    console.log(error);
-                });*/
+            }
+        ]).then(result => {
+            console.log(result);
+            return callback({
+                encryptedChatKey: result[0].encryptedChatKey
+            });
+        }).catch(error => {
+            console.log(error);
+        });
     });
 
 
