@@ -12,7 +12,7 @@ const Message = ({ message: { name, user_id, text, color }, current_uid, same_us
         color: color,
         display: display
     };
-
+    
 
     return (
         <div className={styleClasses}>

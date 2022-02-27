@@ -14,9 +14,10 @@ const Messages = ({ messages, user_id, privacy }) => {
         }
     }
 
+
     return (
         <div>
-            {messages.map((message, i) => (
+            {messages.map((message, _) => (
                 <Message key={message._id} message={message} current_uid={user_id} same_user={checkLastUserMessage(message.user_id)} privacy={privacy} />
             ))}
         </div>

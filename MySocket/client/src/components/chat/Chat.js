@@ -8,7 +8,7 @@ import CryptoJS from 'crypto-js';
 import NodeRSA from 'node-rsa';
 import './Chat.css';
 
-let socket;
+let socket, chatKey = '';
 const Chat = () => {
     const ENDPT = 'https://localhost:5000';
     const { user, setUser } = useContext(UserContext);
@@ -16,7 +16,7 @@ const Chat = () => {
     const [messages, setMessages] = useState([]);
     const [file, setFile] = useState(null);
     const [chunks, setChunks] = useState([]);
-    const [chatKey, setChatKey] = useState('');
+    //const [chatKey, setChatKey] = useState('');
     let { color, privacy, room_id, room_name } = useParams();
 
 
@@ -65,11 +65,21 @@ const Chat = () => {
         }
     }
 
-    const decryptionChatKey = (cryptosystem) => {
+    const decryptionChatKey = (cryptogram) => {
         const privateKey = localStorage.getItem('privateKey');
         const decryptionNode = new NodeRSA(privateKey);
-        const chatKey = decryptionNode.decrypt(cryptosystem, 'utf8');
+        const chatKey = decryptionNode.decrypt(cryptogram, 'utf8');
         return chatKey;
+    }
+
+    const encryptionMessage = (msg, key) => {
+        const cryptogram = CryptoJS.AES.encrypt(msg, key, CryptoJS.enc.Base64);
+        return cryptogram.toString();
+    }
+
+    const decryptionMessage = (msg, key) => {
+        const decryptedMsg = CryptoJS.AES.decrypt(msg, key);
+        return decryptedMsg.toString(CryptoJS.enc.Utf8);
     }
 
     const sendMessage = e => {
@@ -79,11 +89,13 @@ const Chat = () => {
         if (file) {
             // For DO IT
         } else if (message) {
-            console.log('color2', color);
-            const nameColor = (color === '#') ? (color + '000') : ('#' + color);
+
+            // Encrypt message with
+            const cryptogram = encryptionMessage(message, chatKey);
 
             // Emit a listener to the server
-            socket.emit('send-message', { message, color: nameColor }, room_id, () => {
+            const nameColor = '#' + color;
+            socket.emit('send-message', { message: cryptogram, color: nameColor }, room_id, () => {
                 setMessage('');
                 stickySendMessageBox();
                 scrollToTheEnd();
@@ -158,25 +170,20 @@ const Chat = () => {
             privacy
         }, (response) => {
             console.log(response);
-            const symmetricKey = decryptionChatKey(response.encryptedChatKey);
-            setChatKey(symmetricKey);
+            chatKey = decryptionChatKey(response.encryptedChatKey);
+            //setChatKey(symmetricKey);
+            response.messages.forEach(message => {
+                message.text = decryptionMessage(message.text, chatKey);
+            });
+            setMessages(response.messages);
+            stickySendMessageBox();
+            scrollToTheEnd();
         });
     }, []) // Empty array for executing one only time each refresh
 
     useEffect(() => {
-        socket.on('get-message-history', messages => {
-            setMessages(messages)
-            stickySendMessageBox();
-            scrollToTheEnd();
-        });
-
-        return () => {
-            socket.off('get-messages-history');
-        }
-    }, [])
-
-    useEffect(() => {
         socket.on('new-message', message => {
+            message.text = decryptionMessage(message.text, chatKey);
 
             // Spread operator to append all messages inside array
             setMessages([...messages, message]);

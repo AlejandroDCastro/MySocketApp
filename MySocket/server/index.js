@@ -34,6 +34,7 @@ const SharedRoom = require('./models/SharedRoom');
 const Message = require('./models/Message');
 const User = require('./models/User');
 
+
 // Socket listeners for events
 io.on('connection', (socket) => {
     console.log(socket.id);
@@ -296,19 +297,15 @@ io.on('connection', (socket) => {
         // Add the Room ID to the socket list
         socket.join(room_id);
 
-        // Send room messages to the client
-        Message.find({ room_id }).then(result => {
-            console.log('messages history', result);
-            socket.emit('get-message-history', result);
-        }).catch(error => {
-            console.log(error);
-        });
 
+        // Send room messages to the client
+        const msgQuery = Message.find({ room_id });
+        
         // Get encrypted room key for user
         const objUserID = new mongoose.mongo.ObjectId(user_id);
         const objRoomID = new mongoose.mongo.ObjectId(room_id);
         const Room = (privacy === 'Private') ? PrivateRoom : SharedRoom;
-        Room.aggregate([
+        const keyQuery = Room.aggregate([
             { $match: { _id: objRoomID } },
             { $unwind: "$members" },
             { $match: { 'members._id': objUserID}},
@@ -318,13 +315,15 @@ io.on('connection', (socket) => {
                     encryptedChatKey: { $first: "$members.encryptedChatKey" }
                 }
             }
-        ]).then(result => {
+        ]);
+
+        // Execute them concurrently
+        Promise.all([msgQuery, keyQuery]).then(result => {
             console.log(result);
             return callback({
-                encryptedChatKey: result[0].encryptedChatKey
+                messages: result[0],
+                encryptedChatKey: result[1][0].encryptedChatKey
             });
-        }).catch(error => {
-            console.log(error);
         });
     });
 
