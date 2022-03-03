@@ -17,6 +17,10 @@ const messageSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    type: {
+        type: String,
+        enum: ['text', 'audio/webm', 'file']
+    },
     color: {
         type: String,
         default: '#000'

@@ -8,14 +8,16 @@ import CryptoJS from 'crypto-js';
 import NodeRSA from 'node-rsa';
 import './Chat.css';
 
-let socket, chatKey = '';
+// We put variables outside the component to prevent rerender
+let socket, chatKey = '', chunks = [], mediaRecorder = null;
+
 const Chat = () => {
     const ENDPT = 'https://localhost:5000';
     const { user, setUser } = useContext(UserContext);
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
     const [file, setFile] = useState(null);
-    const [chunks, setChunks] = useState([]);
+    //const [chunks, setChunks] = useState([]);
     //const [chatKey, setChatKey] = useState('');
     let { color, privacy, room_id, room_name } = useParams();
 
@@ -88,6 +90,7 @@ const Chat = () => {
         // Send a text message or audio recorded or attached file
         if (file) {
             // For DO IT
+            console.log('File sent!!!');
         } else if (message) {
 
             // Encrypt message with
@@ -95,7 +98,11 @@ const Chat = () => {
 
             // Emit a listener to the server
             const nameColor = '#' + color;
-            socket.emit('send-message', { message: cryptogram, color: nameColor }, room_id, () => {
+            socket.emit('send-message', {
+                message: cryptogram,
+                color: nameColor,
+                type: 'text'
+            }, room_id, () => {
                 setMessage('');
                 stickySendMessageBox();
                 scrollToTheEnd();
@@ -106,9 +113,15 @@ const Chat = () => {
             navigator.mediaDevices.getUserMedia({ audio: true }).then(function (mediaStream) {
                 let divIcon = document.querySelector('#send-message>div:last-child');
                 let micIcon = document.querySelector('#send-message>div:last-child>i:last-child');
-                let mediaRecorder = new MediaRecorder(mediaStream, {
-                    mimeType: 'audio/webm'
-                });
+                if (mediaRecorder === null) {
+                    mediaRecorder = new MediaRecorder(mediaStream, {
+                        mimeType: 'audio/webm'
+                    });
+                } else {
+                    mediaRecorder.stop();
+                    mediaRecorder = null;
+                    return;
+                }
 
                 mediaRecorder.onstart = function () {
 
@@ -119,7 +132,6 @@ const Chat = () => {
                         micIcon.classList.add('run-animation');
                     }
                 }
-                mediaRecorder.start();
 
                 // Audio recording splitted in items and save them
                 mediaRecorder.ondataavailable = function (e) {
@@ -133,23 +145,31 @@ const Chat = () => {
                     micIcon.classList.replace('run-animation', 'stop-animation');
                     setInputPlaceholder('Type a message', 'white', false);
 
+                    // Prepare to send data to server
                     let audioBlob = new Blob(chunks, { type: 'audio/webm' });
-                    setChunks([]);
-
-                    // Download audio
-                    let link = document.createElement('a');
-                    link.href = window.URL.createObjectURL(audioBlob);
-                    link.setAttribute('download', 'video_recorded.webm');
-                    link.style.display = 'none';
-                    document.getElementById('chat-view').appendChild(link);
-
-                    link.click();
-                    link.remove();
+                    const reader = new FileReader();
+                    reader.readAsDataURL(audioBlob);
+                    reader.onload = function () {
+                        const data = reader.result.split(',')[1];
+                        const cryptogram = encryptionMessage(data, chatKey);
+                        const nameColor = '#' + color;
+                        socket.emit('send-message', {
+                            message: cryptogram,
+                            color: nameColor,
+                            type: 'audio/webm'
+                        }, room_id, () => {
+                            setMessage('');
+                            stickySendMessageBox();
+                            scrollToTheEnd();
+                        });
+                    }
+                    //setChunks([]);
+                    chunks = [];
                 };
 
-                setTimeout(() => {
-                    mediaRecorder.stop();
-                }, 5000);
+                if (mediaRecorder !== null) {
+                    mediaRecorder.start();
+                }
 
             }).catch(function (error) {
                 console.log("Permission error: ", error);
@@ -172,6 +192,8 @@ const Chat = () => {
             console.log(response);
             chatKey = decryptionChatKey(response.encryptedChatKey);
             //setChatKey(symmetricKey);
+
+            // Decrypt all messages donwloaded from server
             response.messages.forEach(message => {
                 message.text = decryptionMessage(message.text, chatKey);
             });
