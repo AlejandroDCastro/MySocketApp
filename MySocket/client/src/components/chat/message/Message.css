@@ -50,6 +50,10 @@
             color: #fff;
         }
 
+        .left-msg>div>img,
+        .right-msg>div>img {
+            max-width: 700px;
+        }
 
 .same-user {
     margin-top: 2px;

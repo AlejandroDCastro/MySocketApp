@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './Message.css';
 
-const Message = ({ message: { name, user_id, text, type, color }, current_uid, same_user, privacy }) => {
+const Message = ({ message: { name, user_id, text, color, fileName }, current_uid, same_user, privacy }) => {
     const [elementDOM, setElementDOM] = useState();
 
     // Depend on client indentify align messages right or left
@@ -15,31 +15,46 @@ const Message = ({ message: { name, user_id, text, type, color }, current_uid, s
     };
 
     const displayMessage = _ => {
-        switch (type) {
-            case 'text':
-                setElementDOM(<p>{text}</p>);
-                break;
-        
-            case 'audio/webm':
+        if (fileName) {
 
-                // Fetch API used to convert base64 to blob
-                fetch(`data:${type};base64,${text}`)
-                    .then(response => {
-                        return response.blob();
-                    })
-                    .then(blob => {
-                        setElementDOM(
-                            <audio controls='controls'>
-                                <source src={URL.createObjectURL(blob)} type={type} />
-                            </audio>
-                        );
-                    });
-                break;
+            // Extract the content type
+            const contentType = text.slice(5, text.length).split(';')[0];
+            
+            // Fetch API used to convert base64 to blob
+            fetch(text)
+                .then(response => {
+                    return response.blob();
+                })
+                .then(blob => {
+                    const blobURL = URL.createObjectURL(blob);
 
-            default:
-                console.log('File is not displayed yet!!!');
-                setElementDOM(<p>{text}</p>);
-                break;
+                    switch (contentType) {
+                        case 'audio/webm':
+                        case 'audio/mpeg':
+                            setElementDOM(
+                                <audio controls='controls'>
+                                    <source src={blobURL} type={contentType} />
+                                </audio>
+                            );
+                            break;
+                    
+                        case 'image/png':
+                        case 'image/jpeg':
+                            setElementDOM(<img src={blobURL} alt={fileName} />);
+                            break;
+
+                        default:
+
+                            // Load and unknown file ready to download
+                            setElementDOM(<a href={blobURL} download={fileName}>{fileName}</a>);
+                            break;
+                    }
+                });
+
+        } else {
+            
+            // Set as plain text
+            setElementDOM(<p>{text}</p>);
         }
     }
 

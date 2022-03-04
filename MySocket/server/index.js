@@ -335,9 +335,11 @@ io.on('connection', (socket) => {
             user_id: user.user_id,
             room_id,
             text: data.message,
-            type: data.type,
             color: data.color
         };
+        if (data.fileName) {
+            msgData.fileName = data.fileName;
+        }
         console.log('message', msgData);
 
         // Save message

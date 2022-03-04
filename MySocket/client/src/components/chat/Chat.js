@@ -84,29 +84,41 @@ const Chat = () => {
         return decryptedMsg.toString(CryptoJS.enc.Utf8);
     }
 
-    const sendMessage = e => {
+    const sendMessage = (message, fileName = '') => {
+
+        // Encrypt message with chat key
+        const cryptogram = encryptionMessage(message, chatKey);
+        const hexColor = '#' + color;
+
+        // Emit a listener to the server
+        socket.emit('send-message', {
+            message: cryptogram,
+            color: hexColor,
+            fileName
+        }, room_id, () => {
+            setMessage('');
+            stickySendMessageBox();
+            scrollToTheEnd();
+        });
+    }
+
+    const submitSendMessage = e => {
         e.preventDefault();
 
         // Send a text message or audio recorded or attached file
         if (file) {
-            // For DO IT
-            console.log('File sent!!!');
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function () {
+                const data = reader.result;
+
+                // Put the name to the file
+                sendMessage(data, file.name);
+                setFile(null);
+            }
         } else if (message) {
 
-            // Encrypt message with
-            const cryptogram = encryptionMessage(message, chatKey);
-
-            // Emit a listener to the server
-            const nameColor = '#' + color;
-            socket.emit('send-message', {
-                message: cryptogram,
-                color: nameColor,
-                type: 'text'
-            }, room_id, () => {
-                setMessage('');
-                stickySendMessageBox();
-                scrollToTheEnd();
-            });
+            sendMessage(message);
         } else {
 
             // Give permission to the App for using microphone
@@ -147,21 +159,21 @@ const Chat = () => {
 
                     // Prepare to send data to server
                     let audioBlob = new Blob(chunks, { type: 'audio/webm' });
+
+                    // Download the audio
+                    /*let link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(audioBlob);
+                    link.setAttribute('download', 'video_recorded.webm');
+                    link.style.display = 'none';
+                    document.getElementById('chat-view').appendChild(link);
+                    link.click();
+                    link.remove();*/
+
                     const reader = new FileReader();
                     reader.readAsDataURL(audioBlob);
                     reader.onload = function () {
-                        const data = reader.result.split(',')[1];
-                        const cryptogram = encryptionMessage(data, chatKey);
-                        const nameColor = '#' + color;
-                        socket.emit('send-message', {
-                            message: cryptogram,
-                            color: nameColor,
-                            type: 'audio/webm'
-                        }, room_id, () => {
-                            setMessage('');
-                            stickySendMessageBox();
-                            scrollToTheEnd();
-                        });
+                        const data = reader.result;
+                        sendMessage(data, 'audio_recorded.webm');
                     }
                     //setChunks([]);
                     chunks = [];
@@ -250,7 +262,7 @@ const Chat = () => {
                     </h2>
                     <div>
                         <Messages messages={messages} user_id={user._id} privacy={privacy} />
-                        <Input message={message} setMessage={setMessage} setFile={setFile} sendMessage={sendMessage} showAudioIcon={showAudioIcon} showSocketIcon={showSocketIcon} />
+                        <Input message={message} setMessage={setMessage} setFile={setFile} sendMessage={submitSendMessage} showAudioIcon={showAudioIcon} showSocketIcon={showSocketIcon} />
                     </div>
                 </div>
             </div>
