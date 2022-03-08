@@ -12,7 +12,7 @@ const corsOptions = {
     optionsSuccessStatus: 200 // For legacy browser support
 }
 
-app.use(cors(corsOptions));
+//app.use(cors(corsOptions));
 app.use(express.json()); // Middleware that recognize the incoming Request Object as a JSON Object
 app.use(cookieParser());
 app.use(authRoutes);
@@ -24,7 +24,12 @@ const server = https.createServer({
 }, app);
 const mongoose = require('mongoose');
 const socketio = require('socket.io');
-const io = socketio(server);
+const io = socketio(server, {
+    cors: {
+        origin: 'https://localhost:3000',
+        credentials: true,
+    }
+});
 const mongoDB = "mongodb+srv://mysocket:BbEToh01@mysocket-chatapp.jkcv8.mongodb.net/mysocket-database?retryWrites=true&w=majority";
 mongoose.connect(mongoDB).then(() => console.log('database connected')).catch(err => console.log(err));
 const { Helper } = require('./helper');
