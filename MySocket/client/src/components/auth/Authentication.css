@@ -1,17 +1,33 @@
 
-.formView>h2 {
-    margin-top: 15px;
+.formView>div>h2 {
+    margin-top: 20px;
 }
 
-    .formView>form>div:not(:first-child) {
+    .formView>div>p {
+        margin-top: 15px;
+        font-size: 1.1em;
+    }
+
+    .formView>div>form>div:not(:first-child) {
         margin-top: 45px;
     }
 
-    .formView>form>div:nth-last-child(2) {
+    .formView>div>form>div:nth-last-child(2) {
         margin-bottom: 20px;
     }
 
-        .formView>form>div>p {
+        .formView>div>form>div>p {
             margin: 7px 0;
             color: #ff3838;
         }
+
+    .formView>div>form>p {
+        margin-top: 20px;
+    }
+
+        .formView>div>form>p>a {
+            text-decoration: none;
+            color: var(--bottom-color);
+            font-weight: bold;
+        }
+

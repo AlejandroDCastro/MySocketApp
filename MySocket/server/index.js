@@ -12,7 +12,7 @@ const corsOptions = {
     optionsSuccessStatus: 200 // For legacy browser support
 }
 
-//app.use(cors(corsOptions));
+app.use(cors(corsOptions));
 app.use(express.json()); // Middleware that recognize the incoming Request Object as a JSON Object
 app.use(cookieParser());
 app.use(authRoutes);
@@ -25,9 +25,14 @@ const server = https.createServer({
 const mongoose = require('mongoose');
 const socketio = require('socket.io');
 const io = socketio(server, {
-    cors: {
-        origin: 'https://localhost:3000',
-        credentials: true,
+    origins: ['https://localhost:3000'],
+    handlePreflightRequest: (req, res) => {
+        res.writeHead(200, {
+            "Access-Control-Allow-Origin": "https://localhost:3000",
+            "Access-Control-Allow-Methods": "GET,POST",
+            "Access-Control-Allow-Credentials": true
+        });
+        res.end();
     }
 });
 const mongoDB = "mongodb+srv://mysocket:BbEToh01@mysocket-chatapp.jkcv8.mongodb.net/mysocket-database?retryWrites=true&w=majority";

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../../UserContext';
-import { useParams } from 'react-router-dom';
+import { Redirect, useParams } from 'react-router-dom';
 import io from 'socket.io-client';
 import Messages from './messages/Messages';
 import Input from './input/Input';
@@ -194,7 +194,9 @@ const Chat = () => {
     // Hooks
 
     useEffect(() => {
-        socket = io(ENDPT);
+        socket = io(ENDPT, {
+            withCredentials: true
+        });
         console.log('my socket is: ', socket);
         socket.emit('join-room', {
             user_id: user._id,

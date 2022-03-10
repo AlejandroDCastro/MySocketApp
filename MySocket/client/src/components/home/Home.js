@@ -30,7 +30,9 @@ const Home = () => {
     useEffect(() => {
 
         // Get the existing socket from server created for this client
-        socket = io(ENDPT);
+        socket = io(ENDPT, {
+            withCredentials: true
+        });
         console.log('my socket is: ', socket);
 
         // Callback function after each refresh or update

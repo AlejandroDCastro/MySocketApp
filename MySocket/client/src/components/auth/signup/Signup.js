@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { UserContext } from '../../../UserContext';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 import CryptoJS from 'crypto-js';
 import NodeRSA from 'node-rsa';
 import '../Authentication.css';
@@ -130,25 +130,29 @@ const Signup = () => {
 
     return (
         <div className="formData formView">
-            <h2>Signup</h2>
-            <form onSubmit={submitHandler}>
-                <div className="inputData labelDown">
-                    <input id="name" type="text" value={name} onChange={changeName} />
-                    <label htmlFor="name">Enter a name</label>
-                    <p>{nameError}</p>
-                </div>
-                <div className="inputData labelDown">
-                    <input id="email" type="email" value={email} onChange={changeEmail} />
-                    <label htmlFor="email">Enter a email</label>
-                    <p>{emailError}</p>
-                </div>
-                <div className="inputData labelDown">
-                    <input id="password" type="password" value={password} onChange={changePassword} />
-                    <label htmlFor="password">Enter a password</label>
-                    <p>{passwordError}</p>
-                </div>
-                <input type="submit" value="Sign Up" />
-            </form>
+            <div>
+                <h2>Signup</h2>
+                <p>Create a MySocket account</p>
+                <form onSubmit={submitHandler}>
+                    <div className="inputData labelDown">
+                        <input id="name" type="text" value={name} onChange={changeName} />
+                        <label htmlFor="name">Enter a name</label>
+                        <p>{nameError}</p>
+                    </div>
+                    <div className="inputData labelDown">
+                        <input id="email" type="email" value={email} onChange={changeEmail} />
+                        <label htmlFor="email">Enter a email</label>
+                        <p>{emailError}</p>
+                    </div>
+                    <div className="inputData labelDown">
+                        <input id="password" type="password" value={password} onChange={changePassword} />
+                        <label htmlFor="password">Enter a password</label>
+                        <p>{passwordError}</p>
+                    </div>
+                    <p>You do not have an account yet? <Link to={'/login'}>Log In</Link></p>
+                    <input type="submit" value="Sign Up" />
+                </form>
+            </div>
         </div>
     )
 }

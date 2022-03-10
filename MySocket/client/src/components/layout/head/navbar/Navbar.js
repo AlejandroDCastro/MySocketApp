@@ -3,7 +3,6 @@ import { UserContext } from '../../../../UserContext';
 import SignedInMenu from './SignedInMenu';
 import SignedOutMenu from './SignedOutMenu';
 import './Navbar.css';
-import CryptoJS from 'crypto-js';
 
 const Navbar = () => {
     const { user, setUser } = useContext(UserContext);
