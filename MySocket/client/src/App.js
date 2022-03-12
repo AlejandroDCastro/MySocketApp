@@ -41,7 +41,6 @@ function App() {
 
         {/* Accept in prop value the user connnected */}
         <UserContext.Provider value={{ user, setUser }}>
-          <Head />
           <Switch>
             <Route exact path="/" component={Home} />
             <Route path="/chat/:color/:privacy/:room_id/:room_name" component={Chat} />

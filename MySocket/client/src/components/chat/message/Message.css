@@ -26,7 +26,7 @@
     }
 
     .right-msg>div {
-        background-color: var(--blue-background);
+        background-color: var(--mySocketPurple);
         border-radius: 12px 0px 12px 12px;
     }
 

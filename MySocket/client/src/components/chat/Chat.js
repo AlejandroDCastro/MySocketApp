@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../../UserContext';
-import { Redirect, useParams } from 'react-router-dom';
+import { Link, Redirect, useParams } from 'react-router-dom';
 import io from 'socket.io-client';
 import Messages from './messages/Messages';
 import Input from './input/Input';
@@ -262,6 +262,9 @@ const Chat = () => {
                         <span>{room_name}</span>
                         <span>[{privacy}]</span>
                     </h2>
+                    <p>
+                        <Link to={'/'}><i class="fas fa-angle-left"></i></Link>
+                    </p>
                     <div>
                         <Messages messages={messages} user_id={user._id} privacy={privacy} />
                         <Input message={message} setMessage={setMessage} setFile={setFile} sendMessage={submitSendMessage} showAudioIcon={showAudioIcon} showSocketIcon={showSocketIcon} />

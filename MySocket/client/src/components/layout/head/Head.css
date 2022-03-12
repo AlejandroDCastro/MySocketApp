@@ -15,3 +15,13 @@
     font-size: 20px;
     color: #f6f8ff;
 }
+
+
+@media all and (max-width: 860px) {
+
+    #head>p {
+        left: initial;
+        right: 15px;
+        font-size: 18px;
+    }    
+}

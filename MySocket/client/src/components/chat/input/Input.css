@@ -37,7 +37,7 @@
 }
 
 .send-msg-text {
-    background-color: var(--blue-background);
+    background-color: var(--mySocketPurple);
 }
 
     .send-msg-text:hover {

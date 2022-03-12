@@ -2,7 +2,8 @@
 
 html {
   width: 100%;
-  height: 86%;
+  height: 100%;
+  /*height: 86%; IMPORTANTE PARA MAQUETAR!!!!*/
 }
 
 body {
@@ -33,11 +34,13 @@ code {
 }
 
 :root {
-  --mySocketPurple: #9801fc;
-  --mySocketBlue: #f6f8ff;
-  --blue-background: #3e00b1;
-  --bottom-color: #5ce0e0;
-  --button-border: rgb(139, 139, 139);
+  --mySocketBlackPurple: #460080;
+  --mySocketDarkPurple: #4f0090;
+  --mySocketPurple: #57009e;
+  --mySocketBlack: #292929;
+  --mySocketGrey: #7c7c7c;
+  --mySocketWhite: #fbfafa;
+  --mySocketRed: #d93025;
 }
 
 .background-purple {
@@ -45,20 +48,12 @@ code {
 }
 
 .letter-blue {
-  color: var(--mySocketBlue);
+  color: var(--mySocketWhite);
 }
 
 input:focus {
   outline: none;
 }
-
-/*
-.formData {
-  background-color: var(--blue-background);
-  color: white;
-  margin: 10px;
-  padding: 10px 0;
-}*/
 
 
 .formData {
@@ -70,21 +65,32 @@ input:focus {
 }
 
 .formData>div {
-  background-color: var(--blue-background);
-  color: white;
   width: 450px;
   height: 510px;
-  margin: 10px;
   padding: 20px;
-  border-radius: 2%;
+  background-color: var(--mySocketWhite);
+  box-shadow: 0 0 12px -4px var(--mySocketPurple);
+  border-radius: 10px;
 }
 
-  .formView>div>p {
-    margin-top: 15px;
-    font-size: 1.1em;
+  .formData>div>div>h1 {
+    font-size: 1.3em;
+    padding-top: 20px;
+    color: var(--mySocketPurple);
   }
 
-  .formData>div>form {
+  .formData>div>div>h2 {
+    margin-top: 13px;
+    font-weight: initial;
+  }
+
+  .formData>div>div>p {
+    margin-top: 10px;
+    font-size: 1em;
+    color: var(--mySocketBlack);
+  }
+
+  .formData>div>div>form {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -93,58 +99,89 @@ input:focus {
     margin-top: 45px;
   }
 
-    .formData>div>form>input {
-        padding: 10px;
-        margin: 40px 0;
-        font-size: 1em;
-        background-color: var(--bottom-color);
-        border-style: none;
-        border-bottom: 2px solid var(--button-border);
-        border-right: 2px solid var(--button-border);
-        border-top: 1px solid var(--button-border);
-        border-left: 1px solid var(--button-border);
-    }
-    
-    .formData>div>form>input:hover {
-        cursor: pointer;
+    .formData>div>div>form>div:not(:first-child) {
+      margin-top: 43px;
     }
 
-    .formData>div>form>input:focus {
-        position: relative;
-        left: 1px;
-        top: 1px;
-        border-top: 2px solid var(--button-border);
-        border-left: 2px solid var(--button-border);
-        border-right: 1px solid var(--button-border);
-        border-bottom: 1px solid var(--button-border);
+    .formData>div>div>form>div:nth-last-child(2) {
+      margin-bottom: 20px;
+    }
+
+      .formData>div>div>form>div>p {
+        margin: 5px 0;
+        color: var(--mySocketRed);
+        font-size: 12px;
+        text-align: left;
+      }
+
+        .formData>div>div>form>div>p>i {
+          font-size: 1.1em;
+          padding-right: 4px;
+        }
+
+    .formData>div>div>form>p {
+      margin-top: 50px;
+    }
+
+      .formData>div>div>form>p>a {
+        text-decoration: none;
+        color: var(--mySocketPurple);
+        font-weight: bold;
+      }
+
+    .formData>div>div>form>input {
+      padding: 12px;
+      margin: 40px 0;
+      font-size: 1em;
+      color: var(--mySocketWhite);
+      background-color: var(--mySocketPurple);
+      border-style: none;
+      border-radius: 5px;
+      background-clip: padding-box; /* Avoid aliasing */
+      border-bottom: 2px solid var(--mySocketWhite);
+      border-right: 2px solid var(--mySocketWhite);
+      border-top: 1px solid var(--mySocketWhite);
+      border-left: 1px solid var(--mySocketWhite);
+    }
+    
+    .formData>div>div>form>input:hover {
+      cursor: pointer;
+      background-color: var(--mySocketDarkPurple);
+    }
+
+    .formData>div>div>form>input:hover:focus {
+      background-color: var(--mySocketBlackPurple);
     }
 
 
 .inputData {
-    width: 93%;
-    height: 40px;
-    position: relative;
+  width: 93%;
+  height: 40px;
+  position: relative;
 }
 
     .inputData>input {
-        width: 100%;
-        height: 100%;
-        background-color: var(--blue-background);
-        border-style: none;
-        border-bottom: 1px solid white;
-        /*border-radius: 3%;*/
-        font-size: 1.2em;
-        color: white;
+      width: 100%;
+      height: 100%;
+      background-color: var(--mySocketWhite);
+      border-style: none;
+      border-bottom: 1px solid var(--mySocketGrey);
+      border-radius: 2%;
+      font-size: 1.2em;
+      text-indent: 2px;
     }
 
     .inputData>input:hover {
-        border-bottom-color: orange;
-        transition: all .2s;
+      border-bottom-color: var(--mySocketPurple);
+    }
+
+    .inputData>input:focus {
+      border-bottom: 2px solid var(--mySocketPurple);
     }
 
     .inputData>p {
-        margin: 7px 0;
-        color: #ff3838;
+      margin: 7px 0;
+      color: #ff3838;
     }
 
 
@@ -153,7 +190,7 @@ input:focus {
 .labelDown>input:not(:focus)~label {
   display: block;
   text-align: left;
-  opacity: .6;
+  color: var(--mySocketGrey);
   position: absolute;
   top: 10px;
   left: 3px;
@@ -170,7 +207,12 @@ input:focus {
 
 .labelDown>input:focus~label,
 .labelUp>label {
-  top: -15px;
+  color: var(--mySocketPurple);
+  top: -11px;
   left: 0px;
   font-size: .7em;
+}
+
+.labelUp>input {
+  border-bottom: 2px solid var(--mySocketPurple);
 }

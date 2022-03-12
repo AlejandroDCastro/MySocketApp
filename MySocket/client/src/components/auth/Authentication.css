@@ -1,33 +1,79 @@
 
-.formView>div>h2 {
-    margin-top: 20px;
+#signup-view>div {
+    display: flex;
+    width: 750px;
+    height: 595px;
 }
 
-    .formView>div>p {
-        margin-top: 15px;
-        font-size: 1.1em;
+    #signup-view>div>div {
+        width: 60%;
     }
 
-    .formView>div>form>div:not(:first-child) {
-        margin-top: 45px;
-    }
-
-    .formView>div>form>div:nth-last-child(2) {
-        margin-bottom: 20px;
-    }
-
-        .formView>div>form>div>p {
-            margin: 7px 0;
-            color: #ff3838;
+        #signup-view>div>div>h1,
+        #signup-view>div>div>h2,
+        #signup-view>div>div>p {
+            text-align: left;
+            padding-left: 16px;
         }
 
-    .formView>div>form>p {
-        margin-top: 20px;
+    #signup-view>div>aside {
+        width: 40%;
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
     }
 
-        .formView>div>form>p>a {
-            text-decoration: none;
-            color: var(--bottom-color);
-            font-weight: bold;
+        #signup-view>div>aside>p:first-child {
+            font-size: 100px;
+            padding-bottom: 30px;
         }
 
+            #signup-view>div>aside>p:first-child>i {
+                position: relative; 
+            }
+
+            #signup-view>div>aside>p:first-child>i:first-child {
+                color: var(--mySocketPurple);
+                bottom: 30px;
+                transform: rotate(3deg);
+                left: 25px;
+                z-index: 2;
+            }
+
+            #signup-view>div>aside>p:first-child>i:last-child {
+                color: var(--mySocketBlackPurple);
+                transform: rotate(-3deg) scaleX(-1);
+                right: 25px;
+                z-index: 1;
+            }
+
+        #signup-view>div>aside>p:last-child {
+            font-size: .98em;
+        }
+
+
+
+@media all and (max-width: 780px) {
+
+    #signup-view>div {
+        display: flex;
+        width: 450px;
+    }
+    
+        #signup-view>div>div {
+            width: 100%;
+        }
+
+            #signup-view>div>div>h1,
+            #signup-view>div>div>h2,
+            #signup-view>div>div>p {
+                text-align: inherit;
+                padding-left: 0px;
+            }
+
+        #signup-view>div>aside {
+            display: none;
+        }
+}

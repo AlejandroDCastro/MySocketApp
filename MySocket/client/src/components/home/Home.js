@@ -276,61 +276,74 @@ const Home = () => {
         return <Redirect to="/login" />
     }
 
+/* <div>
+                    <section id="add-new-user">
+                        <div>
+                            <h2>Add new user</h2>
+                            <form onSubmit={handleSubmitPrivateRoom}>
+                                <div className="inputData labelDown">
+                                    <input type="email" id="privateRoom" required value={privateRoom} onChange={changePrivateRoomValue} />
+                                    <label htmlFor="privateRoom">Enter a user email</label>
+                                    <p>{privateRoomError}</p>
+                                </div>
+                                <input type="submit" value="OPEN CHAT" />
+                            </form>
+                        </div>
+                    </section>
+                    <section id="add-new-group">
+                        <div>
+                            <h2>Add new group</h2>
+                            <form onSubmit={handleSubmitSharedRoom}>
+                                <div className="inputData labelDown">
+                                    <input type="text" id="sharedRoom" required value={sharedRoom} onChange={changeSharedRoomValue} />
+                                    <label htmlFor="sharedRoom">Enter a room name</label>
+                                    <p>{sharedRoomError}</p>
+                                </div>
+                                <input type="submit" value="OPEN CHAT" />
+                            </form>
+                        </div>
+                    </section>
+                    <div id="group-list">
+                        <div>
+                            <form onSubmit={handleSubmitGroupMembers}>
+                                <div className="inputData labelDown">
+                                    <input type="email" id="groupMember" required value={groupMember} onChange={changeGroupMemberValue} />
+                                    <label htmlFor="groupMember">Enter a user email</label>
+                                    <p>{groupMemberError}</p>
+                                </div>
+                                <input type="submit" value="ADD USER" />
+                            </form>
+                            <p>User list:</p>
+                            <ul>
+                                <li>No users at the moment...</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>*/
+
 
     return (
         <div>
             <div id="home-view">
                 <div>
-                    <section className="formData" id="add-new-user">
-                        <h2>Add new user</h2>
-                        <form onSubmit={handleSubmitPrivateRoom}>
-                            <div className="inputData labelDown">
-                                <input type="email" id="privateRoom" required value={privateRoom} onChange={changePrivateRoomValue} />
-                                <label htmlFor="privateRoom">Enter a user email</label>
-                                <p>{privateRoomError}</p>
+                    <ul>
+                        <li>Individual</li>
+                        <li>Group</li>
+                    </ul>
+                    <div>
+                        <section className="active" id="private-room-section">
+                            <h2>Individual</h2>
+                            <div className="roomList" id="private-room-list">
+                                <RoomList rooms={privateRooms} type="Private" />
                             </div>
-                            <input type="submit" value="OPEN CHAT" />
-                        </form>
-                    </section>
-                    <section className="formData" id="add-new-group">
-                        <h2>Add new group</h2>
-                        <form onSubmit={handleSubmitSharedRoom}>
-                            <div className="inputData labelDown">
-                                <input type="text" id="sharedRoom" required value={sharedRoom} onChange={changeSharedRoomValue} />
-                                <label htmlFor="sharedRoom">Enter a room name</label>
-                                <p>{sharedRoomError}</p>
+                        </section>
+                        <section id="shared-room-section">
+                            <h2>Group</h2>
+                            <div className="roomList" id="shared-room-list">
+                                <RoomList rooms={sharedRooms} type="Shared" />
                             </div>
-                            <input type="submit" value="OPEN CHAT" />
-                        </form>
-                    </section>
-                    <div className="formData" id="group-list">
-                        <form onSubmit={handleSubmitGroupMembers}>
-                            <div className="inputData labelDown">
-                                <input type="email" id="groupMember" required value={groupMember} onChange={changeGroupMemberValue} />
-                                <label htmlFor="groupMember">Enter a user email</label>
-                                <p>{groupMemberError}</p>
-                            </div>
-                            <input type="submit" value="ADD USER" />
-                        </form>
-                        <p>User list:</p>
-                        <ul>
-                            <li>No users at the moment...</li>
-                        </ul>
+                        </section>
                     </div>
-                </div>
-                <div>
-                    <section className="roomSection" id="private-room-section">
-                        <h2>Private Rooms</h2>
-                        <div className="roomList" id="private-room-list">
-                            <RoomList rooms={privateRooms} type="Private" />
-                        </div>
-                    </section>
-                    <section className="roomSection" id="shared-room-section">
-                        <h2>Shared Rooms</h2>
-                        <div className="roomList" id="shared-room-list">
-                            <RoomList rooms={sharedRooms} type="Shared" />
-                        </div>
-                    </section>
                 </div>
             </div>
         </div>
