@@ -3,6 +3,7 @@ import { UserContext } from '../../../UserContext';
 import { Redirect, Link } from 'react-router-dom';
 import CryptoJS from 'crypto-js';
 import '../Authentication.css';
+import loaderSpinner from '../assets/loader-spinner.png';
 
 
 const Login = () => {
@@ -12,6 +13,8 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [emailError, setEmailError] = useState('');
     const [passwordError, setPasswordError] = useState('');
+
+    const [loader, setLoader] = useState(null);
 
 
     // Hooks
@@ -48,10 +51,21 @@ const Login = () => {
         setPassword(e.target.value);
     }
 
-    const submitHandler = async e => {
-        e.preventDefault();
-        setEmailError('');
-        setPasswordError('');
+    const changeSubmitCSS = (option) => {
+
+        // Set view for user experience
+        let container = document.querySelector('#login-view>div');
+
+        if (option === 1) {
+            container.classList.add('transparent');
+            setLoader(<img src={loaderSpinner} alt='loading...' />);
+        } else {
+            container.classList.remove('transparent');
+            setLoader(null);
+        }
+    }
+
+    const submitHandler = async _ => {
 
         console.log(email, password);
         try {
@@ -78,15 +92,16 @@ const Login = () => {
             const data = await res.json();
             console.log(data);
             if (data.errors) {
+                changeSubmitCSS(2);
                 if (data.errors.email === '') {
                     setEmailError('');
                 } else {
-                    setEmailError(<><i class="fas fa-exclamation-circle"></i><span>{data.errors.email}</span></>);
+                    setEmailError(<><i className="fas fa-exclamation-circle"></i><span>{data.errors.email}</span></>);
                 }
                 if (data.errors.password === '') {
                     setPasswordError('');
                 } else {
-                    setPasswordError(<><i class="fas fa-exclamation-circle"></i><span>{data.errors.password}</span></>);
+                    setPasswordError(<><i className="fas fa-exclamation-circle"></i><span>{data.errors.password}</span></>);
                 }
             } else if (data.user) {
 
@@ -106,6 +121,15 @@ const Login = () => {
         }
     }
 
+    const submitLogin = e => {
+
+        // Prevent the form submit action
+        e.preventDefault();
+
+        changeSubmitCSS(1);
+        setTimeout(submitHandler, 350);
+    }
+
 
     if (user) {
         return <Redirect to="/" />
@@ -114,12 +138,13 @@ const Login = () => {
 
     return (
         <div id='login-view' className="formData">
+            <p>{loader}</p>
             <div>
                 <div>
                     <h1>MySocket</h1>
                     <h2>Log in</h2>
                     <p>Use your MySocket account</p>
-                    <form onSubmit={submitHandler}>
+                    <form onSubmit={submitLogin}>
                         <div className="inputData labelDown">
                             <input id="email" type="email" value={email} onChange={changeEmail} />
                             <label htmlFor="email">Enter an email</label>

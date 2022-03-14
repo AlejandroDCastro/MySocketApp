@@ -43,6 +43,14 @@ code {
   --mySocketRed: #d93025;
 }
 
+
+@keyframes rotate {
+  from {transform: rotate(0deg);}
+  to {transform: rotate(360deg);}
+}
+
+
+
 .background-purple {
   background-color: var(--mySocketPurple);
 }
@@ -62,7 +70,18 @@ input:focus {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
 }
+
+.formData>p {
+  height: 45px;
+  margin-bottom: 15px;
+}
+
+  .formData>p>img {
+    width: 45px;
+    animation: .8s rotate linear infinite;
+  }
 
 .formData>div {
   width: 450px;
@@ -71,6 +90,11 @@ input:focus {
   background-color: var(--mySocketWhite);
   box-shadow: 0 0 12px -4px var(--mySocketPurple);
   border-radius: 10px;
+}
+
+.formData>div.transparent {
+  opacity: .6;
+  transition: all .3s;
 }
 
   .formData>div>div>h1 {

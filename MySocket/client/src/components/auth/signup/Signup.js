@@ -4,6 +4,7 @@ import { Redirect, Link } from 'react-router-dom';
 import CryptoJS from 'crypto-js';
 import NodeRSA from 'node-rsa';
 import '../Authentication.css';
+import loaderSpinner from '../assets/loader-spinner.png';
 
 
 const Signup = () => {
@@ -15,6 +16,8 @@ const Signup = () => {
     const [nameError, setNameError] = useState('');
     const [emailError, setEmailError] = useState('');
     const [passwordError, setPasswordError] = useState('');
+
+    const [loader, setLoader] = useState(null);
 
 
     // Hooks
@@ -64,12 +67,21 @@ const Signup = () => {
         setPassword(e.target.value);
     }
 
-    const submitHandler = async e => {
-        e.preventDefault();
+    const changeSubmitCSS = (option) => {
 
-        setEmailError('');
-        setNameError('');
-        setPasswordError('');
+        // Set view for user experience
+        let container = document.querySelector('#signup-view>div');
+
+        if (option === 1) {
+            container.classList.add('transparent');
+            setLoader(<img src={loaderSpinner} alt='loading...' />);
+        } else {
+            container.classList.remove('transparent');
+            setLoader(null);
+        }
+    }
+
+    const submitHandler = async _ => {
 
         console.log(name, email, password);
         try {
@@ -101,23 +113,26 @@ const Signup = () => {
                     encryptedPrivateKey
                 }),
                 headers: { 'Content-Type': 'application/json' }
-            });
+            })
             const data = await res.json();
             console.log(data);
             if (data.errors) {
+                changeSubmitCSS(2);
+                if (data.errors.name === '') {
+                    setNameError('');
+                } else {
+                    setNameError(<><i className="fas fa-exclamation-circle"></i><span>{data.errors.name}</span></>);
+                }
                 if (data.errors.email === '') {
                     setEmailError('');
                 } else {
-                    setEmailError(<><i class="fas fa-exclamation-circle"></i><span>{data.errors.email}</span></>);
+                    setEmailError(<><i className="fas fa-exclamation-circle"></i><span>{data.errors.email}</span></>);
                 }
                 if (data.errors.password === '') {
                     setPasswordError('');
                 } else {
-                    setPasswordError(<><i class="fas fa-exclamation-circle"></i><span>{data.errors.password}</span></>);
+                    setPasswordError(<><i className="fas fa-exclamation-circle"></i><span>{data.errors.password}</span></>);
                 }
-                setEmailError(data.errors.email);
-                setNameError(data.errors.name);
-                setPasswordError(data.errors.password);
             } else if (data.user_id) {
 
                 // Save private key in browser hard disk
@@ -135,6 +150,15 @@ const Signup = () => {
         }
     }
 
+    const submitSignup = e => {
+
+        // Prevent the form submit action
+        e.preventDefault();
+
+        changeSubmitCSS(1);
+        setTimeout(submitHandler, 350);
+    }
+
     if (user) {
         return <Redirect to="/" />
     }
@@ -142,12 +166,13 @@ const Signup = () => {
 
     return (
         <div id='signup-view' className="formData">
+            <p>{loader}</p>
             <div>
                 <div>
                     <h1>MySocket</h1>
                     <h2>Sign up</h2>
                     <p>Create a MySocket account</p>
-                    <form onSubmit={submitHandler}>
+                    <form onSubmit={submitSignup}>
                         <div className="inputData labelDown">
                             <input id="name" type="text" value={name} onChange={changeName} />
                             <label htmlFor="name">Enter a name</label>
@@ -169,10 +194,10 @@ const Signup = () => {
                 </div>
                 <aside>
                     <p>
-                        <i class="fas fa-comment"></i>
-                        <i class="fas fa-comment"></i>
+                        <i className="fas fa-comment"></i>
+                        <i className="fas fa-comment"></i>
                     </p>
-                    <p>Talk with family and friends. MySocket is your socket.</p>
+                    <p>Chat with family and friends safely. MySocket is your socket.</p>
                 </aside>
             </div>
         </div>

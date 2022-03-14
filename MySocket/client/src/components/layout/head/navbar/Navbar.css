@@ -50,7 +50,7 @@
         }
 
         #navbar>ul>li>a:hover {
-            background-color: #8636e0;
+            background-color: var(--mySocketDarkPurple);
             transition: all .3s;
         }
 

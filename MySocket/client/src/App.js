@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { UserContext } from './UserContext';
 import Chat from './components/chat/Chat';
 import Home from './components/home/Home';
-import Head from './components/layout/head/Head';
 import Login from './components/auth/login/Login';
 import Signup from './components/auth/signup/Signup';
 
