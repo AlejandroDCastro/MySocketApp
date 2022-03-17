@@ -1,0 +1,11 @@
+
+.room-list>a {
+    text-decoration: none;
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.room-list>a:last-child {
+    margin-bottom: 15px;
+}

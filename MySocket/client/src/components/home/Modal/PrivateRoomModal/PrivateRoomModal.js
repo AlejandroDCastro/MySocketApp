@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import '../Modal.css';
 
 
-const PrivateRoomModal = ({ privateParams: { handleSubmitPrivateRoom, privateRoom, changePrivateRoomValue, privateRoomError, setOpenPrivateModal } }) => {
+const PrivateRoomModal = ({ privateParams: { handleSubmitPrivateRoom, privateRoom, setPrivateRoom, privateRoomError, setOpenPrivateModal } }) => {
 
     useEffect(() => {
         let inputDiv = document.querySelector('#add-new-user>div>div>section>form>div:first-child');
@@ -15,6 +15,10 @@ const PrivateRoomModal = ({ privateParams: { handleSubmitPrivateRoom, privateRoo
             }
         }
     }, [privateRoom]);
+
+    const changePrivateRoomValue = e => {
+        setPrivateRoom(e.target.value);
+    }
 
 
     return (

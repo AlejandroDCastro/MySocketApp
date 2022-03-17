@@ -1,26 +1,19 @@
 
 article {
-    border: 1px black solid;
-    padding: 15px;
-    margin-top: 10px;
-    border-color: rgb(177, 177, 177);
-    border-radius: 2%;
-}
-
-article:not(:active) {
-    box-shadow: 0 0 5px -2px var(--mySocketPurple);
+    width: 99%;
+    padding: 18px 0;
+    background-color: var(--mySocketWhite);
+    border-radius: 8px;
+    box-shadow: 0 0 8px var(--mySocketGrey);
 }
 
 article:hover {
-    box-shadow: 0 0 12px -2px var(--mySocketPurple);
     cursor: pointer;
-    transition: box-shadow .15s;
+    box-shadow: 0 0 10px var(--mySocketPurple);
+    transition: box-shadow .3s;
 }
 
-article:active {
-    box-shadow: inset 0 0 7px var(--mySocketPurple);
-}
-
-article>h3 {
-    font-weight: normal;
-}
+    article>h3 {
+        font-size: 1.4em;
+        color: var(--mySocketPurple);
+    }

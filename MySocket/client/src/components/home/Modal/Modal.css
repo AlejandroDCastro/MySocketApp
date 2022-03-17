@@ -82,3 +82,20 @@
     width: 400px;
     height: 420px;
 }
+
+#add-new-group>div {
+    width: 800px;
+    height: 500px;
+}
+
+    #add-new-group>div>div {
+        display: flex;
+    }
+
+        #add-new-group>div>div>section:first-child {
+            width: 40%;
+        }
+
+        #add-new-group>div>div>section:last-child {
+            width: 60%;
+        }

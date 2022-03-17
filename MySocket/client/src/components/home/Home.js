@@ -4,6 +4,7 @@ import { Redirect } from 'react-router-dom';
 import RoomList from './RoomList/RoomList';
 import Head from '../layout/head/Head';
 import PrivateRoomModal from './Modal/PrivateRoomModal/PrivateRoomModal';
+import SharedRoomModal from './Modal/SharedRoomModal/SharedRoomModal';
 import io from 'socket.io-client';
 import CryptoJS from 'crypto-js';
 import NodeRSA from 'node-rsa';
@@ -60,31 +61,7 @@ const Home = () => {
         return () => {
             socket.off('connect-data-server');
         }
-    }, [ENDPT])
-
-    useEffect(() => {
-        let inputDiv = document.querySelector('#add-new-group>form>div:first-child');
-
-        if (inputDiv) {
-            if (sharedRoom !== '') {
-                inputDiv.classList.replace('labelDown', 'labelUp');
-            } else {
-                inputDiv.classList.replace('labelUp', 'labelDown');
-            }
-        }
-    }, [sharedRoom]);
-
-    useEffect(() => {
-        let inputDiv = document.querySelector('#group-list>form>div:first-child');
-
-        if (inputDiv) {
-            if (groupMember !== '') {
-                inputDiv.classList.replace('labelDown', 'labelUp');
-            } else {
-                inputDiv.classList.replace('labelUp', 'labelDown');
-            }
-        }
-    }, [groupMember]);
+    }, [ENDPT]);
 
     useEffect(() => {
         socket.on('output-private-rooms', privateRooms => {
@@ -245,18 +222,6 @@ const Home = () => {
         });
     }
 
-    const changePrivateRoomValue = e => {
-        setPrivateRoom(e.target.value);
-    }
-
-    const changeSharedRoomValue = e => {
-        setSharedRoom(e.target.value);
-    }
-
-    const changeGroupMemberValue = e => {
-        setGroupMember(e.target.value);
-    }
-
     const changeChatList = (hideIdx, showIdx) => {
         let chatList = document.querySelectorAll('#home-view>div>ul>li');
         let sectionList = document.querySelectorAll('#home-view>div>div>section');
@@ -277,7 +242,7 @@ const Home = () => {
     if (!user) {
 
         // Hide menu
-        let button = document.getElementById('btn-menu')
+        let button = document.getElementById('btn-menu');
         if (button) {
             button.checked = false;
         }
@@ -288,9 +253,21 @@ const Home = () => {
     const privateParams = {
         handleSubmitPrivateRoom,
         privateRoom,
-        changePrivateRoomValue,
+        setPrivateRoom,
         privateRoomError,
         setOpenPrivateModal
+    }
+
+    const sharedParams = {
+        handleSubmitSharedRoom,
+        handleSubmitGroupMembers,
+        sharedRoom,
+        groupMember,
+        setSharedRoom,
+        setGroupMember,
+        sharedRoomError,
+        groupMemberError,
+        setOpenSharedModal
     }
 
 
@@ -298,6 +275,7 @@ const Home = () => {
         <>
             <Head />
             {openPrivateModal && <PrivateRoomModal privateParams={privateParams} />}
+            {openSharedModal && <SharedRoomModal sharedParams={sharedParams}/>}
             <div id="home-view">
                 <div>
                     <ul>
@@ -310,16 +288,16 @@ const Home = () => {
                             <p>
                                 <button onClick={() => setOpenPrivateModal(true)}><i className="fas fa-plus-square"></i> New chat</button>
                             </p>
-                            <div className="roomList" id="private-room-list">
+                            <div id="private-room-list">
                                 <RoomList rooms={privateRooms} type="Private" />
                             </div>
                         </section>
                         <section id="shared-room-section">
                             <h2>Group</h2>
                             <p>
-                                <button><i className="fas fa-plus-square"></i> New chat</button>
+                                <button onClick={() => setOpenSharedModal(true)}><i className="fas fa-plus-square"></i> New chat</button>
                             </p>
-                            <div className="roomList" id="shared-room-list">
+                            <div id="shared-room-list">
                                 <RoomList rooms={sharedRooms} type="Shared" />
                             </div>
                         </section>
