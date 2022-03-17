@@ -7,7 +7,7 @@ const maxAge = 5 * 24 * 60 * 60 // milliseconds
 
 const createJWT = id => {
     return jwt.sign({ id }, 'chat secret', {
-        expiresIn: maxAge * 1000
+        expiresIn: maxAge
     });
 }
 

@@ -148,15 +148,15 @@ const Login = () => {
                         <div className="inputData labelDown">
                             <input id="email" type="email" value={email} onChange={changeEmail} />
                             <label htmlFor="email">Enter an email</label>
-                            <p>{emailError}</p>
+                            <p className='error-msg'>{emailError}</p>
                         </div>
                         <div className="inputData labelDown">
                             <input id="password" type="password" value={password} onChange={changePassword} />
                             <label htmlFor="password">Enter a password</label>
-                            <p>{passwordError}</p>
+                            <p className='error-msg'>{passwordError}</p>
                         </div>
                         <p>Do you already have an account? <Link to={'/signup'}>Sign Up</Link></p>
-                        <input type="submit" value="Submit" />
+                        <input className='button-effect' type="submit" value="Submit" />
                     </form>
                 </div>
             </div>

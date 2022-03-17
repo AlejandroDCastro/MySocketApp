@@ -176,20 +176,20 @@ const Signup = () => {
                         <div className="inputData labelDown">
                             <input id="name" type="text" value={name} onChange={changeName} />
                             <label htmlFor="name">Enter a name</label>
-                            <p>{nameError}</p>
+                            <p className='error-msg'>{nameError}</p>
                         </div>
                         <div className="inputData labelDown">
                             <input id="email" type="email" value={email} onChange={changeEmail} />
                             <label htmlFor="email">Enter a email</label>
-                            <p>{emailError}</p>
+                            <p className='error-msg'>{emailError}</p>
                         </div>
                         <div className="inputData labelDown">
                             <input id="password" type="password" value={password} onChange={changePassword} />
                             <label htmlFor="password">Enter a password</label>
-                            <p>{passwordError}</p>
+                            <p className='error-msg'>{passwordError}</p>
                         </div>
                         <p>You do not have an account yet? <Link to={'/login'}>Log In</Link></p>
-                        <input type="submit" value="Submit" />
+                        <input className='button-effect' type="submit" value="Submit" />
                     </form>
                 </div>
                 <aside>

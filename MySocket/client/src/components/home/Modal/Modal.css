@@ -1,0 +1,84 @@
+
+.pop-up {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 3;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+    .pop-up>div {
+        background-color: var(--mySocketWhite);
+        position: relative;
+        box-shadow: 0 0 10px var(--mySocketBlack);
+        border-radius: 10px;
+    }
+
+        .pop-up>div>p {
+            font-size: 2.2em;
+            position: absolute;
+            right: 0;
+            top: 0;
+            padding: 0 7px 7px 7px;
+        }
+
+        .pop-up>div>p:hover {
+            cursor: pointer;
+        }
+    
+        .pop-up>div>div {
+            background-color: var(--mySocketWhite);
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+        }
+
+            .pop-up>div>div>section {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                align-content: center;
+            }
+    
+                .pop-up>div>div>section>h2 {
+                    margin-top: 40px;
+                }
+            
+                .pop-up>div>div>section>form {
+                    height: 68%;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                }
+
+                    .pop-up>div>div>section>form>div {
+                        width: 86%;
+                    }
+            
+                    .pop-up>div>div>section>form>input {
+                        position: relative;
+                        top: 80px;
+                        padding: 8px 10px;
+                        font-size: 1.1em;
+                        border: none;
+                        color: var(--mySocketWhite);
+                        background-color: var(--mySocketPurple);
+                        border-radius: 5px;
+                    }
+
+                    .pop-up>div>div>section>form>input:hover {
+                        cursor: pointer;
+                    }
+
+
+#add-new-user>div {
+    width: 400px;
+    height: 420px;
+}

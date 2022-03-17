@@ -3,6 +3,7 @@ import { UserContext } from '../../UserContext';
 import { Redirect } from 'react-router-dom';
 import RoomList from './RoomList/RoomList';
 import Head from '../layout/head/Head';
+import PrivateRoomModal from './Modal/PrivateRoomModal/PrivateRoomModal';
 import io from 'socket.io-client';
 import CryptoJS from 'crypto-js';
 import NodeRSA from 'node-rsa';
@@ -25,6 +26,9 @@ const Home = () => {
     const [groupMembers, setGroupMembers] = useState([]);
 
     const [symmetricKey, setSymmetricKey] = useState('');
+
+    const [openPrivateModal, setOpenPrivateModal] = useState(false);
+    const [openSharedModal, setOpenSharedModal] = useState(false);
 
 
     // Run after render DOM
@@ -57,18 +61,6 @@ const Home = () => {
             socket.off('connect-data-server');
         }
     }, [ENDPT])
-
-    useEffect(() => {
-        let inputDiv = document.querySelector('#add-new-user>form>div:first-child');
-
-        if (inputDiv) {
-            if (privateRoom !== '') {
-                inputDiv.classList.replace('labelDown', 'labelUp');
-            } else {
-                inputDiv.classList.replace('labelUp', 'labelDown');
-            }
-        }
-    }, [privateRoom]);
 
     useEffect(() => {
         let inputDiv = document.querySelector('#add-new-group>form>div:first-child');
@@ -183,7 +175,7 @@ const Home = () => {
                 setPrivateRoomError('');
                 setSymmetricKey('');
             } else {
-                setPrivateRoomError(response.body);
+                setPrivateRoomError(<><i className="fas fa-exclamation-circle"></i><span>{response.body}</span></>);
             }
         });
     }
@@ -293,76 +285,44 @@ const Home = () => {
         return <Redirect to="/login" />
     }
 
-    /* <div>
-                        <section id="add-new-user">
-                            <div>
-                                <h2>Add new user</h2>
-                                <form onSubmit={handleSubmitPrivateRoom}>
-                                    <div className="inputData labelDown">
-                                        <input type="email" id="privateRoom" required value={privateRoom} onChange={changePrivateRoomValue} />
-                                        <label htmlFor="privateRoom">Enter a user email</label>
-                                        <p>{privateRoomError}</p>
-                                    </div>
-                                    <input type="submit" value="OPEN CHAT" />
-                                </form>
-                            </div>
-                        </section>
-                        <section id="add-new-group">
-                            <div>
-                                <h2>Add new group</h2>
-                                <form onSubmit={handleSubmitSharedRoom}>
-                                    <div className="inputData labelDown">
-                                        <input type="text" id="sharedRoom" required value={sharedRoom} onChange={changeSharedRoomValue} />
-                                        <label htmlFor="sharedRoom">Enter a room name</label>
-                                        <p>{sharedRoomError}</p>
-                                    </div>
-                                    <input type="submit" value="OPEN CHAT" />
-                                </form>
-                            </div>
-                        </section>
-                        <div id="group-list">
-                            <div>
-                                <form onSubmit={handleSubmitGroupMembers}>
-                                    <div className="inputData labelDown">
-                                        <input type="email" id="groupMember" required value={groupMember} onChange={changeGroupMemberValue} />
-                                        <label htmlFor="groupMember">Enter a user email</label>
-                                        <p>{groupMemberError}</p>
-                                    </div>
-                                    <input type="submit" value="ADD USER" />
-                                </form>
-                                <p>User list:</p>
-                                <ul>
-                                    <li>No users at the moment...</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>*/
+    const privateParams = {
+        handleSubmitPrivateRoom,
+        privateRoom,
+        changePrivateRoomValue,
+        privateRoomError,
+        setOpenPrivateModal
+    }
 
 
     return (
         <>
             <Head />
-            <div>
-                <div id="home-view">
+            {openPrivateModal && <PrivateRoomModal privateParams={privateParams} />}
+            <div id="home-view">
+                <div>
+                    <ul>
+                        <li className='active' onClick={() => changeChatList(1, 0)}>Individual</li>
+                        <li onClick={() => changeChatList(0, 1)}>Group</li>
+                    </ul>
                     <div>
-                        <ul>
-                            <li className='active' onClick={() => changeChatList(1, 0)}>Individual</li>
-                            <li onClick={() => changeChatList(0, 1)}>Group</li>
-                        </ul>
-                        <div>
-                            <section className="active" id="private-room-section">
-                                <h2>Individual</h2>
-                                <div className="roomList" id="private-room-list">
-                                    <RoomList rooms={privateRooms} type="Private" />
-                                </div>
-                            </section>
-                            <section id="shared-room-section">
-                                <h2>Group</h2>
-                                <div className="roomList" id="shared-room-list">
-                                    <RoomList rooms={sharedRooms} type="Shared" />
-                                </div>
-                            </section>
-                        </div>
+                        <section className="active" id="private-room-section">
+                            <h2>Individual</h2>
+                            <p>
+                                <button onClick={() => setOpenPrivateModal(true)}><i className="fas fa-plus-square"></i> New chat</button>
+                            </p>
+                            <div className="roomList" id="private-room-list">
+                                <RoomList rooms={privateRooms} type="Private" />
+                            </div>
+                        </section>
+                        <section id="shared-room-section">
+                            <h2>Group</h2>
+                            <p>
+                                <button><i className="fas fa-plus-square"></i> New chat</button>
+                            </p>
+                            <div className="roomList" id="shared-room-list">
+                                <RoomList rooms={sharedRooms} type="Shared" />
+                            </div>
+                        </section>
                     </div>
                 </div>
             </div>
