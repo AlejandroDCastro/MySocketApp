@@ -1,19 +1,52 @@
 
 article {
     width: 99%;
-    padding: 18px 0;
+    height: 55px;
     background-color: var(--mySocketWhite);
     border-radius: 8px;
     box-shadow: 0 0 8px var(--mySocketGrey);
+    transition: box-shadow .3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fade-in .8s;
 }
 
 article:hover {
     cursor: pointer;
     box-shadow: 0 0 10px var(--mySocketPurple);
-    transition: box-shadow .3s;
 }
 
     article>h3 {
-        font-size: 1.4em;
+        width: 20%;
+        font-size: 1.3em;
         color: var(--mySocketPurple);
     }
+
+    article>div {
+        width: 80%;
+        color: var(--mySocketGrey);
+        position: relative;
+        display: flex;
+    }
+
+        article>div>p:first-child {
+            width: 75%;
+            text-align: left;
+            white-space: nowrap; /* Delete line breaks */
+            overflow-x: hidden;
+            text-overflow: ellipsis; /* Three dots */
+        }
+
+        article>div>p:last-child {
+            width: 25%;
+            font-style: italic;
+        }
+
+
+@media all and (max-width: 1060px) {
+
+    article>div>p:last-child>span {
+        display: none;
+    }
+}

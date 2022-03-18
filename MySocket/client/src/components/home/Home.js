@@ -280,7 +280,7 @@ const Home = () => {
                 <div>
                     <ul>
                         <li className='active' onClick={() => changeChatList(1, 0)}>Individual</li>
-                        <li onClick={() => changeChatList(0, 1)}>Group</li>
+                        <li onClick={() => changeChatList(0, 1)}>&nbsp;&nbsp;&nbsp;Group&nbsp;&nbsp;&nbsp;</li>
                     </ul>
                     <div>
                         <section className="active" id="private-room-section">
@@ -289,7 +289,7 @@ const Home = () => {
                                 <button onClick={() => setOpenPrivateModal(true)}><i className="fas fa-plus-square"></i> New chat</button>
                             </p>
                             <div id="private-room-list">
-                                <RoomList rooms={privateRooms} type="Private" />
+                                <RoomList user={user} rooms={privateRooms} type="Private" setOpenModal={setOpenPrivateModal} />
                             </div>
                         </section>
                         <section id="shared-room-section">
@@ -298,7 +298,7 @@ const Home = () => {
                                 <button onClick={() => setOpenSharedModal(true)}><i className="fas fa-plus-square"></i> New chat</button>
                             </p>
                             <div id="shared-room-list">
-                                <RoomList rooms={sharedRooms} type="Shared" />
+                                <RoomList user={user} rooms={sharedRooms} type="Shared" setOpenModal={setOpenSharedModal} />
                             </div>
                         </section>
                     </div>

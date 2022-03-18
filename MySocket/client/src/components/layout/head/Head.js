@@ -10,7 +10,7 @@ const Head = () => {
     return (
         <div id="head" className="background-purple">
             <p>{(user) ? `Welcome ${user.name}!` : ''}</p>
-            <Header />
+            <Header user={user} />
             <Navbar />
         </div>
     )

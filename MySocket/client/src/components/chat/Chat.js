@@ -4,6 +4,7 @@ import { Link, Redirect, useParams } from 'react-router-dom';
 import io from 'socket.io-client';
 import Messages from './messages/Messages';
 import Input from './input/Input';
+import Head from '../layout/head/Head';
 import CryptoJS from 'crypto-js';
 import NodeRSA from 'node-rsa';
 import './Chat.css';
@@ -251,27 +252,35 @@ const Chat = () => {
             divFile.lastChild.style.display = 'none';
             divFile.firstChild.focus();
         }
-    }, [file])
+    }, [file]);
+
+    
+    if (!user) {
+        return <Redirect to="/login" />
+    }
 
 
     return (
-        <div id="chat-view">
-            <div>
+        <>
+            <Head />
+            <div id="chat-view">
                 <div>
-                    <h2>
-                        <span>{room_name}</span>
-                        <span>[{privacy}]</span>
-                    </h2>
-                    <p>
-                        <Link to={'/'}><i class="fas fa-angle-left"></i></Link>
-                    </p>
                     <div>
-                        <Messages messages={messages} user_id={user._id} privacy={privacy} />
-                        <Input message={message} setMessage={setMessage} setFile={setFile} sendMessage={submitSendMessage} showAudioIcon={showAudioIcon} showSocketIcon={showSocketIcon} />
+                        <p>
+                            <Link to={'/'} onClick={() => { user.chatting = false }}>
+                                <i class="fas fa-angle-left"></i>
+                            </Link>
+                            <h2>{room_name}</h2>
+                            <span>[{privacy}]</span>
+                        </p>
+                        <div>
+                            <Messages messages={messages} user_id={user._id} privacy={privacy} />
+                            <Input message={message} setMessage={setMessage} setFile={setFile} sendMessage={submitSendMessage} showAudioIcon={showAudioIcon} showSocketIcon={showSocketIcon} />
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     )
 }
 

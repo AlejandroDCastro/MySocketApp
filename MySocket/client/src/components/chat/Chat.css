@@ -5,18 +5,35 @@
 #chat-view>div,
 #chat-view>div>div {
     width: 100%;
-    height: 100%;
 }
 
-    #chat-view>div>div>h2 {
-        position: relative;
-        top: 22px;
+    #chat-view>div>div>p {
+        margin-top: 10px;
+        height: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
-        #chat-view>div>div>h2>span:last-child {
+        #chat-view>div>div>p>a {
+            text-decoration: none;
+            font-size: 2.3em;
+            margin-right: 16px;
+            color: var(--mySocketPurple);
+            transition: color .3 ease;
+        }
+
+        #chat-view>div>div>p>a:hover {
+            cursor: pointer;
+            color: var(--mySocketBlackPurple);
+        }
+
+        #chat-view>div>div>p>span {
             margin-left: 10px;
             font-weight: initial;
-            font-size: .6em;
+            font-size: .95em;
+            position: relative;
+            top: 2px;
         }
 
     #chat-view>div>div>div {

@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { UserContext } from '../../../../UserContext';
 import SignedInMenu from './SignedInMenu';
 import SignedOutMenu from './SignedOutMenu';
+import ChatMenu from './ChatMenu';
 import './Navbar.css';
 
 const Navbar = () => {
@@ -31,7 +32,7 @@ const Navbar = () => {
 
 
     // Choose the menu to show
-    const menu = (user) ? <SignedInMenu logout={logout} /> : <SignedOutMenu />;
+    const menu = (user) ? ((user.chatting) ? <ChatMenu logout={logout} /> : <SignedInMenu logout={logout} />) : <SignedOutMenu />;
 
 
     return (
