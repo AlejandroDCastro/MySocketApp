@@ -17,11 +17,13 @@ const Home = () => {
 
     const [privateRoom, setPrivateRoom] = useState('');
     const [privateRooms, setPrivateRooms] = useState([]);
+    //const [privateRoomKeys, setPrivateRoomKeys] = useState([]);
     const [privateRoomError, setPrivateRoomError] = useState('');
 
     const [sharedRoom, setSharedRoom] = useState('');
     const [sharedRoomError, setSharedRoomError] = useState('');
     const [sharedRooms, setSharedRooms] = useState([]);
+    //const [sharedRoomKeys, setSharedRoomKeys] = useState([]);
     const [groupMember, setGroupMember] = useState('');
     const [groupMemberError, setGroupMemberError] = useState('');
     const [groupMembers, setGroupMembers] = useState([]);
@@ -31,6 +33,44 @@ const Home = () => {
     const [openPrivateModal, setOpenPrivateModal] = useState(false);
     const [openSharedModal, setOpenSharedModal] = useState(false);
 
+    const decryptionChatKey = (cryptogram) => {
+        const privateKey = localStorage.getItem('privateKey');
+        const decryptionNode = new NodeRSA(privateKey);
+        const chatKey = decryptionNode.decrypt(cryptogram, 'utf8');
+        return chatKey;
+    }
+
+    const decryptionMessage = (msg, key) => {
+        if (msg[0]) {
+            const decryptedMsg = CryptoJS.AES.decrypt(msg[0], key);
+            const displayMsg = String('"' + decryptedMsg.toString(CryptoJS.enc.Utf8) + '"');
+            return displayMsg;
+        } else {
+            return '[No message yet]';
+        }
+    }
+    
+    const getFormattedData = (date) => {
+        let invertData = date.slice(0, 10);
+        let data = invertData.split('-');
+        let formattedDate = data[2] + '/' + data[1] + '/' + data[0];
+        return formattedDate;
+    }
+
+    const generateSymmetricKey = _ => {
+        const salt = CryptoJS.lib.WordArray.random(128 / 8);
+        const key = CryptoJS.PBKDF2(user._id, salt, {
+            keySize: 256 / 32,
+            iterations: 500
+        }).toString(CryptoJS.enc.Base64);
+        return key;
+    }
+
+    const encryptionChatKey = (message, publicKey) => {
+        const encryptionNode = new NodeRSA(publicKey);
+        const encryptedChatKey = encryptionNode.encrypt(message, 'base64');
+        return encryptedChatKey;
+    }
 
     // Run after render DOM
     useEffect(() => {
@@ -50,8 +90,8 @@ const Home = () => {
 
     useEffect(() => {
         socket.on('connect-data-server', (callback) => {
-            // Create a chat key for encrypt messages
-            setSymmetricKey(generateSymmetricKey());               // ESTO ES TEMPORAL!!!!!
+            
+            //setSymmetricKey(generateSymmetricKey());               // ESTO ES TEMPORAL!!!!!
             return callback({
                 name: user.name,
                 user_id: user._id
@@ -65,6 +105,11 @@ const Home = () => {
 
     useEffect(() => {
         socket.on('output-private-rooms', privateRooms => {
+            privateRooms[0].forEach((room, i) => {
+                privateRooms[1][i].chatKey = decryptionChatKey(privateRooms[1][i].chatKey);
+                room.lastMessage = decryptionMessage(room.lastMessage, privateRooms[1][i].chatKey);
+                room.updatedAt = getFormattedData(room.updatedAt);
+            });
             setPrivateRooms(privateRooms);
         });
         socket.on('output-shared-rooms', sharedRooms => {
@@ -107,19 +152,28 @@ const Home = () => {
         console.log('shared rooms', sharedRooms);
     }, [sharedRooms]);
 
-    const generateSymmetricKey = _ => {
-        const salt = CryptoJS.lib.WordArray.random(128 / 8);
-        const key = CryptoJS.PBKDF2(user._id, salt, {
-            keySize: 256 / 32,
-            iterations: 500
-        }).toString(CryptoJS.enc.Base64);
-        return key;
+
+    const openModal = (setOpenModal) => {
+        setOpenModal(true);
+
+        // Create a chat key for encrypt messages
+        setSymmetricKey(generateSymmetricKey());
     }
 
-    const encryptionChatKey = (message, publicKey) => {
-        const encryptionNode = new NodeRSA(publicKey);
-        const encryptedChatKey = encryptionNode.encrypt(message, 'base64');
-        return encryptedChatKey;
+    const closeModal = (setOpenModal, id) => {
+        let modalElement = document.getElementById(id);
+        //let roomListElement = document.querySelector('#home-view>div:last-child>div>section>div'); // IMPORTANTE
+        
+        modalElement.classList.replace('modal-fade-in', 'modal-fade-out');
+        setTimeout(() => {
+            setSymmetricKey('');
+
+            // Go to the last element
+            //roomListElement.scrollTop = roomListElement.scrollHeight;
+
+            // Close modal
+            setOpenModal(false);
+        }, 500);
     }
 
     const handleSubmitPrivateRoom = e => {
@@ -130,6 +184,7 @@ const Home = () => {
         // Emit a socket event
         socket.emit('check-correct-room', privateRoom, (response) => {
             if (response.valid) {
+                closeModal(setOpenPrivateModal, 'add-new-user');
 
                 // Encryption for both host and guest
                 const hostEncryptedChatKey = encryptionChatKey(symmetricKey, user.publicKey);
@@ -167,6 +222,8 @@ const Home = () => {
 
     const handleSubmitSharedRoom = e => {
         e.preventDefault();
+
+        closeModal(setOpenSharedModal, 'add-new-group');
 
         addUserToArray(user._id, user.publicKey);
         socket.emit('create-shared-room', sharedRoom, groupMembers, (response) => {
@@ -229,12 +286,22 @@ const Home = () => {
         if (chatList.length && sectionList.length) {
             
             // Change group picked
-            chatList[hideIdx].classList.remove('active');
-            chatList[showIdx].classList.add('active');
+            chatList[hideIdx].classList.replace('active', 'inactive');
+            chatList[showIdx].classList.replace('inactive', 'active');
+            sessionStorage.setItem('privateRoom', 'active');
+            sessionStorage.setItem('sharedRoom', 'inactive');
 
             // Change list
-            sectionList[hideIdx].classList.remove('active');
-            sectionList[showIdx].classList.add('active');
+            sectionList[hideIdx].classList.replace('active', 'inactive');
+            sectionList[showIdx].classList.replace('inactive', 'active');
+        }
+
+        if (hideIdx === 1) {
+            sessionStorage.setItem('privateRoom', 'active');
+            sessionStorage.setItem('sharedRoom', 'inactive');
+        } else {
+            sessionStorage.setItem('privateRoom', 'inactive');
+            sessionStorage.setItem('sharedRoom', 'active');
         }
     }
 
@@ -249,6 +316,7 @@ const Home = () => {
 
         return <Redirect to="/login" />
     }
+
 
     const privateParams = {
         handleSubmitPrivateRoom,
@@ -279,23 +347,23 @@ const Home = () => {
             <div id="home-view">
                 <div>
                     <ul>
-                        <li className='active' onClick={() => changeChatList(1, 0)}>Individual</li>
-                        <li onClick={() => changeChatList(0, 1)}>&nbsp;&nbsp;&nbsp;Group&nbsp;&nbsp;&nbsp;</li>
+                        <li className={sessionStorage.getItem('privateRoom')} onClick={() => changeChatList(1, 0)}>Individual</li>
+                        <li className={sessionStorage.getItem('sharedRoom')} onClick={() => changeChatList(0, 1)}>&nbsp;&nbsp;&nbsp;Group&nbsp;&nbsp;&nbsp;</li>
                     </ul>
                     <div>
-                        <section className="active" id="private-room-section">
+                        <section className={sessionStorage.getItem('privateRoom')} id="private-room-section">
                             <h2>Individual</h2>
                             <p>
-                                <button onClick={() => setOpenPrivateModal(true)}><i className="fas fa-plus-square"></i> New chat</button>
+                                <button onClick={() => openModal(setOpenPrivateModal)}><i className="fas fa-plus-square"></i> New chat</button>
                             </p>
                             <div id="private-room-list">
-                                <RoomList user={user} rooms={privateRooms} type="Private" setOpenModal={setOpenPrivateModal} />
+                                <RoomList user={user} rooms={privateRooms[0]} type="Private" setOpenModal={setOpenPrivateModal} />
                             </div>
                         </section>
-                        <section id="shared-room-section">
+                        <section className={sessionStorage.getItem('sharedRoom')} id="shared-room-section">
                             <h2>Group</h2>
                             <p>
-                                <button onClick={() => setOpenSharedModal(true)}><i className="fas fa-plus-square"></i> New chat</button>
+                                <button onClick={() => openModal(setOpenSharedModal)}><i className="fas fa-plus-square"></i> New chat</button>
                             </p>
                             <div id="shared-room-list">
                                 <RoomList user={user} rooms={sharedRooms} type="Shared" setOpenModal={setOpenSharedModal} />

@@ -7,7 +7,7 @@
     width: 100%;
 }
 
-    #chat-view>div>div>p {
+    #chat-view>div>div>h2 {
         margin-top: 10px;
         height: 50px;
         display: flex;
@@ -15,23 +15,23 @@
         align-items: center;
     }
 
-        #chat-view>div>div>p>a {
+        #chat-view>div>div>h2>a {
             text-decoration: none;
-            font-size: 2.3em;
+            font-size: 1.6em;
             margin-right: 16px;
             color: var(--mySocketPurple);
             transition: color .3 ease;
         }
 
-        #chat-view>div>div>p>a:hover {
+        #chat-view>div>div>h2>a:hover {
             cursor: pointer;
             color: var(--mySocketBlackPurple);
         }
 
-        #chat-view>div>div>p>span {
+        #chat-view>div>div>h2>span:last-child {
             margin-left: 10px;
             font-weight: initial;
-            font-size: .95em;
+            font-size: .7em;
             position: relative;
             top: 2px;
         }

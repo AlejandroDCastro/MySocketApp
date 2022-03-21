@@ -56,11 +56,12 @@ const Message = ({ message: { name, user_id, text, color, fileName }, current_ui
             // Set as plain text
             setElementDOM(<p>{text}</p>);
         }
+        //setElementDOM(<p></p>);
     }
 
     useEffect(() => {
         displayMessage();
-    }, [])
+    }, []);
     
 
     return (

@@ -1,15 +1,17 @@
 import React from 'react';
+import CryptoJS from 'crypto-js';
 import './Room.css';
 
-const Room = ({ name }) => {
 
+const Room = ({ name, lastMessage, updatedAt }) => {
+    console.log('Render Room');
     return (
         <>
             <article>
                 <h3>{name}</h3>
                 <div>
-                    <p>[No messages yet]</p>
-                    <p><span>Updated: </span>14/02/2022</p>
+                    <p>{lastMessage}</p>
+                    <p><span>Updated: </span>{updatedAt}</p>
                 </div>
             </article>
         </>

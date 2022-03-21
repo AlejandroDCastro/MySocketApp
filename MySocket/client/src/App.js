@@ -24,6 +24,10 @@ function App() {
           email: data.user.email,
           publicKey: data.user.publicKey
         });
+        
+        // Set the current view for user
+        sessionStorage.setItem('privateRoom', 'active');
+        sessionStorage.setItem('sharedRoom', 'inactive');
       } catch (error) {
         console.log(error);
         localStorage.removeItem('privateKey');

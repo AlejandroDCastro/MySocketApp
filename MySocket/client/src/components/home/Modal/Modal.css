@@ -1,4 +1,12 @@
 
+.modal-fade-in {
+    animation: fade-in .5s;
+}
+
+.modal-fade-out {
+    animation: fade-out .5s;
+}
+
 .pop-up {
     position: fixed;
     top: 0;

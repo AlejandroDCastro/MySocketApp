@@ -22,9 +22,9 @@ const PrivateRoomModal = ({ privateParams: { handleSubmitPrivateRoom, privateRoo
 
 
     return (
-        <div id="add-new-user" className='pop-up'>
+        <div id="add-new-user" className='pop-up modal-fade-in'>
             <div>
-                <p onClick={() => setOpenPrivateModal(false)}><i class="fas fa-times"></i></p>
+                <p onClick={() => setOpenPrivateModal(false)}><i className="fas fa-times"></i></p>
                 <div>
                     <section>
                         <h2>Add new user</h2>

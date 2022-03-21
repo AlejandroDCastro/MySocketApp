@@ -144,6 +144,10 @@ const Signup = () => {
                     email: email,
                     publicKey: publicKey
                 });
+
+                // Set the current view for user
+                sessionStorage.setItem('privateRoom', 'active');
+                sessionStorage.setItem('sharedRoom', 'inactive');
             }
         } catch (error) {
             console.log(error);

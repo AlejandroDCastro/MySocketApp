@@ -50,9 +50,11 @@ const Chat = () => {
 
     // Go to the chat end
     const scrollToTheEnd = _ => {
-        let divScroll = document.querySelector('#chat-view>div>div>div');
+        let divScroll = document.querySelector('#chat-view>div>div>div>div');
         if (divScroll) {
             divScroll.scrollTop = divScroll.scrollHeight;
+        } else {
+            console.log('no se puede hacer escrool hasta el final');
         }
     }
 
@@ -62,9 +64,15 @@ const Chat = () => {
         let lastMsg = document.querySelector('#chat-view>div>div>div>div>div:last-child');
 
         if (formSendMsg && lastMsg) {
+            console.log("formulario:", formSendMsg.getBoundingClientRect().top);
+            console.log("lastMsg:", lastMsg.getBoundingClientRect().bottom);
             if (formSendMsg.getBoundingClientRect().top < lastMsg.getBoundingClientRect().bottom) {
                 formSendMsg.classList.replace('absolute-bottom', 'sticky-bottom');
+            } else {
+                console.log('no da la altura');
             }
+        } else {
+            console.log('todavia no cargados los docs');
         }
     }
 
@@ -95,11 +103,12 @@ const Chat = () => {
         socket.emit('send-message', {
             message: cryptogram,
             color: hexColor,
-            fileName
+            fileName,
+            privacy
         }, room_id, () => {
             setMessage('');
-            stickySendMessageBox();
             scrollToTheEnd();
+            stickySendMessageBox();
         });
     }
 
@@ -192,8 +201,6 @@ const Chat = () => {
     }
 
 
-    // Hooks
-
     useEffect(() => {
         socket = io(ENDPT, {
             withCredentials: true
@@ -213,8 +220,8 @@ const Chat = () => {
                 message.text = decryptionMessage(message.text, chatKey);
             });
             setMessages(response.messages);
-            stickySendMessageBox();
             scrollToTheEnd();
+            stickySendMessageBox();
         });
     }, []) // Empty array for executing one only time each refresh
 
@@ -254,7 +261,7 @@ const Chat = () => {
         }
     }, [file]);
 
-    
+
     if (!user) {
         return <Redirect to="/login" />
     }
@@ -266,13 +273,13 @@ const Chat = () => {
             <div id="chat-view">
                 <div>
                     <div>
-                        <p>
+                        <h2>
                             <Link to={'/'} onClick={() => { user.chatting = false }}>
-                                <i class="fas fa-angle-left"></i>
+                                <i className="fas fa-angle-left"></i>
                             </Link>
-                            <h2>{room_name}</h2>
+                            <span>{room_name}</span>
                             <span>[{privacy}]</span>
-                        </p>
+                        </h2>
                         <div>
                             <Messages messages={messages} user_id={user._id} privacy={privacy} />
                             <Input message={message} setMessage={setMessage} setFile={setFile} sendMessage={submitSendMessage} showAudioIcon={showAudioIcon} showSocketIcon={showSocketIcon} />

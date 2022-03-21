@@ -20,6 +20,10 @@ const Navbar = () => {
                 localStorage.removeItem('privateKey');
                 if (!localStorage.getItem('privateKey'))
                     console.log('Private Key removed!');
+
+                // Set the current view for user
+                sessionStorage.removeItem('privateRoom');
+                sessionStorage.removeItem('sharedRoom');
             }
         } catch (error) {
             console.log(error);
@@ -32,7 +36,7 @@ const Navbar = () => {
 
 
     // Choose the menu to show
-    const menu = (user) ? ((user.chatting) ? <ChatMenu logout={logout} /> : <SignedInMenu logout={logout} />) : <SignedOutMenu />;
+    const menu = (user) ? ((user.chatting) ? <ChatMenu user={user} logout={logout} /> : <SignedInMenu logout={logout} />) : <SignedOutMenu />;
 
 
     return (

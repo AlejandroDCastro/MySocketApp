@@ -60,6 +60,8 @@ io.on('connection', (socket) => {
         });
         const objUserID = new mongoose.mongo.ObjectId(user.user_id);
 
+
+        /*
         // Show user private rooms avaliable
         PrivateRoom.aggregate([
             { $match: { 'members._id': objUserID } },
@@ -89,7 +91,7 @@ io.on('connection', (socket) => {
                     updatedAt: { $first: "$updatedAt" }
                 }
             },
-            { $sort: { updatedAt: 1 } },
+            { $sort: { updatedAt: -1 } },
             {
                 $project: {
                     _id: true,
@@ -102,9 +104,86 @@ io.on('connection', (socket) => {
             socket.emit('output-private-rooms', result);
         }).catch(error => {
             console.log('Output public rooms:', error);
+        });*/
+
+        // Query for private rooms of user
+        const userPrivateRoomsQuery = PrivateRoom.aggregate([
+            { $match: { 'members._id': objUserID } },
+            { $lookup: { from: 'users', localField: 'members._id', foreignField: '_id', as: 'user' } },
+            { $lookup: { from: 'messages', localField: 'message', foreignField: '_id', as: 'lastMessage' } },
+            {
+                $project: {
+                    _id: true,
+                    user: true,
+                    lastMessage: true,
+                    updatedAt: true
+                }
+            },
+            { $unwind: "$user" },
+            {
+                $redact: {
+                    $cond: {
+                        if: { $eq: ["$user._id", objUserID] },
+                        then: "$$PRUNE",
+                        else: "$$DESCEND"
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: "$_id",
+                    name: { $first: "$user.name" },
+                    color: { $first: "000" },
+                    lastMessage: { $first: "$lastMessage.text" },
+                    updatedAt: { $first: "$updatedAt" }
+                }
+            },
+            { $sort: { updatedAt: -1 } }
+        ]);
+
+        // Query for decrypt chat keys for user
+        const chatKeysQuery = PrivateRoom.aggregate([
+            { $match: { 'members._id': objUserID } },
+            {
+                $project: {
+                    _id: true,
+                    members: true,
+                    updatedAt: true
+                }
+            },
+            { $unwind: "$members" },
+            {
+                $redact: {
+                    $cond: {
+                        if: { $eq: ["$members._id", objUserID] },
+                        then: "$$KEEP",
+                        else: "$$PRUNE"
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: "$_id",
+                    chatKey: { $first: "$members.encryptedChatKey" },
+                    updatedAt: { $first: "$updatedAt" }
+                }
+            },
+            { $sort: { updatedAt: -1 } },
+            {
+                $project: {
+                    _id: false,
+                    chatKey: true
+                }
+            }
+        ]);
+
+        // Resolve private rooms
+        Promise.all([userPrivateRoomsQuery, chatKeysQuery]).then(result => {
+            console.log(result);
+            socket.emit('output-private-rooms', result);
         });
 
-        // Show user shared rooms avaliable
+    /*    // Show user shared rooms avaliable
         SharedRoom.aggregate([
             { $match: { "members._id": objUserID } },
             {
@@ -124,7 +203,7 @@ io.on('connection', (socket) => {
                     updatedAt: { $first: "$updatedAt" }
                 }
             },
-            { $sort: { updatedAt: 1 } },
+            { $sort: { updatedAt: -1 } },
             {
                 $project: {
                     _id: true,
@@ -137,7 +216,7 @@ io.on('connection', (socket) => {
             socket.emit('output-shared-rooms', result);
         }).catch(error => {
             console.log('Output shared rooms:', error);
-        });
+        });*/
     });
 
 
@@ -207,6 +286,17 @@ io.on('connection', (socket) => {
 
             // Emit new Room at the moment
             console.log('private room', result);
+            const localPrivateRoom = [
+                {
+                    _id: result.id,
+                    name: data.guest.name,
+                    color: '000',
+                    lastMessage: [],
+                    updatedAt: result.updatedAt
+                }, {
+                    encryptedChatKey
+                }
+            ];
             socket.emit('private-room-created', {
                 _id: result.id,
                 name: data.guest.name,
@@ -310,7 +400,7 @@ io.on('connection', (socket) => {
 
         // Send room messages to the client
         const msgQuery = Message.find({ room_id });
-        
+
         // Get encrypted room key for user
         const objUserID = new mongoose.mongo.ObjectId(user_id);
         const objRoomID = new mongoose.mongo.ObjectId(room_id);
@@ -318,7 +408,7 @@ io.on('connection', (socket) => {
         const keyQuery = Room.aggregate([
             { $match: { _id: objRoomID } },
             { $unwind: "$members" },
-            { $match: { 'members._id': objUserID}},
+            { $match: { 'members._id': objUserID } },
             {
                 $group: {
                     _id: "$members._id",
@@ -355,6 +445,11 @@ io.on('connection', (socket) => {
         // Save message
         const newMessage = new Message(msgData);
         newMessage.save().then(result => {
+
+            // Update chat with last message
+            const Room = (data.privacy === 'Private') ? PrivateRoom : SharedRoom;
+            const objRoomID = new mongoose.mongo.ObjectId(room_id);
+            Room.findOneAndUpdate({ '_id': objRoomID }, { $set: { 'message': result._id } }).then();
 
             // Send event to the clients in the same room
             io.to(room_id).emit('new-message', result);

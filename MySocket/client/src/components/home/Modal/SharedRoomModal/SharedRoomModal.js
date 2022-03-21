@@ -38,9 +38,9 @@ const SharedRoomModal = ({ sharedParams: { handleSubmitSharedRoom, handleSubmitG
 
 
     return (
-        <div id="add-new-group" className='pop-up'>
+        <div id="add-new-group" className='pop-up modal-fade-in'>
             <div>
-                <p onClick={() => setOpenSharedModal(false)}><i class="fas fa-times"></i></p>
+                <p onClick={() => setOpenSharedModal(false)}><i className="fas fa-times"></i></p>
                 <div>
                     <section id='group-name'>
                         <h2>Type group name</h2>
