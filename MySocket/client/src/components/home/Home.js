@@ -10,6 +10,52 @@ import CryptoJS from 'crypto-js';
 import NodeRSA from 'node-rsa';
 import './Home.css';
 
+const decryptionChatKey = (cryptogram) => {
+    const privateKey = localStorage.getItem('privateKey');
+    const decryptionNode = new NodeRSA(privateKey);
+    const chatKey = decryptionNode.decrypt(cryptogram, 'utf8');
+    return chatKey;
+}
+
+const decryptionMessage = (msg, key) => {
+    if (msg[0]) {
+        const decryptedMsg = CryptoJS.AES.decrypt(msg[0], key);
+        const displayMsg = String('"' + decryptedMsg.toString(CryptoJS.enc.Utf8) + '"');
+        return displayMsg;
+    } else {
+        return '[No message yet]';
+    }
+}
+
+const getFormattedData = (date) => {
+    let invertData = date.slice(0, 10);
+    let data = invertData.split('-');
+    let formattedDate = data[2] + '/' + data[1] + '/' + data[0];
+    return formattedDate;
+}
+
+const generateSymmetricKey = (secret) => {
+    const salt = CryptoJS.lib.WordArray.random(128 / 8);
+    const key = CryptoJS.PBKDF2(secret, salt, {
+        keySize: 256 / 32,
+        iterations: 500
+    }).toString(CryptoJS.enc.Base64);
+    return key;
+}
+
+const encryptionChatKey = (message, publicKey) => {
+    const encryptionNode = new NodeRSA(publicKey);
+    const encryptedChatKey = encryptionNode.encrypt(message, 'base64');
+    return encryptedChatKey;
+}
+
+const decryptRoomData = (room, key) => {
+    key = decryptionChatKey(key);
+    room.lastMessage = decryptionMessage(room.lastMessage, key);
+    room.updatedAt = getFormattedData(room.updatedAt);
+    return room;
+}
+
 let socket;
 const Home = () => {
     const ENDPT = 'https://localhost:5000';
@@ -33,44 +79,6 @@ const Home = () => {
     const [openPrivateModal, setOpenPrivateModal] = useState(false);
     const [openSharedModal, setOpenSharedModal] = useState(false);
 
-    const decryptionChatKey = (cryptogram) => {
-        const privateKey = localStorage.getItem('privateKey');
-        const decryptionNode = new NodeRSA(privateKey);
-        const chatKey = decryptionNode.decrypt(cryptogram, 'utf8');
-        return chatKey;
-    }
-
-    const decryptionMessage = (msg, key) => {
-        if (msg[0]) {
-            const decryptedMsg = CryptoJS.AES.decrypt(msg[0], key);
-            const displayMsg = String('"' + decryptedMsg.toString(CryptoJS.enc.Utf8) + '"');
-            return displayMsg;
-        } else {
-            return '[No message yet]';
-        }
-    }
-    
-    const getFormattedData = (date) => {
-        let invertData = date.slice(0, 10);
-        let data = invertData.split('-');
-        let formattedDate = data[2] + '/' + data[1] + '/' + data[0];
-        return formattedDate;
-    }
-
-    const generateSymmetricKey = _ => {
-        const salt = CryptoJS.lib.WordArray.random(128 / 8);
-        const key = CryptoJS.PBKDF2(user._id, salt, {
-            keySize: 256 / 32,
-            iterations: 500
-        }).toString(CryptoJS.enc.Base64);
-        return key;
-    }
-
-    const encryptionChatKey = (message, publicKey) => {
-        const encryptionNode = new NodeRSA(publicKey);
-        const encryptedChatKey = encryptionNode.encrypt(message, 'base64');
-        return encryptedChatKey;
-    }
 
     // Run after render DOM
     useEffect(() => {
@@ -105,12 +113,11 @@ const Home = () => {
 
     useEffect(() => {
         socket.on('output-private-rooms', privateRooms => {
+            let roomList = [];
             privateRooms[0].forEach((room, i) => {
-                privateRooms[1][i].chatKey = decryptionChatKey(privateRooms[1][i].chatKey);
-                room.lastMessage = decryptionMessage(room.lastMessage, privateRooms[1][i].chatKey);
-                room.updatedAt = getFormattedData(room.updatedAt);
+                roomList.push(decryptRoomData(room, privateRooms[1][i].chatKey));
             });
-            setPrivateRooms(privateRooms);
+            setPrivateRooms(roomList);
         });
         socket.on('output-shared-rooms', sharedRooms => {
             setSharedRooms(sharedRooms);
@@ -124,8 +131,8 @@ const Home = () => {
 
     useEffect(() => {
         socket.on('private-room-created', privateRoom => {
-            console.log('private:', privateRoom);
-            setPrivateRooms([...privateRooms, privateRoom]);
+            const newPrivateRoom = decryptRoomData(privateRoom[0], privateRoom[1]);
+            setPrivateRooms([newPrivateRoom, ...privateRooms]);
         });
 
         return () => {
@@ -157,7 +164,7 @@ const Home = () => {
         setOpenModal(true);
 
         // Create a chat key for encrypt messages
-        setSymmetricKey(generateSymmetricKey());
+        setSymmetricKey(generateSymmetricKey(user._id));
     }
 
     const closeModal = (setOpenModal, id) => {
@@ -189,8 +196,6 @@ const Home = () => {
                 // Encryption for both host and guest
                 const hostEncryptedChatKey = encryptionChatKey(symmetricKey, user.publicKey);
                 const guestEncryptedChatKey = encryptionChatKey(symmetricKey, response.body.guest_publicKey);
-                console.log('host', hostEncryptedChatKey);
-                console.log('guest', guestEncryptedChatKey);
                 socket.emit('create-private-room', {
                     host: {
                         id: user._id,
@@ -357,7 +362,7 @@ const Home = () => {
                                 <button onClick={() => openModal(setOpenPrivateModal)}><i className="fas fa-plus-square"></i> New chat</button>
                             </p>
                             <div id="private-room-list">
-                                <RoomList user={user} rooms={privateRooms[0]} type="Private" setOpenModal={setOpenPrivateModal} />
+                                <RoomList user={user} rooms={privateRooms} type="Private" setOpenModal={setOpenPrivateModal} />
                             </div>
                         </section>
                         <section className={sessionStorage.getItem('sharedRoom')} id="shared-room-section">

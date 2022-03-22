@@ -294,14 +294,10 @@ io.on('connection', (socket) => {
                     lastMessage: [],
                     updatedAt: result.updatedAt
                 }, {
-                    encryptedChatKey
+                    encryptedChatKey: data.host.encryptedChatKey
                 }
             ];
-            socket.emit('private-room-created', {
-                _id: result.id,
-                name: data.guest.name,
-                color: '000'
-            });
+            socket.emit('private-room-created', localPrivateRoom);
 
             // Check if other user is connected
             const guestConnected = Helper.getUserByID(data.guest.id);

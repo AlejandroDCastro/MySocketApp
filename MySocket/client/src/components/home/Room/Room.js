@@ -4,7 +4,7 @@ import './Room.css';
 
 
 const Room = ({ name, lastMessage, updatedAt }) => {
-    console.log('Render Room');
+
     return (
         <>
             <article>

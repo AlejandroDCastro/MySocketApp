@@ -6,7 +6,6 @@ import './RoomList.css';
 
 
 const RoomList = ({ user, rooms, type, setOpenModal }) => {
-    console.log('Render RoomList');
 
     return ((rooms && rooms.length > 0) ?
         <div className='room-list'>
