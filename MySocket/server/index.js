@@ -61,51 +61,6 @@ io.on('connection', (socket) => {
         const objUserID = new mongoose.mongo.ObjectId(user.user_id);
 
 
-        /*
-        // Show user private rooms avaliable
-        PrivateRoom.aggregate([
-            { $match: { 'members._id': objUserID } },
-            { $lookup: { from: 'users', localField: 'members._id', foreignField: '_id', as: 'user' } },
-            {
-                $project: {
-                    _id: true,
-                    user: true,
-                    updatedAt: true
-                }
-            },
-            { $unwind: "$user" },
-            {
-                $redact: {
-                    $cond: {
-                        if: { $eq: ["$user._id", objUserID] },
-                        then: "$$PRUNE",
-                        else: "$$DESCEND"
-                    }
-                }
-            },
-            {
-                $group: {
-                    _id: "$_id",
-                    name: { $first: "$user.name" },
-                    color: { $first: "000" },
-                    updatedAt: { $first: "$updatedAt" }
-                }
-            },
-            { $sort: { updatedAt: -1 } },
-            {
-                $project: {
-                    _id: true,
-                    name: true,
-                    color: true
-                }
-            }
-        ]).then(result => {
-            console.log('private rooms', result);
-            socket.emit('output-private-rooms', result);
-        }).catch(error => {
-            console.log('Output public rooms:', error);
-        });*/
-
         // Query for private rooms of user
         const userPrivateRoomsQuery = PrivateRoom.aggregate([
             { $match: { 'members._id': objUserID } },
@@ -179,44 +134,80 @@ io.on('connection', (socket) => {
 
         // Resolve private rooms
         Promise.all([userPrivateRoomsQuery, chatKeysQuery]).then(result => {
-            console.log(result);
+            console.log('private rooms', result);
             socket.emit('output-private-rooms', result);
         });
 
-    /*    // Show user shared rooms avaliable
-        SharedRoom.aggregate([
+
+        // Query for shared rooms of user
+        const userSharedRoomsQuery = SharedRoom.aggregate([
             { $match: { "members._id": objUserID } },
+            { $lookup: { from: 'messages', localField: 'message', foreignField: '_id', as: 'lastMessage' } },
+            { $unwind: "$members" },
             {
-                $project: {
-                    name: true,
-                    members: true,
-                    updatedAt: true
+                $redact: {
+                    $cond: {
+                        if: { $eq: ["$members._id", objUserID] },
+                        then: "$$KEEP",
+                        else: "$$PRUNE"
+                    }
                 }
             },
-            { $unwind: "$members" },
-            { $match: { "members._id": objUserID } },
             {
                 $group: {
                     _id: "$_id",
                     name: { $first: "$name" },
                     color: { $first: "$members.color" },
+                    lastMessage: { $first: "$lastMessage.text" },
+                    messageAuthor: { $first: "$lastMessage.name" },
+                    updatedAt: { $first: "$updatedAt" }
+                }
+            },
+            { $sort: { updatedAt: -1 } }
+        ]);
+
+
+        // Query for decrypt chat keys for user
+        const chatKeysQueryShared = SharedRoom.aggregate([
+            { $match: { "members._id": objUserID } },
+            {
+                $project: {
+                    _id: true,
+                    members: true,
+                    updatedAt: true
+                }
+            },
+            { $unwind: "$members" },
+            {
+                $redact: {
+                    $cond: {
+                        if: { $eq: ["$members._id", objUserID] },
+                        then: "$$KEEP",
+                        else: "$$PRUNE"
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: "$_id",
+                    chatKey: { $first: "$members.encryptedChatKey" },
                     updatedAt: { $first: "$updatedAt" }
                 }
             },
             { $sort: { updatedAt: -1 } },
             {
                 $project: {
-                    _id: true,
-                    name: true,
-                    color: true
+                    _id: false,
+                    chatKey: true
                 }
             }
-        ]).then(result => {
+        ]);
+
+        // Resolve shared rooms
+        Promise.all([userSharedRoomsQuery, chatKeysQueryShared]).then(result => {
             console.log('shared rooms', result);
             socket.emit('output-shared-rooms', result);
-        }).catch(error => {
-            console.log('Output shared rooms:', error);
-        });*/
+        });
     });
 
 
@@ -302,11 +293,18 @@ io.on('connection', (socket) => {
             // Check if other user is connected
             const guestConnected = Helper.getUserByID(data.guest.id);
             if (guestConnected) {
-                io.to(guestConnected.socket_id).emit('private-room-created', {
-                    _id: result.id,
-                    name: data.host.name,
-                    color: '000'
-                });
+                const guestPrivateRoom = [
+                    {
+                        _id: result.id,
+                        name: data.host.name,
+                        color: '000',
+                        lastMessage: [],
+                        updatedAt: result.updatedAt
+                    }, {
+                        encryptedChatKey: data.guest.encryptedChatKey
+                    }
+                ];
+                io.to(guestConnected.socket_id).emit('private-room-created', guestPrivateRoom);
             } else {
                 console.log('The guest user is not connected right now...');
             }
@@ -325,11 +323,17 @@ io.on('connection', (socket) => {
             result.members.forEach(member => {
                 const userConnected = Helper.getUserByID(member.id);
                 if (userConnected) {
-                    const roomData = {
-                        _id: result.id,
-                        name: result.name,
-                        color: member.color
-                    }
+                    const roomData = [
+                        {
+                            _id: result.id,
+                            name: result.name,
+                            color: member.color,
+                            lastMessage: [],
+                            updatedAt: result.updatedAt
+                        }, {
+                            encryptedChatKey: member.encryptedChatKey
+                        }
+                    ];
                     io.to(userConnected.socket_id).emit('shared-room-created', roomData);
                 } else {
                     console.log('The user ' + member.id + ' is not connected right now');

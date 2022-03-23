@@ -120,7 +120,16 @@ const Home = () => {
             setPrivateRooms(roomList);
         });
         socket.on('output-shared-rooms', sharedRooms => {
-            setSharedRooms(sharedRooms);
+            let roomList = [];
+            sharedRooms[0].forEach((room, i) => {
+                let roomData = decryptRoomData(room, sharedRooms[1][i].chatKey);
+                if (roomData.lastMessage !== '[No message yet]') {
+                    roomData.lastMessage = roomData.messageAuthor + ': ' + roomData.lastMessage;
+                }
+                delete roomData.messageAuthor;
+                roomList.push(roomData);
+            });
+            setSharedRooms(roomList);
         });
 
         return () => {
@@ -146,8 +155,8 @@ const Home = () => {
 
     useEffect(() => {
         socket.on('shared-room-created', sharedRoom => {
-            console.log('shared:', sharedRoom);
-            setSharedRooms([...sharedRooms, sharedRoom]);
+            const newSharedRoom = decryptRoomData(sharedRoom[0], sharedRoom[1]);
+            setSharedRooms([newSharedRoom, ...sharedRooms]);
         });
 
         return () => {
