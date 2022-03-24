@@ -227,7 +227,7 @@ const Home = () => {
     }
 
     const clearUsersFromList = e => {
-        let listElement = document.querySelector('#group-list>ul');
+        let listElement = document.querySelector('#group-list>div>ul');
         listElement.innerHTML = ``;
         let letter = document.createElement('li');
         letter.textContent = 'No users at the moment...';
@@ -237,17 +237,16 @@ const Home = () => {
     const handleSubmitSharedRoom = e => {
         e.preventDefault();
 
-        closeModal(setOpenSharedModal, 'add-new-group');
-
         addUserToArray(user._id, user.publicKey);
         socket.emit('create-shared-room', sharedRoom, groupMembers, (response) => {
             if (response.valid) {
+                closeModal(setOpenSharedModal, 'add-new-group');
                 setSharedRoomError('');
                 setSharedRoom('');
                 clearUsersFromList();
                 setSymmetricKey('');
             } else {
-                setSharedRoomError(response.body);
+                setSharedRoomError(<><i className="fas fa-exclamation-circle"></i><span>{response.body}</span></>);
             }
             setGroupMembers([]);
         });
@@ -268,7 +267,7 @@ const Home = () => {
     }
 
     const displayUserToList = (email, name) => {
-        let listElement = document.querySelector('#group-list>ul');
+        let listElement = document.querySelector('#group-list>div>ul');
         let newChild = document.createElement('li');
 
         if (groupMembers.length === 0) {
@@ -288,7 +287,7 @@ const Home = () => {
                 setGroupMemberError('');
                 setGroupMember('');
             } else {
-                setGroupMemberError(response.body);
+                setGroupMemberError(<><i className="fas fa-exclamation-circle"></i><span>{response.body}</span></>);
             }
         });
     }
@@ -337,6 +336,7 @@ const Home = () => {
         privateRoom,
         setPrivateRoom,
         privateRoomError,
+        setPrivateRoomError,
         setOpenPrivateModal
     }
 
@@ -347,9 +347,13 @@ const Home = () => {
         groupMember,
         setSharedRoom,
         setGroupMember,
+        setGroupMembers,
         sharedRoomError,
         groupMemberError,
-        setOpenSharedModal
+        setSharedRoomError,
+        setGroupMemberError,
+        setOpenSharedModal,
+        clearUsersFromList
     }
 
 

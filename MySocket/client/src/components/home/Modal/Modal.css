@@ -92,18 +92,96 @@
 }
 
 #add-new-group>div {
-    width: 800px;
-    height: 500px;
+    width: 450px;
+    height: 800px;
 }
 
     #add-new-group>div>div {
         display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 
-        #add-new-group>div>div>section:first-child {
-            width: 40%;
+        #add-new-group>div>div>hr {
+            position: relative;
+            bottom: 52px;
+            color: var(--mySocketBlack);
+            margin-top: 4px;
         }
 
-        #add-new-group>div>div>section:last-child {
+        #add-new-group>div>div>hr:nth-child(2) {
             width: 60%;
         }
+
+        #add-new-group>div>div>hr:nth-child(3) {
+            width: 40%;
+            opacity: .8;
+        }
+
+        #add-new-group>div>div>hr:nth-child(4) {
+            width: 20%;
+            opacity: .75;
+        }
+
+        #add-new-group>div>div>hr:nth-child(5) {
+            width: 10%;
+            opacity: .7;
+        }
+
+        #add-new-group>div>div>hr:nth-child(6) {
+            width: 2%;
+            opacity: .65;
+        }
+
+        #add-new-group>div>div>section {
+            width: 100%;
+            height: 360px;
+        }
+
+            #add-new-group>div>div>section:last-child>h2 {
+                margin-top: 0px;
+                font-size: 1.35em;
+            }
+
+            #add-new-group>div>div>section>form {
+                height: 50%;
+            }
+
+                #add-new-group>div>div>section>form>input {
+                    top: 60px;
+                }
+
+            #add-new-group>div>div>section>div {
+                position: relative;
+                top: 52px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+                #add-new-group>div>div>section>div>p {
+                    font-weight: bold;
+                    margin-bottom: 10px;
+                    font-size: 1.1em;
+                }
+
+                #add-new-group>div>div>section>div>ul {
+                    width: 80%;
+                    height: 100px;
+                    list-style: none;
+                    text-align: left;
+                    overflow-y: scroll;
+                    color: #000;
+                    padding: 10px;
+                    border: 1px solid var(--mySocketSoftGrey);
+                    border-radius: 5px;
+                    box-shadow: 0 0 5px var(--mySocketSoftGrey);
+                }
+
+                    #add-new-group>div>div>section>div>ul>li {
+                        margin-bottom: 3px;
+                    }
+
+                    #add-new-group>div>div>section>div>ul>li:not(:first-child) {
+                        margin-top: 3px;
+                    }

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import '../Modal.css';
 
 
-const PrivateRoomModal = ({ privateParams: { handleSubmitPrivateRoom, privateRoom, setPrivateRoom, privateRoomError, setOpenPrivateModal } }) => {
+const PrivateRoomModal = ({ privateParams: { handleSubmitPrivateRoom, privateRoom, setPrivateRoom, privateRoomError, setPrivateRoomError, setOpenPrivateModal } }) => {
 
     useEffect(() => {
         let inputDiv = document.querySelector('#add-new-user>div>div>section>form>div:first-child');
@@ -20,11 +20,17 @@ const PrivateRoomModal = ({ privateParams: { handleSubmitPrivateRoom, privateRoo
         setPrivateRoom(e.target.value);
     }
 
+    const closeModal = _ => {
+        setPrivateRoom('');
+        setPrivateRoomError('');
+        setOpenPrivateModal(false);
+    }
+
 
     return (
         <div id="add-new-user" className='pop-up modal-fade-in'>
             <div>
-                <p onClick={() => setOpenPrivateModal(false)}><i className="fas fa-times"></i></p>
+                <p onClick={closeModal}><i className="fas fa-times"></i></p>
                 <div>
                     <section>
                         <h2>Add new user</h2>
