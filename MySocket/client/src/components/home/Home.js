@@ -17,10 +17,16 @@ const decryptionChatKey = (cryptogram) => {
     return chatKey;
 }
 
-const decryptionMessage = (msg, key) => {
+const decryptionMessage = (msg, key, fileName) => {
     if (msg[0]) {
-        const decryptedMsg = CryptoJS.AES.decrypt(msg[0], key);
-        const displayMsg = String('"' + decryptedMsg.toString(CryptoJS.enc.Utf8) + '"');
+        let clearMsg;
+        if (fileName && fileName[0] && fileName[0] !== '') {
+            clearMsg = fileName[0];
+        } else {
+            const decryptedMsg = CryptoJS.AES.decrypt(msg[0], key);
+            clearMsg = decryptedMsg.toString(CryptoJS.enc.Utf8);
+        }
+        const displayMsg = String('"' + clearMsg + '"');
         return displayMsg;
     } else {
         return '[No message yet]';
@@ -51,7 +57,7 @@ const encryptionChatKey = (message, publicKey) => {
 
 const decryptRoomData = (room, key) => {
     key = decryptionChatKey(key);
-    room.lastMessage = decryptionMessage(room.lastMessage, key);
+    room.lastMessage = decryptionMessage(room.lastMessage, key, room.fileName);
     room.updatedAt = getFormattedData(room.updatedAt);
     return room;
 }
@@ -78,6 +84,8 @@ const Home = () => {
 
     const [openPrivateModal, setOpenPrivateModal] = useState(false);
     const [openSharedModal, setOpenSharedModal] = useState(false);
+    const [privateListLoaded, setPrivateListLoaded] = useState(false);
+    const [sharedListLoaded, setSharedListLoaded] = useState(false);
 
 
     // Run after render DOM
@@ -98,7 +106,7 @@ const Home = () => {
 
     useEffect(() => {
         socket.on('connect-data-server', (callback) => {
-            
+
             //setSymmetricKey(generateSymmetricKey());               // ESTO ES TEMPORAL!!!!!
             return callback({
                 name: user.name,
@@ -118,6 +126,7 @@ const Home = () => {
                 roomList.push(decryptRoomData(room, privateRooms[1][i].chatKey));
             });
             setPrivateRooms(roomList);
+            setPrivateListLoaded(true);
         });
         socket.on('output-shared-rooms', sharedRooms => {
             let roomList = [];
@@ -130,6 +139,7 @@ const Home = () => {
                 roomList.push(roomData);
             });
             setSharedRooms(roomList);
+            setSharedListLoaded(true);
         });
 
         return () => {
@@ -372,7 +382,8 @@ const Home = () => {
                                 <button onClick={() => openModal(setOpenPrivateModal)}><i className="fas fa-plus-square"></i> New chat</button>
                             </p>
                             <div id="private-room-list">
-                                <RoomList user={user} rooms={privateRooms} type="Private" setOpenModal={setOpenPrivateModal} />
+                                {privateListLoaded && <RoomList user={user} rooms={privateRooms} type="Private" setOpenModal={setOpenPrivateModal} />}
+                                {!privateListLoaded && <p className='msg-empty-list'>Loading chat list...</p>}
                             </div>
                         </section>
                         <section className={sessionStorage.getItem('sharedRoom')} id="shared-room-section">
@@ -381,7 +392,8 @@ const Home = () => {
                                 <button onClick={() => openModal(setOpenSharedModal)}><i className="fas fa-plus-square"></i> New chat</button>
                             </p>
                             <div id="shared-room-list">
-                                <RoomList user={user} rooms={sharedRooms} type="Shared" setOpenModal={setOpenSharedModal} />
+                                {sharedListLoaded && <RoomList user={user} rooms={sharedRooms} type="Shared" setOpenModal={setOpenSharedModal} />}
+                                {!sharedListLoaded && <p className='msg-empty-list'>Loading chat list...</p>}
                             </div>
                         </section>
                     </div>

@@ -149,7 +149,7 @@ const Chat = () => {
 
                     // Start some animations
                     divIcon.classList.replace('send-msg-text', 'send-msg-audio');
-                    setInputPlaceholder('Recording audio...', 'red', true);
+                    setInputPlaceholder('Recording audio...', 'rgb(255, 132, 132)', true);
                     if (!micIcon.classList.replace('stop-animation', 'run-animation')) {
                         micIcon.classList.add('run-animation');
                     }

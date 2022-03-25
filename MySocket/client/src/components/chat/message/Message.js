@@ -19,7 +19,7 @@ const Message = ({ message: { name, user_id, text, color, fileName }, current_ui
 
             // Extract the content type
             const contentType = text.slice(5, text.length).split(';')[0];
-            
+
             // Fetch API used to convert base64 to blob
             fetch(text)
                 .then(response => {
@@ -37,7 +37,7 @@ const Message = ({ message: { name, user_id, text, color, fileName }, current_ui
                                 </audio>
                             );
                             break;
-                    
+
                         case 'image/png':
                         case 'image/jpeg':
                             setElementDOM(<img src={blobURL} alt={fileName} />);
@@ -46,13 +46,13 @@ const Message = ({ message: { name, user_id, text, color, fileName }, current_ui
                         default:
 
                             // Load and unknown file ready to download
-                            setElementDOM(<a href={blobURL} download={fileName}>{fileName}</a>);
+                            setElementDOM(<a style={{ color: '#fff' }} href={blobURL} download={fileName}>{fileName}</a>);
                             break;
                     }
                 });
 
         } else {
-            
+
             // Set as plain text
             setElementDOM(<p>{text}</p>);
         }
@@ -62,7 +62,7 @@ const Message = ({ message: { name, user_id, text, color, fileName }, current_ui
     useEffect(() => {
         displayMessage();
     }, []);
-    
+
 
     return (
         <div className={styleClasses}>

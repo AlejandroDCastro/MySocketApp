@@ -9,27 +9,3 @@
 .room-list>a:last-child {
     margin-bottom: 15px;
 }
-
-.msg-empty-list {
-    width: 100%;
-    text-align: center;
-    position: absolute;
-    bottom: 50%;
-    font-size: 1.3em;
-}
-
-    .msg-empty-list>span {
-        color: #00e;
-    }
-
-    .msg-empty-list>span:hover {
-        cursor: pointer;
-    }
-
-    .msg-empty-list>span:visited {
-        color: #551a8b;
-    }
-
-    .msg-empty-list>span:active {
-        color: #e00;
-    }

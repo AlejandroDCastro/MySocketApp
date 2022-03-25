@@ -90,6 +90,7 @@ io.on('connection', (socket) => {
                     name: { $first: "$user.name" },
                     color: { $first: "000" },
                     lastMessage: { $first: "$lastMessage.text" },
+                    fileName: { $first: "$lastMessage.fileName" },
                     updatedAt: { $first: "$updatedAt" }
                 }
             },
@@ -160,6 +161,7 @@ io.on('connection', (socket) => {
                     color: { $first: "$members.color" },
                     lastMessage: { $first: "$lastMessage.text" },
                     messageAuthor: { $first: "$lastMessage.name" },
+                    fileName: { $first: "$lastMessage.fileName" },
                     updatedAt: { $first: "$updatedAt" }
                 }
             },

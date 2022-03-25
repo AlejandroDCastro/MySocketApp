@@ -11,7 +11,7 @@ const RoomList = ({ user, rooms, type, setOpenModal }) => {
         <div className='room-list'>
             {rooms.map((room, _) => (
                 <Link onClick={() => { user.chatting = true }} to={'/chat/' + room.color + '/' + type + '/' + room._id + '/' + room.name} key={room._id}>
-                    <Room name={room.name} lastMessage={room.lastMessage} updatedAt={room.updatedAt} />
+                    <Room name={room.name} lastMessage={room.lastMessage} fileName={room.fileName} updatedAt={room.updatedAt} />
                 </Link>
             ))}
         </div> : <p className='msg-empty-list'>
