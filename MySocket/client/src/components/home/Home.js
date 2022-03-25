@@ -1,11 +1,11 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { UserContext } from '../../UserContext';
 import { Redirect } from 'react-router-dom';
+import io from 'socket.io-client';
 import RoomList from './RoomList/RoomList';
 import Head from '../layout/head/Head';
 import PrivateRoomModal from './Modal/PrivateRoomModal/PrivateRoomModal';
 import SharedRoomModal from './Modal/SharedRoomModal/SharedRoomModal';
-import io from 'socket.io-client';
 import CryptoJS from 'crypto-js';
 import NodeRSA from 'node-rsa';
 import './Home.css';

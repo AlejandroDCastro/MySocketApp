@@ -86,35 +86,48 @@ const Signup = () => {
         console.log(name, email, password);
         try {
 
-            // Apply hash function to password
-            const wArray = CryptoJS.SHA3(password, { outputLength: 512 });
-            console.log('WordArray:', wArray);
-            const hash = wArray.toString(CryptoJS.enc.Base64);
-            console.log('Hash:', hash);
-            const klogin = hash.slice(0, hash.length / 2);
-            const kdata = hash.slice(hash.length / 2, hash.length);
-            console.log('klogin:', klogin);
-            console.log('kdata:', kdata);
+            let data = undefined, privateKey = undefined, publicKey = undefined;
+            if (password !== '') {
 
-            // Create RSA key pair
-            const key = new NodeRSA({ b: 2048 });
-            const publicKey = key.exportKey('public');
-            const privateKey = key.exportKey('private');
-            let encryptedPrivateKey = CryptoJS.AES.encrypt(privateKey, kdata, CryptoJS.enc.Base64).toString();
+                // Apply hash function to password
+                const wArray = CryptoJS.SHA3(password, { outputLength: 512 });
+                console.log('WordArray:', wArray);
+                const hash = wArray.toString(CryptoJS.enc.Base64);
+                console.log('Hash:', hash);
+                const klogin = hash.slice(0, hash.length / 2);
+                const kdata = hash.slice(hash.length / 2, hash.length);
+                console.log('klogin:', klogin);
+                console.log('kdata:', kdata);
 
-            const res = await fetch('https://localhost:5000/signup', {
-                method: 'POST',
-                credentials: 'include', // include data to the browser
-                body: JSON.stringify({
-                    name,
-                    email,
-                    klogin,
-                    publicKey,
-                    encryptedPrivateKey
-                }),
-                headers: { 'Content-Type': 'application/json' }
-            })
-            const data = await res.json();
+                // Create RSA key pair
+                const key = new NodeRSA({ b: 2048 });
+                publicKey = key.exportKey('public');
+                privateKey = key.exportKey('private');
+                let encryptedPrivateKey = CryptoJS.AES.encrypt(privateKey, kdata, CryptoJS.enc.Base64).toString();
+
+                const res = await fetch('https://localhost:5000/signup', {
+                    method: 'POST',
+                    credentials: 'include', // include data to the browser
+                    body: JSON.stringify({
+                        name,
+                        email,
+                        klogin,
+                        publicKey,
+                        encryptedPrivateKey
+                    }),
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                data = await res.json();
+            } else {
+                data = {
+                    errors: {
+                        name: '',
+                        email: '',
+                        password: 'A password is needed',
+                    }
+                }
+            }
+
             console.log(data);
             if (data.errors) {
                 changeSubmitCSS(2);
