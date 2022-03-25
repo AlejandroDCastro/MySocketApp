@@ -179,13 +179,10 @@ const Home = () => {
     const closeModal = (setOpenModal, id) => {
         let modalElement = document.getElementById(id);
         //let roomListElement = document.querySelector('#home-view>div:last-child>div>section>div'); // IMPORTANTE
-        
+
         modalElement.classList.replace('modal-fade-in', 'modal-fade-out');
         setTimeout(() => {
             setSymmetricKey('');
-
-            // Go to the last element
-            //roomListElement.scrollTop = roomListElement.scrollHeight;
 
             // Close modal
             setOpenModal(false);
@@ -297,7 +294,7 @@ const Home = () => {
         let sectionList = document.querySelectorAll('#home-view>div>div>section');
 
         if (chatList.length && sectionList.length) {
-            
+
             // Change group picked
             chatList[hideIdx].classList.replace('active', 'inactive');
             chatList[showIdx].classList.replace('inactive', 'active');
@@ -361,7 +358,7 @@ const Home = () => {
         <>
             <Head />
             {openPrivateModal && <PrivateRoomModal privateParams={privateParams} />}
-            {openSharedModal && <SharedRoomModal sharedParams={sharedParams}/>}
+            {openSharedModal && <SharedRoomModal sharedParams={sharedParams} />}
             <div id="home-view">
                 <div>
                     <ul>
