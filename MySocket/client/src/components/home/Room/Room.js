@@ -1,19 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Room.css';
 
 
-const Room = ({ name, lastMessage, fileName, updatedAt }) => {
-    const colorMsg = (lastMessage.indexOf(fileName[0]) !== -1) ? '#654fe3' : '#7c7c7c';
-    const fileColour = {
-        color: colorMsg
+const getFormatedMessage = (lastMessage, fileName) => {
+    const strings = lastMessage.split('"');
+    if (strings.length === 3 && fileName === strings[1]) {
+        return (<>{strings[0]}"<span>{strings[1]}</span>"</>);
+    } else {
+        return lastMessage;
     }
+}
+
+const Room = ({ name, lastMessage, fileName, updatedAt }) => {
 
     return (
         <>
             <article>
                 <h3>{name}</h3>
                 <div>
-                    <p style={fileColour}>{lastMessage}</p>
+                    <p>{getFormatedMessage(lastMessage, fileName[0])}</p>
                     <p><span>Updated: </span>{updatedAt}</p>
                 </div>
             </article>

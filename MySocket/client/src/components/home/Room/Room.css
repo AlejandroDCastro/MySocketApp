@@ -38,6 +38,10 @@ article:hover {
             text-overflow: ellipsis; /* Three dots */
         }
 
+            article>div>p:first-child>span {
+                color: #654fe3 !important;
+            }
+
         article>div>p:last-child {
             width: 25%;
             font-style: italic;
