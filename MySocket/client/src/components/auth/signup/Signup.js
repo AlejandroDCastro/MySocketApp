@@ -83,7 +83,6 @@ const Signup = () => {
 
     const submitHandler = async _ => {
 
-        console.log(name, email, password);
         try {
 
             let data = undefined, privateKey = undefined, publicKey = undefined;
@@ -91,13 +90,9 @@ const Signup = () => {
 
                 // Apply hash function to password
                 const wArray = CryptoJS.SHA3(password, { outputLength: 512 });
-                console.log('WordArray:', wArray);
                 const hash = wArray.toString(CryptoJS.enc.Base64);
-                console.log('Hash:', hash);
                 const klogin = hash.slice(0, hash.length / 2);
                 const kdata = hash.slice(hash.length / 2, hash.length);
-                console.log('klogin:', klogin);
-                console.log('kdata:', kdata);
 
                 // Create RSA key pair
                 const key = new NodeRSA({ b: 2048 });
@@ -128,7 +123,6 @@ const Signup = () => {
                 }
             }
 
-            console.log(data);
             if (data.errors) {
                 changeSubmitCSS(2);
                 if (data.errors.name === '') {
@@ -150,7 +144,6 @@ const Signup = () => {
 
                 // Save private key in browser hard disk
                 localStorage.setItem('privateKey', privateKey);
-                console.log('Private Key saved!');
                 setUser({
                     _id: data.user_id,
                     name: name,

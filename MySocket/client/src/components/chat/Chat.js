@@ -18,8 +18,6 @@ const Chat = () => {
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
     const [file, setFile] = useState(null);
-    //const [chunks, setChunks] = useState([]);
-    //const [chatKey, setChatKey] = useState('');
     let { color, privacy, room_id, room_name } = useParams();
 
 
@@ -53,8 +51,6 @@ const Chat = () => {
         let divScroll = document.querySelector('#chat-view>div>div>div>div');
         if (divScroll) {
             divScroll.scrollTop = divScroll.scrollHeight;
-        } else {
-            console.log('no se puede hacer escrool hasta el final');
         }
     }
 
@@ -64,15 +60,9 @@ const Chat = () => {
         let lastMsg = document.querySelector('#chat-view>div>div>div>div>div:last-child');
 
         if (formSendMsg && lastMsg) {
-            console.log("formulario:", formSendMsg.getBoundingClientRect().top);
-            console.log("lastMsg:", lastMsg.getBoundingClientRect().bottom);
             if (formSendMsg.getBoundingClientRect().top < lastMsg.getBoundingClientRect().bottom) {
                 formSendMsg.classList.replace('absolute-bottom', 'sticky-bottom');
-            } else {
-                console.log('no da la altura');
             }
-        } else {
-            console.log('todavia no cargados los docs');
         }
     }
 
@@ -170,15 +160,6 @@ const Chat = () => {
                     // Prepare to send data to server
                     let audioBlob = new Blob(chunks, { type: 'audio/webm' });
 
-                    // Download the audio
-                    /*let link = document.createElement('a');
-                    link.href = window.URL.createObjectURL(audioBlob);
-                    link.setAttribute('download', 'video_recorded.webm');
-                    link.style.display = 'none';
-                    document.getElementById('chat-view').appendChild(link);
-                    link.click();
-                    link.remove();*/
-
                     const reader = new FileReader();
                     reader.readAsDataURL(audioBlob);
                     reader.onload = function () {
@@ -205,15 +186,12 @@ const Chat = () => {
         socket = io(ENDPT, {
             withCredentials: true
         });
-        console.log('my socket is: ', socket);
         socket.emit('join-room', {
             user_id: user._id,
             room_id: room_id,
             privacy
         }, (response) => {
-            console.log(response);
             chatKey = decryptionChatKey(response.encryptedChatKey);
-            //setChatKey(symmetricKey);
 
             // Decrypt all messages donwloaded from server
             response.messages.forEach(message => {

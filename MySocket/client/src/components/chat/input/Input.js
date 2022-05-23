@@ -7,8 +7,6 @@ const Input = ({ message, setMessage, setFile, sendMessage, showAudioIcon, showS
     const changeMessage = e => {
         let message = e.target.value;
 
-        console.log("Cambia los mensajes de texto...");
-
         setMessage(message);
 
         // Change options to send message or record audio

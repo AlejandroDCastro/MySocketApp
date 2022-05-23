@@ -47,7 +47,6 @@ const User = require('./models/User');
 
 // Socket listeners for events
 io.on('connection', (socket) => {
-    console.log(socket.id);
 
 
     // Save data for users connected
@@ -135,7 +134,6 @@ io.on('connection', (socket) => {
 
         // Resolve private rooms
         Promise.all([userPrivateRoomsQuery, chatKeysQuery]).then(result => {
-            console.log('private rooms', result);
             socket.emit('output-private-rooms', result);
         });
 
@@ -207,7 +205,6 @@ io.on('connection', (socket) => {
 
         // Resolve shared rooms
         Promise.all([userSharedRoomsQuery, chatKeysQueryShared]).then(result => {
-            console.log('shared rooms', result);
             socket.emit('output-shared-rooms', result);
         });
     });
@@ -252,7 +249,6 @@ io.on('connection', (socket) => {
                 );
             });
         }).catch(error => {
-            console.log(error);
             return callback({
                 valid: false,
                 body: error
@@ -278,7 +274,6 @@ io.on('connection', (socket) => {
         privateRoom.save().then(result => {
 
             // Emit new Room at the moment
-            console.log('private room', result);
             const localPrivateRoom = [
                 {
                     _id: result.id,
@@ -307,8 +302,6 @@ io.on('connection', (socket) => {
                     }
                 ];
                 io.to(guestConnected.socket_id).emit('private-room-created', guestPrivateRoom);
-            } else {
-                console.log('The guest user is not connected right now...');
             }
         });
     });
@@ -321,7 +314,6 @@ io.on('connection', (socket) => {
             members: members
         });
         sharedRoom.save().then(result => {
-            console.log('new shared room', result);
             result.members.forEach(member => {
                 const userConnected = Helper.getUserByID(member.id);
                 if (userConnected) {
@@ -337,8 +329,6 @@ io.on('connection', (socket) => {
                         }
                     ];
                     io.to(userConnected.socket_id).emit('shared-room-created', roomData);
-                } else {
-                    console.log('The user ' + member.id + ' is not connected right now');
                 }
             });
             return callback({
@@ -346,12 +336,10 @@ io.on('connection', (socket) => {
             });
         }).catch(error => {
             const errorMessage = error.errors.members.properties.message;
-            console.log('error', errorMessage);
             return callback({
                 valid: false,
                 body: errorMessage//ESTO FALLA
             });
-            //console.log('errores', error)
         });
     });
 
@@ -390,11 +378,6 @@ io.on('connection', (socket) => {
             user_id,
             room_id
         });
-        if (error) {
-            console.log('join error:', error);
-        } else {
-            console.log('join user:', user);
-        }
 
         // Add the Room ID to the socket list
         socket.join(room_id);
@@ -406,7 +389,7 @@ io.on('connection', (socket) => {
         // Get encrypted room key for user
         const objUserID = new mongoose.mongo.ObjectId(user_id);
         const objRoomID = new mongoose.mongo.ObjectId(room_id);
-        const Room = (privacy === 'Private') ? PrivateRoom : SharedRoom;
+        const Room = (privacy === 'Individual') ? PrivateRoom : SharedRoom;
         const keyQuery = Room.aggregate([
             { $match: { _id: objRoomID } },
             { $unwind: "$members" },
@@ -421,7 +404,6 @@ io.on('connection', (socket) => {
 
         // Execute them concurrently
         Promise.all([msgQuery, keyQuery]).then(result => {
-            console.log(result);
             return callback({
                 messages: result[0],
                 encryptedChatKey: result[1][0].encryptedChatKey
@@ -442,14 +424,13 @@ io.on('connection', (socket) => {
         if (data.fileName) {
             msgData.fileName = data.fileName;
         }
-        console.log('message', msgData);
 
         // Save message
         const newMessage = new Message(msgData);
         newMessage.save().then(result => {
 
             // Update chat with last message
-            const Room = (data.privacy === 'Private') ? PrivateRoom : SharedRoom;
+            const Room = (data.privacy === 'Individual') ? PrivateRoom : SharedRoom;
             const objRoomID = new mongoose.mongo.ObjectId(room_id);
             Room.findOneAndUpdate({ '_id': objRoomID }, { $set: { 'message': result._id } }).then();
 
@@ -462,7 +443,6 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
         Helper.removeUserBySocketID(socket.id);
-        console.log('User disconnected...');
     });
 });
 

@@ -14,12 +14,9 @@ const Navbar = () => {
                 credentials: 'include'
             });
             const data = await res.json();
-            console.log('logout data', data);
             if (data.logout) {
                 setUser(null);
                 localStorage.removeItem('privateKey');
-                if (!localStorage.getItem('privateKey'))
-                    console.log('Private Key removed!');
 
                 // Set the current view for user
                 sessionStorage.removeItem('privateRoom');

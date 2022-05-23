@@ -29,10 +29,7 @@ function App() {
         sessionStorage.setItem('privateRoom', 'active');
         sessionStorage.setItem('sharedRoom', 'inactive');
       } catch (error) {
-        console.log(error);
         localStorage.removeItem('privateKey');
-        if (!localStorage.getItem('privateKey'))
-          console.log('Private Key removed!');
       }
     }
     verifyuser();

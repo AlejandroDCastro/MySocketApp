@@ -69,13 +69,11 @@ const Home = () => {
 
     const [privateRoom, setPrivateRoom] = useState('');
     const [privateRooms, setPrivateRooms] = useState([]);
-    //const [privateRoomKeys, setPrivateRoomKeys] = useState([]);
     const [privateRoomError, setPrivateRoomError] = useState('');
 
     const [sharedRoom, setSharedRoom] = useState('');
     const [sharedRoomError, setSharedRoomError] = useState('');
     const [sharedRooms, setSharedRooms] = useState([]);
-    //const [sharedRoomKeys, setSharedRoomKeys] = useState([]);
     const [groupMember, setGroupMember] = useState('');
     const [groupMemberError, setGroupMemberError] = useState('');
     const [groupMembers, setGroupMembers] = useState([]);
@@ -95,7 +93,6 @@ const Home = () => {
         socket = io(ENDPT, {
             withCredentials: true
         });
-        console.log('my socket is: ', socket);
 
         // Callback function after each refresh or update
         return () => {
@@ -160,10 +157,6 @@ const Home = () => {
     }, [privateRooms]);
 
     useEffect(() => {
-        console.log('private rooms', privateRooms);
-    }, [privateRooms]);
-
-    useEffect(() => {
         socket.on('shared-room-created', sharedRoom => {
             const newSharedRoom = decryptRoomData(sharedRoom[0], sharedRoom[1]);
             setSharedRooms([newSharedRoom, ...sharedRooms]);
@@ -172,10 +165,6 @@ const Home = () => {
         return () => {
             socket.off('shared-room-created');
         }
-    }, [sharedRooms]);
-
-    useEffect(() => {
-        console.log('shared rooms', sharedRooms);
     }, [sharedRooms]);
 
 
@@ -270,7 +259,6 @@ const Home = () => {
             color: getRandomColour(),
             encryptedChatKey
         });
-        console.log('group members', groupMembers);
     }
 
     const displayUserToList = (email, name) => {
@@ -382,7 +370,7 @@ const Home = () => {
                                 <button onClick={() => openModal(setOpenPrivateModal)}><i className="fas fa-plus-square"></i> New chat</button>
                             </p>
                             <div id="private-room-list">
-                                {privateListLoaded && <RoomList user={user} rooms={privateRooms} type="Private" setOpenModal={setOpenPrivateModal} />}
+                                {privateListLoaded && <RoomList user={user} rooms={privateRooms} type="Individual" setOpenModal={setOpenPrivateModal} />}
                                 {!privateListLoaded && <p className='msg-empty-list'>Loading chat list...</p>}
                             </div>
                         </section>
@@ -392,7 +380,7 @@ const Home = () => {
                                 <button onClick={() => openModal(setOpenSharedModal)}><i className="fas fa-plus-square"></i> New chat</button>
                             </p>
                             <div id="shared-room-list">
-                                {sharedListLoaded && <RoomList user={user} rooms={sharedRooms} type="Shared" setOpenModal={setOpenSharedModal} />}
+                                {sharedListLoaded && <RoomList user={user} rooms={sharedRooms} type="Group" setOpenModal={setOpenSharedModal} />}
                                 {!sharedListLoaded && <p className='msg-empty-list'>Loading chat list...</p>}
                             </div>
                         </section>

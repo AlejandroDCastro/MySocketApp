@@ -8,7 +8,7 @@ const Message = ({ message: { name, user_id, text, color, fileName }, current_ui
     const classNameAlign = (user_id === current_uid) ? 'right-msg' : 'left-msg';
     const classMarginFromLast = same_user ? 'same-user' : 'diff-user';
     const styleClasses = classNameAlign + ' ' + classMarginFromLast;
-    const display = (styleClasses === 'left-msg diff-user' && privacy === 'Shared') ? 'flex' : 'none';
+    const display = (styleClasses === 'left-msg diff-user' && privacy === 'Group') ? 'flex' : 'none';
     const nameStyle = {
         color: color,
         display: display

@@ -67,18 +67,13 @@ const Login = () => {
 
     const submitHandler = async _ => {
 
-        console.log(email, password);
         try {
 
             // Apply hash function to password
             const wArray = CryptoJS.SHA3(password, { outputLength: 512 });
-            console.log('WordArray:', wArray);
             const hash = wArray.toString(CryptoJS.enc.Base64);
-            console.log('Hash:', hash);
             const klogin = hash.slice(0, hash.length / 2);
             const kdata = hash.slice(hash.length / 2, hash.length);
-            console.log('klogin:', klogin);
-            console.log('kdata:', kdata);
 
             const res = await fetch('https://localhost:5000/login', {
                 method: 'POST',
@@ -90,7 +85,6 @@ const Login = () => {
                 headers: { 'Content-Type': 'application/json' }
             });
             const data = await res.json();
-            console.log(data);
             if (data.errors) {
                 changeSubmitCSS(2);
                 if (data.errors.email === '') {
@@ -108,7 +102,6 @@ const Login = () => {
                 // Decrypt to the initial UTF-8 enconding key
                 const privateKey = CryptoJS.AES.decrypt(data.user.encryptedPrivateKey, kdata).toString(CryptoJS.enc.Utf8);
                 localStorage.setItem('privateKey', privateKey);
-                console.log('Private Key saved!');
                 setUser({
                     _id: data.user._id,
                     name: data.user.name,

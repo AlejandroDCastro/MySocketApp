@@ -51,7 +51,6 @@ module.exports.signup = async (req, res) => {
         res.cookie('jwt', token, { httpOnly: true, secure: true, maxAge: maxAge * 1000 });
         res.status(201).json({ user_id: user._id });
     } catch (error) {
-        console.log(error);
         let errors = alertError(error);
         res.status(400).json({ errors });
     }
@@ -77,10 +76,7 @@ module.exports.verifyuser = (req, res, next) => {
     const token = req.cookies.jwt;
     if (token) {
         jwt.verify(token, 'chat secret', async (err, decodedToken) => {
-            console.log('decoded token', decodedToken);
-            if (err) {
-                console.log(err.message);
-            } else {
+            if (!err) {
                 let user = await User.findById(decodedToken.id);
                 user.kloginHash = '';
                 res.json({ user });
@@ -99,7 +95,6 @@ module.exports.logout = (req, res) => {
     if (token) {
         const user_id = jwt.decode(token).id;
         const user = Helper.removeUserByUserID(user_id);
-        console.log('user removed:', user);
     }
 
     // Delete token with user login data from client
