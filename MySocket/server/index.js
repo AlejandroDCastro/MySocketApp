@@ -35,7 +35,7 @@ const io = socketio(server, {
         res.end();
     }
 });
-const mongoDB = "mongodb+srv://mysocket:BbEToh01@mysocket-chatapp.jkcv8.mongodb.net/mysocket-database?retryWrites=true&w=majority";
+const mongoDB = "mongodb+srv://mysocket:DNTTA@mysocket-chatapp.jkcv8.mongodb.net/mysocket-database?retryWrites=true&w=majority";
 mongoose.connect(mongoDB).then(() => console.log('database connected')).catch(err => console.log(err));
 const { Helper } = require('./helper');
 const PORT = process.env.PORT || 5000;
