@@ -5,7 +5,7 @@
 
 MySocket is an *Undergraduate Thesis Project* made by Alejandro Castro Valero from *Multimedia Engineering* degree.
 
-To see all the specifications that do not appear in this file about the project, please check the full thesis in [RUA](http://rua.ua.es/dspace/handle/10045/36932).
+To see all the specifications that do not appear in this file about the project, please check the full thesis in [RUA](http://rua.ua.es/dspace/handle/10045/126905).
 
 ***
 
